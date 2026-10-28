@@ -11,3 +11,4 @@ desktop/resources/engine/
 test-results/
 playwright-report/
 *.log
+dist-website/
