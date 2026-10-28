@@ -64,3 +64,9 @@ Die native Probe `tests/native-windows.mjs` prüft WebView2 und den tatsächlich
 Der Windows-NVDA-Job benötigt eine interaktive Desktop-Sitzung des Runners. Fehlt sie, schlägt der Job fehl; das gilt nicht als bestandene Barrierefreiheitsprüfung. Ein angelegter Workflow ist noch kein erfolgreicher CI-Lauf. Erst die Artefakte des aktuellen Commits belegen Windows-Build und native Prüfungen.
 
 Für die abschließende menschliche Abnahme: frisch installieren, ohne systemweit installiertes Java starten, alle Diagnosearten mit repräsentativen öffentlichen Daten prüfen, JSON/HTML mit und ohne Rohantworten speichern, den nativen Speicherdialog abbrechen und bestätigen, alle Formulare mit Tastatur und NVDA bedienen, Hell/Dunkel und 200-%-Skalierung prüfen und deinstallieren. Reale PKI-/Routing-/Destination-Daten und Netzwerkausfälle bleiben eigenständige Integrationsprüfungen.
+
+## Abhängigkeiten vor einer Abnahme prüfen
+
+Für npm `npm audit` und für den festgeschriebenen Rust-Baum `cargo audit --file desktop/Cargo.lock` mit einer aktuellen RustSec-Datenbank ausführen. Informative Meldungen nicht als „keine Befunde“ ausgeben: Der Linux-GTK-Pfad enthält derzeit Hinweise zu `glib 0.18.5` und `proc-macro-error 1.0.4`. Beide sind im ermittelten Windows-x64-Abhängigkeitsbaum nicht enthalten. Linux bleibt Entwicklungsplattform, kein Releaseziel von 0.1.0. Bei Änderungen an Tauri und dem Lockfile diese Einordnung erneut prüfen.
+
+Java-Laufzeitabhängigkeiten mit `mvn -f engine/pom.xml dependency:list -DincludeScope=runtime` ermitteln und gegen aktuelle Advisories mit Maven-Versionssemantik abgleichen. Datenbankstand, geprüfte Koordinaten und Grenzen des Abgleichs protokollieren. Ein leerer Trefferbestand ist keine allgemeine Sicherheitsgarantie; die gebündelte JDK-Distribution und das konkrete Windows-Paket bleiben eigene Prüfgegenstände.

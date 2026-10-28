@@ -28,5 +28,40 @@ test('exported guide uses the product website shell and preserves every help top
     assert.ok(guide.includes(`id="${topic.id}"`));
     assert.ok(guide.includes(`href="#${topic.id}"`));
   }
-  assert.ok(guide.includes('destination.png'));
+  for (const file of ['start.png', 'destination.png', 'schema.png'])
+    assert.ok(guide.includes(file));
+  assert.ok(guide.includes('IN ENTWICKLUNG'));
+  assert.ok(guide.includes('<ol>'));
+  assert.ok(guide.includes('<pre><code>'));
+  assert.ok(!product.includes('releases/download/'));
+});
+
+test('website export inventories only public files with matching checksums', async () => {
+  await import('../scripts/export-website.mjs');
+  const { createHash } = await import('node:crypto');
+  const manifest = JSON.parse(readFileSync('dist-website/manifest.json', 'utf8'));
+  assert.equal(manifest.product, 'FBForge Inspect');
+  assert.match(manifest.sourceCommit, /^[a-f0-9]{40}$/);
+  assert.ok(manifest.files.length >= 10);
+  for (const entry of manifest.files) {
+    assert.ok(entry.path.startsWith('inspect/'));
+    assert.ok(!entry.path.includes('..'));
+    assert.equal(
+      createHash('sha256')
+        .update(readFileSync(`dist-website/site/${entry.path}`))
+        .digest('hex'),
+      entry.sha256,
+    );
+  }
+  for (const name of [
+    'inspect/index.html',
+    'inspect/images/start.png',
+    'inspect/images/schema.png',
+    'inspect/hilfe/0.1/index.html',
+  ]) {
+    assert.ok(
+      manifest.files.some((file) => file.path === name),
+      name,
+    );
+  }
 });

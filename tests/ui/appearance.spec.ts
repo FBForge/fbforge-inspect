@@ -91,3 +91,20 @@ test('enabled form fields have a visible boundary in both themes', async ({ page
     expect(ratio, `${theme} field boundary`).toBeGreaterThanOrEqual(3);
   }
 });
+
+test('offline help includes schema steps and a usable synthetic example', async ({ page }) => {
+  await page.goto('/');
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Hilfe', exact: true })
+    .click();
+  await page
+    .getByRole('navigation', { name: 'Hilfethemen' })
+    .getByRole('link', { name: 'Fachschemata lesen', exact: true })
+    .click();
+  const topic = page.locator('#schemas');
+  await expect(topic.locator('ol li')).toHaveCount(3);
+  const example = JSON.parse(await topic.locator('pre').innerText());
+  expect(example.type).toBe('object');
+  expect(example.properties.vorgangsnummer.type).toBe('string');
+});

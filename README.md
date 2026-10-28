@@ -4,6 +4,8 @@
 
 Öffentliche FIT-Connect- und PVOG-Schnittstellen verstehen, Konfiguration prüfen und Befunde lokal weitergeben. Eine eigenständige Desktop-App ohne Anmeldung, Backendserver oder Telemetrie.
 
+**In Entwicklung · Zielversion 0.1.0.** Noch kein freigegebener Windows-Installer. Screenshots und Anleitung beschreiben den Entwicklungsstand; sie ersetzen keine native Windows-/NVDA-Abnahme.
+
 FBForge Inspect ergänzt Integrationstests um nachvollziehbare Diagnosen. Es nutzt ausschließlich öffentliche Schnittstellen und implementiert deren dokumentierte Verträge unabhängig. Kein offizielles Produkt der FITKO.
 
 ## Funktionen in 0.1.0
@@ -54,3 +56,11 @@ npm run desktop:dev
 Für Rust-Abhängigkeiten muss zuvor `cargo fetch --locked --manifest-path desktop/Cargo.toml` erfolgreich gewesen sein. Details zur Zielplattform und den Prüfungen stehen in [BUILDING.md](BUILDING.md).
 
 Lizenz: [EUPL-1.2](LICENSE). Fremdkomponenten: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) und `licenses/`.
+
+## Einblick in den Entwicklungsstand
+
+![Startansicht mit den öffentlichen Diagnoseaufgaben](docs/images/start.png)
+
+Die bebilderte Anleitung wird aus derselben [fachlichen Quelle](docs/help.json) für App und Website erzeugt. Das [lokale Schema-Beispiel](docs/images/schema.png) zeigt ausdrücklich getrennte Struktur- und Referenzbefunde mit fiktiven Daten.
+
+`npm run website:export` erstellt ausschließlich die öffentlichen Produktseiten, Hilfe und Bilder unter `dist-website/`. Der Export enthält ein Quellstand-/Prüfsummenmanifest für die spätere Übernahme in den FBForge-Webauftritt; er veröffentlicht keine Website.

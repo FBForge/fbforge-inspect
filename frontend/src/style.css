@@ -1069,3 +1069,16 @@ pre {
     border-color: CanvasText;
   }
 }
+
+.help-example {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 16px;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.help-topic li {
+  line-height: 1.65;
+  margin-bottom: 10px;
+}

@@ -278,6 +278,10 @@ async function save() {
           <article v-for="topic in help" :id="topic.id" :key="topic.id" class="panel help-topic">
             <h2>{{ topic.title }}</h2>
             <p v-for="text in topic.paragraphs" :key="text">{{ text }}</p>
+            <ol v-if="topic.steps.length">
+              <li v-for="step in topic.steps" :key="step">{{ step }}</li>
+            </ol>
+            <pre v-if="topic.example" class="help-example"><code>{{ topic.example }}</code></pre>
           </article>
           <p class="hint">
             Grundlagen und aktuelle API-Verträge: docs.fitko.de/fit-connect · pvog.fitko.de

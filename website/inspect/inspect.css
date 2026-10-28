@@ -115,3 +115,47 @@
     overflow-wrap: anywhere;
   }
 }
+
+.inspect-previews {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.inspect-previews figure {
+  min-width: 0;
+  margin: 0;
+}
+.inspect-previews img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.inspect-previews figcaption {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+#entwicklung,
+#einblick,
+#funktionen {
+  scroll-margin-top: 100px;
+}
+@media (max-width: 800px) {
+  .inspect-previews {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Grid children must shrink when users enlarge reading text on narrow screens. */
+.inspect-grid article,
+.inspect-facts > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 550px) {
+  .inspect-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
