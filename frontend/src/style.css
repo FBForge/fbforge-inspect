@@ -10,6 +10,7 @@
   --ink: #1e3044;
   --muted: #596b7f;
   --line: #dbe3eb;
+  --control-border: #7a8a9a;
   --brand: #005c8f;
   --brand-strong: #004a73;
   --accent: #007ba8;
@@ -28,6 +29,7 @@
   --ink: #e7eef7;
   --muted: #acbdd0;
   --line: #35475d;
+  --control-border: #74899f;
   --brand: #39bfe9;
   --brand-strong: #91e0f5;
   --accent: #39bfe9;
@@ -520,7 +522,7 @@ textarea {
   min-height: 37px;
   background: var(--surface);
   color: var(--ink);
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-border);
   border-radius: 5px;
   padding: 9px 10px;
   font-weight: 400;

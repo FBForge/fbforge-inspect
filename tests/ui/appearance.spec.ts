@@ -60,3 +60,34 @@ test('toolbar labels remain inside the header at minimum and standard window siz
     ).toBeTruthy();
   }
 });
+
+test('enabled form fields have a visible boundary in both themes', async ({ page }) => {
+  await page.goto('/');
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Destination prüfen', exact: true })
+    .click();
+  for (const theme of ['light', 'dark']) {
+    await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption(theme);
+    const ratio = await page
+      .getByRole('textbox', { name: 'Destination-ID', exact: true })
+      .evaluate((element) => {
+        const style = getComputedStyle(element);
+        const luminance = (color: string) => {
+          const channels = color
+            .match(/[\d.]+/g)!
+            .slice(0, 3)
+            .map(Number)
+            .map((value) => {
+              const s = value / 255;
+              return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+            });
+          return channels[0]! * 0.2126 + channels[1]! * 0.7152 + channels[2]! * 0.0722;
+        };
+        const a = luminance(style.borderTopColor),
+          b = luminance(style.backgroundColor);
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+      });
+    expect(ratio, `${theme} field boundary`).toBeGreaterThanOrEqual(3);
+  }
+});
