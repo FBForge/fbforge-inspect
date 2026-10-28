@@ -1,0 +1,96 @@
+name: Verify 0.1.0 candidate
+on:
+  push:
+    branches: [main, release/0.1.0]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Native prerequisites
+        run: sudo apt-get update && sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev librsvg2-dev patchelf
+      - name: Rust toolchain
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy && rustup default 1.96.0
+      - run: npm ci
+      - run: npm run build
+      - run: node --test --test-isolation=none tests/*.test.mjs
+      - run: npm run format:check
+      - run: npm run docs:build
+      - run: cargo fetch --locked --manifest-path desktop/Cargo.toml
+      - run: npm run licenses:collect && npm run stage:engine
+      - run: cargo fmt --manifest-path desktop/Cargo.toml --check
+      - run: cargo test --locked --manifest-path desktop/Cargo.toml -j 4
+      - run: cargo clippy --locked --manifest-path desktop/Cargo.toml --all-targets -j 4 -- -D warnings
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:ui
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: verification-evidence
+          path: |
+            engine/target/surefire-reports/
+            test-results/
+          if-no-files-found: warn
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Rust toolchain
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy; rustup default 1.96.0
+      - run: npm ci
+      - run: npm run build
+      - run: cargo fetch --locked --manifest-path desktop/Cargo.toml
+      - run: npm run licenses:collect
+      - run: npm run stage:engine
+      - run: cargo test --locked --manifest-path desktop/Cargo.toml
+      - name: Build unsigned NSIS candidate
+        shell: powershell
+        run: ./scripts/build-windows.ps1 -InspectJavaHome $env:JAVA_HOME
+      - name: Real WebView2 and bundled Java round trip
+        run: node tests/native-windows.mjs .local/artifacts/windows-x64/fbforge-inspect.exe .local/native-evidence
+      - name: Prepare official NVDA with pinned integrity check
+        shell: powershell
+        run: ./scripts/ci/prepare-nvda.ps1
+      - name: Installed candidate, native keyboard and actual NVDA speech
+        shell: powershell
+        run: |
+          $setup = @(Get-ChildItem .local/artifacts/windows-x64 -Filter '*-setup.exe')
+          if ($setup.Count -ne 1) { throw 'expected_one_installer' }
+          ./scripts/windows-accessibility-smoke.ps1 -InstallerPath $setup[0].FullName -ExpectedBinaryPath .local/artifacts/windows-x64/fbforge-inspect.exe -NvdaPath $env:INSPECT_NVDA_PATH
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: windows-unsigned-candidate
+          path: |
+            .local/artifacts/windows-x64/
+            .local/native-evidence/
+            ${{ runner.temp }}/fbforge-accessibility-result.json
+          if-no-files-found: warn
+          include-hidden-files: true

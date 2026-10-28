@@ -34,6 +34,7 @@ watch(dark, (value) => (document.documentElement.dataset.theme = value ? 'dark' 
 });
 watch(preview, async (value) => {
   if (value) {
+    raw.value = false;
     await nextTick();
     exportDialog.value?.showModal();
   }
@@ -45,6 +46,10 @@ function clear() {
   status.value = 'Bereit';
 }
 watch([page, environment, apiVersion], clear);
+watch(page, async () => {
+  await nextTick();
+  document.querySelector<HTMLElement>('#page-title')?.focus();
+});
 async function run(operation: string, input: Record<string, unknown>) {
   clear();
   if (!isTauri()) {
@@ -175,7 +180,9 @@ async function save() {
         <div class="page-heading">
           <div>
             <span class="eyebrow">FBFORGE INSPECT</span>
-            <h1>{{ page === 'start' ? 'Klarheit für Ihre Integration.' : active.label }}</h1>
+            <h1 id="page-title" tabindex="-1">
+              {{ page === 'start' ? 'Klarheit für Ihre Integration.' : active.label }}
+            </h1>
             <p>{{ active.description }}</p>
           </div>
           <button v-if="report" class="button secondary" @click="preview = true">
@@ -259,8 +266,11 @@ async function save() {
             <p>Ergebnis, Befunde und Quellen erscheinen hier nach dem Start.</p>
           </div></template
         >
-        <template v-else-if="page === 'help'"
-          ><article v-for="topic in help" :id="topic.id" :key="topic.id" class="panel help-topic">
+        <template v-else-if="page === 'help'">
+          <nav class="help-index" aria-label="Hilfethemen">
+            <a v-for="topic in help" :key="topic.id" :href="`#${topic.id}`">{{ topic.title }}</a>
+          </nav>
+          <article v-for="topic in help" :id="topic.id" :key="topic.id" class="panel help-topic">
             <h2>{{ topic.title }}</h2>
             <p v-for="text in topic.paragraphs" :key="text">{{ text }}</p>
           </article>

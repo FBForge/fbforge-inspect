@@ -1021,3 +1021,21 @@ pre {
     transition: none !important;
   }
 }
+
+/* Keep toolbar labels inside the header; generic form-label margins do not apply. */
+.toolbar label {
+  margin: 0;
+}
+.help-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-bottom: 22px;
+}
+.help-index a {
+  color: var(--brand);
+  text-underline-offset: 3px;
+}
+.help-topic {
+  scroll-margin-top: 20px;
+}

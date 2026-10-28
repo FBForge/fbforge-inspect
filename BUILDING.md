@@ -33,7 +33,7 @@ npm run test:ui
 npm run docs:build
 ```
 
-Die UI-Tests benötigen einen zu Playwright passenden Chromium. Ein bereits installierter Browser kann ausdrücklich über `INSPECT_CHROMIUM_EXECUTABLE` gewählt werden. Die Tests verwenden isolierte Kontexte und synthetische IPC-Antworten. Sie ersetzen keinen nativen Windows-/WebView2-Test. Die Java-Tests verwenden synthetische Zertifikate und signierte OCSP-/CRL-Fixtures, ohne externe Dienste.
+Die UI-Tests benötigen einen zu Playwright passenden Chromium. Ein bereits installierter Browser kann ausdrücklich über `INSPECT_CHROMIUM_EXECUTABLE` gewählt werden. Die Tests verwenden isolierte Kontexte. Vier Workflows verwenden synthetische IPC-Antworten, drei weitere prüfen lokale Datei- und Parsergrenzen; zwei davon rufen über eine reine Testbrücke den echten zuvor gebauten Java-Kern auf. Deshalb zuerst `npm run build:engine` ausführen. Sie ersetzen keinen nativen Windows-/WebView2-Test. Die Java-Tests verwenden synthetische Zertifikate und signierte OCSP-/CRL-Fixtures, ohne externe Dienste.
 
 Node-Tests laufen mit `--test-isolation=none`, damit die hier verwendete Node-24-Laufzeit die einzelnen exportbezogenen Tests zuverlässig ausführt. Maven `package` führt die Kerntests aus. Es gibt keine Git-Hooks und keinen automatischen Veröffentlichungsweg.
 
@@ -54,3 +54,13 @@ Eine echte native Probe kann unter Windows mit `node tests/native-windows.mjs <P
 ## Vor der Veröffentlichung
 
 Windows-Neuinstallation in einem separaten Testbenutzer, Start ohne installiertes Java, Deinstallation, WebView2-Verhalten, Tastatur/NVDA und Netzwerkfehler prüfen. Danach signierte EXE und signierten Installer mit Zeitstempel erzeugen und deren Signaturen sowie SHA-256-Summen kontrollieren. Ein Signierprovider oder ein privater Schlüssel ist nicht im Repository konfiguriert. Signierung und Veröffentlichung erfordern einen gesondert autorisierten Schritt. Ein erfolgreicher Build wird nicht als signiertes Release ausgegeben.
+
+## CI und Windows-Abnahme
+
+[Verify 0.1.0 candidate](.github/workflows/verify.yml) läuft bei Pushes nach `main` und `release/0.1.0`, bei Pull Requests sowie manuell. Der Linux-Job prüft Build, Java-/Node-/Rust-Tests, Clippy, Formatierung, Browser-Workflows und Hilfegenerierung. Der Windows-Job baut einen **unsignierten** NSIS-Kandidaten mit gebündeltem Java und bewahrt Installer, SHA-256-Summen und native Testbelege als Actions-Artefakt auf. Es gibt keine automatische Veröffentlichung und keine Signierschlüssel.
+
+Die native Probe `tests/native-windows.mjs` prüft WebView2 und den tatsächlichen IPC-Weg. Danach installiert `scripts/windows-accessibility-smoke.ps1` genau den gebauten Installer in ein temporäres Verzeichnis, gleicht die EXE-Prüfsumme ab und prüft Tastaturnavigation und von **NVDA 2026.2 tatsächlich erzeugte Sprachsequenzen**. Der stille Synthesizer vermeidet Audioausgabe; dies ist keine hörende Usability-Abnahme. Die NVDA-Vorbereitung prüft den Download gegen eine feste SHA-256-Summe. Die Testhilfen folgen dem EUPL-lizenzierten Connect-Vorbild (Referenz `6708441`). Sie werden nicht in der App mitgeliefert.
+
+Der Windows-NVDA-Job benötigt eine interaktive Desktop-Sitzung des Runners. Fehlt sie, schlägt der Job fehl; das gilt nicht als bestandene Barrierefreiheitsprüfung. Ein angelegter Workflow ist noch kein erfolgreicher CI-Lauf. Erst die Artefakte des aktuellen Commits belegen Windows-Build und native Prüfungen.
+
+Für die abschließende menschliche Abnahme: frisch installieren, ohne systemweit installiertes Java starten, alle Diagnosearten mit repräsentativen öffentlichen Daten prüfen, JSON/HTML mit und ohne Rohantworten speichern, den nativen Speicherdialog abbrechen und bestätigen, alle Formulare mit Tastatur und NVDA bedienen, Hell/Dunkel und 200-%-Skalierung prüfen und deinstallieren. Reale PKI-/Routing-/Destination-Daten und Netzwerkausfälle bleiben eigenständige Integrationsprüfungen.

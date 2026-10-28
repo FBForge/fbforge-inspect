@@ -55,7 +55,7 @@ test('destination diagnosis and export preview do not include raw responses by d
   page,
 }) => {
   await page
-    .getByRole('navigation')
+    .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('button', { name: 'Destination prüfen', exact: true })
     .click();
   await page.getByRole('textbox', { name: 'Destination-ID', exact: true }).fill(uuid);
@@ -69,6 +69,11 @@ test('destination diagnosis and export preview do not include raw responses by d
   await expect(dialog.locator('pre')).toContainText('raw-fixture-only');
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
+  await page.getByRole('button', { name: 'Bericht exportieren' }).click();
+  await expect(
+    page.getByRole('dialog').getByRole('checkbox', { name: 'Rohantworten einschließen' }),
+  ).not.toBeChecked();
+  await page.keyboard.press('Escape');
   await page.getByRole('textbox', { name: 'Destination-ID', exact: true }).fill('changed');
   await expect(
     page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true }),
@@ -76,13 +81,13 @@ test('destination diagnosis and export preview do not include raw responses by d
 });
 test('v2 disables process search and STAGE identifies PROD routing', async ({ page }) => {
   await page
-    .getByRole('navigation')
+    .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('button', { name: 'Prozessnachricht prüfen', exact: true })
     .click();
   await page.getByRole('combobox', { name: 'API', exact: true }).selectOption('v2');
   await expect(page.getByRole('button', { name: 'Prüfung starten', exact: true })).toBeDisabled();
   await page
-    .getByRole('navigation')
+    .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('button', { name: 'Routing prüfen', exact: true })
     .click();
   await page.getByRole('combobox', { name: 'Umgebung', exact: true }).selectOption('STAGE');
@@ -92,7 +97,7 @@ test('v2 disables process search and STAGE identifies PROD routing', async ({ pa
 });
 test('private JWK is rejected before invocation', async ({ page }) => {
   await page
-    .getByRole('navigation')
+    .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('button', { name: 'Schlüssel prüfen', exact: true })
     .click();
   await page
@@ -116,6 +121,9 @@ test('both themes have no horizontal overflow and navigation is keyboard reachab
   ).toBeTruthy();
   await page.keyboard.press('Tab');
   await expect(page.locator(':focus')).toHaveCount(1);
-  await page.getByRole('navigation').getByRole('button', { name: 'Hilfe', exact: true }).click();
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Hilfe', exact: true })
+    .click();
   await expect(page.getByRole('heading', { name: 'Schnellstart' })).toBeVisible();
 });
