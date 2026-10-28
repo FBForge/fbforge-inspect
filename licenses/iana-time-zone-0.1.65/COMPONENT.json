@@ -1,0 +1,9 @@
+{
+  "name": "iana-time-zone",
+  "version": "0.1.65",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

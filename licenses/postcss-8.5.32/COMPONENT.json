@@ -1,0 +1,8 @@
+{
+  "name": "postcss",
+  "version": "8.5.32",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

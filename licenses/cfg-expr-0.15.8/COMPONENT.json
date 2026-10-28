@@ -1,0 +1,9 @@
+{
+  "name": "cfg-expr",
+  "version": "0.15.8",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

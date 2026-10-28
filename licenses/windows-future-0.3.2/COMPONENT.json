@@ -1,0 +1,9 @@
+{
+  "name": "windows-future",
+  "version": "0.3.2",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "license-apache-2.0",
+    "license-mit"
+  ]
+}

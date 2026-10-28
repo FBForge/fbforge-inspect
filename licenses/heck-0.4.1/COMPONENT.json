@@ -1,0 +1,9 @@
+{
+  "name": "heck",
+  "version": "0.4.1",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

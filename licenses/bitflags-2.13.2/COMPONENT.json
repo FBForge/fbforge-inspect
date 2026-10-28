@@ -1,0 +1,9 @@
+{
+  "name": "bitflags",
+  "version": "2.13.2",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "window-vibrancy",
+  "version": "0.8.1",
+  "license": "Apache-2.0 OR MIT",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+    "LICENSE.spdx"
+  ]
+}

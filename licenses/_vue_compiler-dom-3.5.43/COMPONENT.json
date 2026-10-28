@@ -1,0 +1,8 @@
+{
+  "name": "@vue/compiler-dom",
+  "version": "3.5.43",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

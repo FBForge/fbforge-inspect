@@ -1,0 +1,10 @@
+{
+  "name": "tray-icon",
+  "version": "0.25.1",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+    "LICENSE.spdx"
+  ]
+}

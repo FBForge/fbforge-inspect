@@ -1,0 +1,9 @@
+{
+  "name": "dbus",
+  "version": "0.9.12",
+  "license": "Apache-2.0/MIT",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

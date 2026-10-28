@@ -1,0 +1,11 @@
+{
+  "name": "static_vcruntime",
+  "version": "3.0.0",
+  "license": "MIT OR Apache-2.0 OR Zlib",
+  "licenseFiles": [
+    "LICENSE",
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+    "LICENSE-ZLIB"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "infer",
+  "version": "0.22.0",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

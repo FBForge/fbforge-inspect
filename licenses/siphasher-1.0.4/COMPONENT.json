@@ -1,0 +1,10 @@
+{
+  "name": "siphasher",
+  "version": "1.0.4",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "COPYING",
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

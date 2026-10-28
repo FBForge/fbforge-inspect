@@ -1,0 +1,10 @@
+{
+  "name": "utf8_iter",
+  "version": "1.0.4",
+  "license": "Apache-2.0 OR MIT",
+  "licenseFiles": [
+    "COPYRIGHT",
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

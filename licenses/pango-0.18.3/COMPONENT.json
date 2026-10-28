@@ -1,0 +1,9 @@
+{
+  "name": "pango",
+  "version": "0.18.3",
+  "license": "MIT",
+  "licenseFiles": [
+    "COPYRIGHT",
+    "LICENSE"
+  ]
+}

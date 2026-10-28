@@ -1,0 +1,8 @@
+{
+  "name": "gtk-sys",
+  "version": "0.18.2",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

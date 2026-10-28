@@ -1,0 +1,9 @@
+{
+  "name": "fastrand",
+  "version": "2.5.0",
+  "license": "Apache-2.0 OR MIT",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

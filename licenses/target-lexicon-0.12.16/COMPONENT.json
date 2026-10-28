@@ -1,0 +1,8 @@
+{
+  "name": "target-lexicon",
+  "version": "0.12.16",
+  "license": "Apache-2.0 WITH LLVM-exception",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

@@ -1,0 +1,83 @@
+[
+  {
+    "id": "start",
+    "title": "Schnellstart",
+    "paragraphs": [
+      "Umgebung und API-Version oben auswählen. V3 ist die Voreinstellung. V2 wird ausdrücklich gewählt, ein automatischer Rückfall findet nicht statt.",
+      "Für eine Destination genügt ihre UUID. Ohne Zugangsdaten ruft Inspect ausschließlich veröffentlichte Konfiguration und öffentliche Schlüssel ab. Prüfungen starten erst mit Ihrem Klick.",
+      "Die App benötigt für öffentliche Abfragen Internetzugang. Lokale JWK- und Schema-Inspektion funktioniert ohne Internet. Diagnoseeingaben und Ergebnisse werden nicht automatisch gespeichert."
+    ]
+  },
+  {
+    "id": "destination",
+    "title": "Destination prüfen",
+    "paragraphs": [
+      "Status, Typ, Metadatenversionen, Leistungen, Prozessnachrichten, Regionen und Fachschemareferenzen werden angezeigt, soweit die gewählte API diese Felder veröffentlicht.",
+      "Optionale Erwartungen an Leistung, Region, Schema und MIME müssen in einem gemeinsamen Leistungskontext erfüllt sein. Ein Schema aus einer anderen Leistung genügt nicht. Fehlende v3-Felder in einer v2-Antwort sind kein Fehler.",
+      "Typ C kann ohne encryptionKid veröffentlicht sein. Eine öffentliche Konfiguration beweist weder authentifizierten Zugang noch eine erfolgreiche Einreichung. Veröffentlichte Senderbeschränkungen sind bei der Integration gesondert zu berücksichtigen."
+    ]
+  },
+  {
+    "id": "routing",
+    "title": "Routing und PVOG",
+    "paragraphs": [
+      "Eine Routingabfrage benötigt einen 14-stelligen LeiKa-Schlüssel und einen AGS, ARS oder eine über die Gebietssuche ausgewählte Gebiets-ID. Ein vorangestelltes DE wird bei AGS/ARS entfernt.",
+      "Inspect lädt Seiten innerhalb eines festen Budgets und behält alle Kontexte. Dieselbe Destination in mehreren Behördenkontexten wird nicht global dedupliziert. Fehler, Ratenlimits und abgebrochene Paginierung bedeuten einen unbekannten oder unvollständigen Bestand.",
+      "STAGE besitzt keine eigene Routing-API. Inspect zeigt hierfür ausdrücklich die PROD-Routingquelle. Diese Ergebnisse beweisen keine STAGE-Zustellbarkeit. TEST nutzt die TEST-Routingquelle.",
+      "PVOG-Daten sind zusätzliche öffentliche Evidenz. Abweichungen zwischen PVOG und Routing belegen keine Ursache oder Fehlentscheidung im Routing. Antwortzeitpunkte und jeweilige Quellen müssen gemeinsam betrachtet werden."
+    ]
+  },
+  {
+    "id": "process",
+    "title": "Prozessnachrichten in v3",
+    "paragraphs": [
+      "Prozessmodell-ID, Nachrichten-ID und Region bilden die öffentliche Suche. Der Modellbezug kann eine URI oder eine bpmn:-Kennung sein. BPMN-Dateien werden nicht importiert oder ausgeführt.",
+      "Optional werden Limits für ein konkretes Paar aus Absender- und Empfänger-Destination abgerufen. Beide UUIDs sind dafür erforderlich. Die öffentliche Suchantwort ist keine Sendeprobe."
+    ]
+  },
+  {
+    "id": "keys",
+    "title": "Öffentliche Schlüssel und Zertifikate",
+    "paragraphs": [
+      "JWK/JWKS können eingefügt, aus einer lokalen Datei geladen oder per öffentlicher HTTPS-URL abgerufen werden. Private und symmetrische Schlüssel werden abgewiesen. Bitte ausschließlich öffentliche Daten verwenden.",
+      "Inspect prüft JWK-Felder, kid, RSA-Größe, Algorithmus und key_ops. Der öffentliche Schlüssel muss zum ersten x5c-Zertifikat passen. Zertifikatslaufzeit, Kettensignaturen und PKIX-Vertrauen sind eigenständige Befunde.",
+      "Die Wurzel aus x5c gilt nicht automatisch als vertrauenswürdig. Für PKIX sind unabhängig bezogene öffentliche CA-Zertifikate als PEM auszuwählen. Die Zugehörigkeit dieser CA zur Verwaltungs-PKI muss unabhängig feststehen. Ohne gewählten Anker bleibt Vertrauen unbekannt.",
+      "TEST erlaubt selbst erzeugte Testzertifikate. Ein erfolgreicher TEST-Einzelbefund beweist keine Produktionstauglichkeit. STAGE und PROD benötigen das Profil der Verwaltungs-PKI."
+    ]
+  },
+  {
+    "id": "revocation",
+    "title": "OCSP und CRL verstehen",
+    "paragraphs": [
+      "Die optionale Online-Sperrprüfung erlaubt öffentliche Zertifikatsendpunkte über HTTPS sowie HTTP auf Standardports. OCSP verwendet einen öffentlichen Leseaufruf per POST. Lokale und private Netzadressen bleiben blockiert.",
+      "Nur eine dem Zertifikat zugeordnete, autorisiert signierte und aktuelle Antwort kann einen Good- oder Revoked-Befund liefern. Delegierte OCSP-Signierer benötigen eine gültige CA-signierte nocheck-Ausnahme oder einen aktuellen direkten vollständigen CRL-Nachweis ihres eigenen Sperrstatus. Eine rekursive OCSP-Prüfung findet nicht statt. Für OCSP gelten 24 Stunden maximale thisUpdate-Alterung, für CRLs sieben Tage, jeweils mit fünf Minuten Zeittoleranz und notwendigem nextUpdate.",
+      "Nicht erreichbare Dienste, unbekannte Antworten, fehlende Aussteller, ungültige Signaturen sowie Delta-, indirekte oder eingeschränkte CRLs erzeugen keinen grünen Nachweis. Die Wurzel wird nicht auf Sperrung geprüft. Vertrauen und Sperrstatus bleiben getrennt."
+    ]
+  },
+  {
+    "id": "schemas",
+    "title": "Fachschemata lesen",
+    "paragraphs": [
+      "Inspect zeigt die Struktur eines JSON Schema oder XSD sowie Referenzen. Es erzeugt keine Beispieldaten und validiert keine Fachdateninstanzen. Eine eingelesene Struktur ist kein Nachweis vollständiger Schema-Gültigkeit.",
+      "DTD, externe XML-Entities und automatische Fremdreferenzauflösung sind deaktiviert. Eine weitere öffentliche HTTPS-Referenz kann einzeln über einen neuen, ausdrücklichen Abruf untersucht werden. URNs müssen nicht als URL auflösbar sein."
+    ]
+  },
+  {
+    "id": "reports",
+    "title": "Berichte und Datenschutz",
+    "paragraphs": [
+      "Befunde haben die Zustände Bestätigt, Fehler, Hinweis, Nicht nachgewiesen oder Nicht anwendbar. Der Beleg enthält Feldpfad, Quelle, Umgebung, Version und Abfragezeit. Bestätigt gilt jeweils nur für die beschriebene Einzelprüfung.",
+      "JSON und eigenständiges HTML werden lokal gespeichert. Vor dem Speichern zeigt die App den vollständigen Exportumfang an. Rohantworten sind standardmäßig ausgeschlossen und müssen ausdrücklich hinzugefügt werden.",
+      "Auch öffentliche Behördenkontakte und technische Konfiguration können Informationen enthalten, die Sie nicht weitergeben möchten. Prüfen Sie die Exportvorschau vor dem Teilen. Die App sendet keine Telemetrie und betreibt keinen Server."
+    ]
+  },
+  {
+    "id": "limits",
+    "title": "Grenzen und Fehlersuche",
+    "paragraphs": [
+      "Grenzen: 2 MiB IPC-Eingabe, 1,5 MB lokale Datei, 4 MiB pro HTTP-Antwort, 40 HTTP-Abrufe, 20 MiB Antwortbudget und 120 Sekunden Netzbudget pro Lauf. Der Host beendet einen Lauf spätestens nach 150 Sekunden. Ergebnisse außerhalb der Budgets bleiben unvollständig.",
+      "Öffentliche HTTP-Ziele dürfen keine Zugangsdaten, privaten IP-Adressen oder Sonderports enthalten. Umleitungen werden erneut geprüft und TLS-Downgrades blockiert. Der Transport verbindet sich mit der bereits geprüften IP und behält TLS-Hostnamenprüfung bei.",
+      "Der direkte native Transport nutzt System-DNS und den TLS-Truststore der gebündelten Java-Laufzeit. Authentifizierte Proxys, PAC und private Unternehmens-CAs werden in 0.1.0 nicht eingerichtet. Netzwerkfehler beweisen keine fehlerhafte Destination."
+    ]
+  }
+]

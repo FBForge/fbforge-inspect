@@ -1,0 +1,8 @@
+{
+  "name": "gio-sys",
+  "version": "0.18.1",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

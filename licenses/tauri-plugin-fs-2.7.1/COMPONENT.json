@@ -1,0 +1,10 @@
+{
+  "name": "tauri-plugin-fs",
+  "version": "2.7.1",
+  "license": "Apache-2.0 OR MIT",
+  "licenseFiles": [
+    "LICENSE.spdx",
+    "LICENSE_APACHE-2.0",
+    "LICENSE_MIT"
+  ]
+}

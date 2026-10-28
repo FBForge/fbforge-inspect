@@ -1,0 +1,9 @@
+{
+  "name": "regex-syntax",
+  "version": "0.8.11",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

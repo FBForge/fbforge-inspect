@@ -1,0 +1,9 @@
+{
+  "name": "winapi-util",
+  "version": "0.1.11",
+  "license": "Unlicense OR MIT",
+  "licenseFiles": [
+    "COPYING",
+    "LICENSE-MIT"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "tauri-winres",
+  "version": "0.3.7",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

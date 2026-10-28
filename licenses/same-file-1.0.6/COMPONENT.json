@@ -1,0 +1,9 @@
+{
+  "name": "same-file",
+  "version": "1.0.6",
+  "license": "Unlicense/MIT",
+  "licenseFiles": [
+    "COPYING",
+    "LICENSE-MIT"
+  ]
+}

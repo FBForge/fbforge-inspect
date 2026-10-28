@@ -1,0 +1,39 @@
+{
+  "name": "fbforge-inspect",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "EUPL-1.2",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "vite --config frontend/vite.config.ts",
+    "build": "npm run typecheck && npm run build:frontend && npm run build:engine",
+    "build:frontend": "vite build --config frontend/vite.config.ts",
+    "typecheck": "vue-tsc --noEmit",
+    "build:engine": "mvn -f engine/pom.xml package",
+    "test": "mvn -f engine/pom.xml test && node --test --test-isolation=none tests/*.test.mjs",
+    "test:ui": "playwright test",
+    "stage:engine": "node scripts/stage-engine.mjs",
+    "desktop:dev": "npm run build:engine && npm run stage:engine && cd desktop && tauri dev",
+    "desktop:build": "npm run build && npm run stage:engine && cd desktop && tauri build",
+    "docs:build": "node scripts/build-help.mjs",
+    "licenses:collect": "node scripts/collect-licenses.mjs",
+    "format": "prettier --write frontend/src docs/help.json scripts/*.mjs tests *.json *.ts desktop/tauri.conf.json desktop/capabilities/*.json",
+    "format:check": "prettier --check frontend/src docs/help.json scripts/*.mjs tests *.json *.ts desktop/tauri.conf.json desktop/capabilities/*.json"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "2.12.4",
+    "vue": "3.5.43"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@tauri-apps/cli": "2.12.3",
+    "@vitejs/plugin-vue": "6.0.10",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3",
+    "vite": "8.3.4",
+    "vue-tsc": "3.3.13"
+  }
+}

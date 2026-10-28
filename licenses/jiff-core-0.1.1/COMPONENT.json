@@ -1,0 +1,9 @@
+{
+  "name": "jiff-core",
+  "version": "0.1.1",
+  "license": "Unlicense OR MIT",
+  "licenseFiles": [
+    "COPYING",
+    "LICENSE-MIT"
+  ]
+}

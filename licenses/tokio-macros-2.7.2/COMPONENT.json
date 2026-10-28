@@ -1,0 +1,8 @@
+{
+  "name": "tokio-macros",
+  "version": "2.7.2",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

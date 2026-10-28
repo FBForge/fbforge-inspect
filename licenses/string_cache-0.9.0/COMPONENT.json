@@ -1,0 +1,9 @@
+{
+  "name": "string_cache",
+  "version": "0.9.0",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

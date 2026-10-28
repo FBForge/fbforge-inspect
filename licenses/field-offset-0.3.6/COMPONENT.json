@@ -1,0 +1,9 @@
+{
+  "name": "field-offset",
+  "version": "0.3.6",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

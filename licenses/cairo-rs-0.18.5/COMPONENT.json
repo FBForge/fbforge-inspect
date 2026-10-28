@@ -1,0 +1,9 @@
+{
+  "name": "cairo-rs",
+  "version": "0.18.5",
+  "license": "MIT",
+  "licenseFiles": [
+    "COPYRIGHT",
+    "LICENSE"
+  ]
+}

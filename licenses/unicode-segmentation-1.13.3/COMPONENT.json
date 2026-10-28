@@ -1,0 +1,10 @@
+{
+  "name": "unicode-segmentation",
+  "version": "1.13.3",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "COPYRIGHT",
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

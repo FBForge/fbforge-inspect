@@ -1,0 +1,9 @@
+{
+  "name": "windows",
+  "version": "0.62.2",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "license-apache-2.0",
+    "license-mit"
+  ]
+}

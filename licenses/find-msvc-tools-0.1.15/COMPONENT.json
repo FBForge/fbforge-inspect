@@ -1,0 +1,9 @@
+{
+  "name": "find-msvc-tools",
+  "version": "0.1.15",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

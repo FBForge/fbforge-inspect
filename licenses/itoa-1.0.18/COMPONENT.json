@@ -1,0 +1,9 @@
+{
+  "name": "itoa",
+  "version": "1.0.18",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

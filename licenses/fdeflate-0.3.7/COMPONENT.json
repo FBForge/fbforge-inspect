@@ -1,0 +1,9 @@
+{
+  "name": "fdeflate",
+  "version": "0.3.7",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

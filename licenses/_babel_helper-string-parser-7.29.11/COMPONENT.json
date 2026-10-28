@@ -1,0 +1,8 @@
+{
+  "name": "@babel/helper-string-parser",
+  "version": "7.29.11",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "brotli",
+  "version": "9.1.1",
+  "license": "BSD-3-Clause AND MIT",
+  "licenseFiles": [
+    "LICENSE.BSD-3-Clause",
+    "LICENSE.MIT"
+  ]
+}

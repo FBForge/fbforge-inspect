@@ -1,0 +1,9 @@
+{
+  "name": "walkdir",
+  "version": "2.5.0",
+  "license": "Unlicense/MIT",
+  "licenseFiles": [
+    "COPYING",
+    "LICENSE-MIT"
+  ]
+}
