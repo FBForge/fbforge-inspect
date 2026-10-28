@@ -1,0 +1,13 @@
+node_modules/
+dist/
+dist-help/
+target/
+desktop/gen/
+resources/engine/
+desktop/resources/engine/
+.local/
+.idea/
+.env*
+test-results/
+playwright-report/
+*.log
