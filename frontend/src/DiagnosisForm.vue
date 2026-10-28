@@ -159,8 +159,7 @@ defineExpose({
           </button>
         </details>
         <label class="check"
-          ><input v-model="form.pvog" type="checkbox" />Öffentliche PVOG-Zuständigkeiten mit
-          abrufen</label
+          ><input v-model="form.pvog" type="checkbox" />PVOG-Adressierung mit abrufen</label
         >
         <label v-if="form.pvog"
           >PVOG-Leistungsbeschreibungs-ID<input
@@ -196,7 +195,7 @@ defineExpose({
           /></label>
         </div>
         <details>
-          <summary>Erwartetes Fachschema</summary>
+          <summary>Erwartetes Fachdatenschema</summary>
           <label>Schema-URI<input v-model.trim="form.schema" placeholder="Optional" /></label
           ><label
             >MIME-Type<select v-model="form.mime">

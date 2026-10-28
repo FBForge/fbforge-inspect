@@ -179,10 +179,12 @@ function canOpen(value: unknown) {
       </div>
     </div>
     <div v-if="pvog.length" class="panel">
-      <h3>PVOG-Zuständigkeitskontexte</h3>
+      <h3>PVOG-Adressierungskontexte</h3>
       <p class="hint">
-        Jede Zeile bleibt ihrem übergeordneten Objekt zugeordnet. Ein fehlender Treffer in dieser
-        Routingantwort belegt keine interne Fehlerursache.
+        Adressierungssignaturen aus PVOG identifizieren den Zustellpunkt. Fachdatenschemata werden
+        an dessen Leistungen in FIT-Connect geprüft. Jede Zeile bleibt ihrem übergeordneten Objekt
+        zugeordnet. Ein fehlender Treffer in dieser Routingantwort belegt keine interne
+        Fehlerursache.
       </p>
       <div class="table-scroll">
         <table>

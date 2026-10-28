@@ -10,12 +10,12 @@ FBForge Inspect ergänzt Integrationstests um nachvollziehbare Diagnosen. Es nut
 
 ## Funktionen in 0.1.0
 
-- **Destination v2/v3:** Status, Typ, Metadaten, Leistungen, Prozessnachrichten, Regionen, Fachschemareferenzen und öffentliche Verschlüsselungsschlüssel. Optionaler Versionsvergleich und zusammengehörige Konfigurationserwartungen.
-- **Routing:** LeiKa mit AGS, ARS oder Gebiets-ID, öffentliche Gebietssuche, begrenzte vollständige Paginierung und erhaltene Ergebniskontexte. Optionale PVOG-JZuFi-Evidenz mit eigener Quellenangabe.
+- **Destination v2/v3:** Status, Typ, Metadaten, Leistungen, Prozessnachrichten, Regionen, Fachdatenschemareferenzen und öffentliche Verschlüsselungsschlüssel. Optionaler Versionsvergleich und zusammengehörige Konfigurationserwartungen.
+- **Routing:** LeiKa mit AGS, ARS oder Gebiets-ID, öffentliche Gebietssuche, begrenzte vollständige Paginierung und erhaltene Ergebniskontexte. Optionale PVOG-Adressierungssignaturen mit eigener Quellenangabe.
 - **Adressierungssignaturen:** Dekodierung und Verifikation getrennt, PS512 und fest gewählte öffentliche FIT-Connect-Schlüsselquellen. Leistung und ARS werden im gemeinsamen signierten Kontext verglichen.
 - **Prozessnachrichten:** Öffentliche v3-Suche anhand von Modell, Nachricht und Region. Optionale paarbezogene Limits zwischen zwei Destinationen.
 - **Öffentliche Schlüssel:** JWK/JWKS aus Datei, Zwischenablage oder HTTPS. RSA, Algorithmen, Schlüsseloperationen, x5c-Zuordnung, Laufzeit und PKIX gegen ausdrücklich ausgewählte öffentliche CA-Anker. Optionale signaturgeprüfte OCSP-/CRL-Diagnose.
-- **Fachschemata:** Struktur und Referenzen von JSON Schema und XSD, sichere XML-Verarbeitung. Keine Fachdaten erforderlich.
+- **Fachdatenschemata:** Struktur und Referenzen von JSON Schema und XSD, sichere XML-Verarbeitung. Keine Fachdaten erforderlich.
 - **Berichte:** Lokales JSON oder eigenständiges HTML mit Exportvorschau. Rohantworten werden nur nach ausdrücklicher Auswahl exportiert.
 - Helles und dunkles Design sowie laufend aktualisierte Systemeinstellung, Tastaturbedienung und vollständig gebündelte Hilfe.
 
@@ -30,6 +30,10 @@ Installer werden erst nach Abnahme veröffentlicht. Solange noch kein Release vo
 3. Prüfung starten und Befunde samt Quellen lesen.
 4. Bei Bedarf erwartete Leistung, Region oder Schema ergänzen.
 5. Berichtsvorschau prüfen und lokal speichern.
+
+## Quellen richtig zuordnen
+
+Fachdatenschemata sind bei der jeweiligen Leistung im FIT-Connect-Zustellpunkt hinterlegt. PVOG liefert Adressierungssignaturen (Destination Signatures) und gegebenenfalls EfA-Parameter. Diese PVOG-Informationen werden von den Fachdatenschemata aus dem Zustellpunkt getrennt betrachtet.
 
 ## Ergebnisse richtig einordnen
 

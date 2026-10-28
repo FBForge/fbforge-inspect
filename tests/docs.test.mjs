@@ -34,6 +34,13 @@ test('exported guide uses the product website shell and preserves every help top
   assert.ok(guide.includes('<ol>'));
   assert.ok(guide.includes('<pre><code>'));
   assert.ok(!product.includes('releases/download/'));
+  assert.ok(product.includes('Leistung im FIT-Connect-Zustellpunkt'));
+  assert.ok(product.includes('Adressierungssignaturen (Destination Signatures)'));
+  assert.ok(product.includes('EfA-Parameter'));
+  const schemaTopic = topics.find((topic) => topic.id === 'schemas');
+  assert.ok(schemaTopic.paragraphs.some((text) => text.includes('Leistung im Zustellpunkt')));
+  const pvogTopic = topics.find((topic) => topic.id === 'routing');
+  assert.ok(pvogTopic.paragraphs.some((text) => text.includes('nicht aus PVOG')));
 });
 
 test('website export inventories only public files with matching checksums', async () => {

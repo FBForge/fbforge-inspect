@@ -63,7 +63,7 @@ try {
   await page.screenshot({ path: join(output, 'windows-start.png') });
   await page
     .getByRole('navigation', { name: 'Hauptnavigation' })
-    .getByRole('button', { name: 'Fachschemata', exact: true })
+    .getByRole('button', { name: 'Fachdatenschemata', exact: true })
     .click();
   await page
     .getByRole('textbox', { name: 'JSON Schema / XSD' })

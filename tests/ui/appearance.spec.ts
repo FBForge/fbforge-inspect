@@ -100,7 +100,7 @@ test('offline help includes schema steps and a usable synthetic example', async 
     .click();
   await page
     .getByRole('navigation', { name: 'Hilfethemen' })
-    .getByRole('link', { name: 'Fachschemata lesen', exact: true })
+    .getByRole('link', { name: 'Fachdatenschemata lesen', exact: true })
     .click();
   const topic = page.locator('#schemas');
   await expect(topic.locator('ol li')).toHaveCount(3);

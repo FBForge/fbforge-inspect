@@ -73,7 +73,7 @@ export const pages = [
   },
   {
     id: 'schema',
-    label: 'Fachschemata',
+    label: 'Fachdatenschemata',
     icon: 'schema',
     description: 'JSON Schema und XSD strukturiert lesen.',
   },

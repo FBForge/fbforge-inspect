@@ -56,7 +56,7 @@ test('local JSON schema file reaches real engine and never resolves external ref
 }) => {
   await page
     .getByRole('navigation', { name: 'Hauptnavigation' })
-    .getByRole('button', { name: 'Fachschemata', exact: true })
+    .getByRole('button', { name: 'Fachdatenschemata', exact: true })
     .click();
   await expect(page.locator('#page-title')).toBeFocused();
   await page.getByLabel('Datei auswählen').setInputFiles({
@@ -78,7 +78,7 @@ test('local JSON schema file reaches real engine and never resolves external ref
 test('XSD is inspected and XXE is rejected through the real engine', async ({ page }) => {
   await page
     .getByRole('navigation', { name: 'Hauptnavigation' })
-    .getByRole('button', { name: 'Fachschemata', exact: true })
+    .getByRole('button', { name: 'Fachdatenschemata', exact: true })
     .click();
   const input = page.getByRole('textbox', { name: 'JSON Schema / XSD' });
   await input.fill(
