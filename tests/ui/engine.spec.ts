@@ -2,6 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { spawn } from 'node:child_process';
 import { join } from 'node:path';
+import { generateKeyPairSync } from 'node:crypto';
 const java = process.env.JAVA_HOME
   ? join(process.env.JAVA_HOME, 'bin', process.platform === 'win32' ? 'java.exe' : 'java')
   : 'java';
@@ -110,4 +111,28 @@ test('oversized and private files are rejected in the UI', async ({ page }) => {
     buffer: Buffer.alloc(1500001, 32),
   });
   await expect(page.getByRole('alert')).toContainText('1,5 MB');
+});
+
+test('public RSA key is diagnosed by the real engine without inventing certificate trust', async ({
+  page,
+}) => {
+  const { publicKey } = generateKeyPairSync('rsa', { modulusLength: 3072 });
+  const jwk = {
+    ...publicKey.export({ format: 'jwk' }),
+    kid: 'public-test-key',
+    alg: 'RSA-OAEP-256',
+    key_ops: ['wrapKey'],
+    use: 'enc',
+  };
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Schlüssel prüfen', exact: true })
+    .click();
+  await page.getByRole('textbox', { name: 'Öffentliches JWK / JWKS' }).fill(JSON.stringify(jwk));
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
+  await expect(page.getByText('RSA-Schlüssellänge', { exact: true })).toBeVisible();
+  await expect(page.getByText('3072 Bit (Mindestvorgabe 3072)', { exact: true })).toBeVisible();
+  await expect(page.getByText('Schlüssel nicht auswertbar', { exact: true })).toHaveCount(0);
+  await page.screenshot({ path: 'test-results/keys-real-engine.png', fullPage: true });
 });
