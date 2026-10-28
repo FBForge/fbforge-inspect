@@ -10,7 +10,7 @@ const esc = (value) =>
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
   );
 const images = {
-  start: ['start.png', 'Einstieg von FBForge Inspect mit den öffentlichen Diagnoseaufgaben'],
+  start: ['start.png', 'FBForge Inspect mit Endpunktabfragen und lokaler Dateiprüfung'],
   destination: [
     'destination.png',
     'Destination-Prüfung mit UUID, optionalem Konfigurationsvergleich und Zertifikatsprüfung',

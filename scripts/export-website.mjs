@@ -29,6 +29,9 @@ const manifest = {
   product: 'FBForge Inspect',
   version,
   sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+  sourceCommitDate: execFileSync('git', ['show', '-s', '--format=%cI', 'HEAD'], {
+    encoding: 'utf8',
+  }).trim(),
   sourceDirty:
     execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim().length > 0,
   files: files.sort((a, b) => a.path.localeCompare(b.path)),

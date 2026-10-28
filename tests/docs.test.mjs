@@ -49,6 +49,7 @@ test('website export inventories only public files with matching checksums', asy
   const manifest = JSON.parse(readFileSync('dist-website/manifest.json', 'utf8'));
   assert.equal(manifest.product, 'FBForge Inspect');
   assert.match(manifest.sourceCommit, /^[a-f0-9]{40}$/);
+  assert.ok(Number.isFinite(Date.parse(manifest.sourceCommitDate)));
   assert.ok(manifest.files.length >= 10);
   for (const entry of manifest.files) {
     assert.ok(entry.path.startsWith('inspect/'));

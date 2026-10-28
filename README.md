@@ -6,7 +6,7 @@
 
 **In Entwicklung.** Noch kein freigegebener Windows-Installer. Screenshots und Anleitung beschreiben den Entwicklungsstand; sie ersetzen keine native Windows-/NVDA-Abnahme.
 
-FBForge Inspect ergänzt Integrationstests um nachvollziehbare Diagnosen. Es nutzt ausschließlich öffentliche Schnittstellen und implementiert deren dokumentierte Verträge unabhängig. Kein offizielles Produkt der FITKO.
+FBForge Inspect ergänzt Integrationstests um die Diagnose öffentlich erreichbarer Endpunkte und ihrer Konfigurationsdaten. Es ist ein privat entwickeltes Open-Source-Projekt und implementiert die dokumentierten Schnittstellen unabhängig.
 
 ## Funktionen in 0.1.0
 
@@ -63,7 +63,7 @@ Lizenz: [EUPL-1.2](LICENSE). Fremdkomponenten: [THIRD_PARTY_NOTICES.md](THIRD_PA
 
 ## Einblick in den Entwicklungsstand
 
-![Startansicht mit den öffentlichen Diagnoseaufgaben](docs/images/start.png)
+![Startansicht mit Endpunktabfragen und lokaler Dateiprüfung](docs/images/start.png)
 
 Die bebilderte Anleitung wird aus derselben [fachlichen Quelle](docs/help.json) für App und Website erzeugt. Das [lokale Schema-Beispiel](docs/images/schema.png) zeigt ausdrücklich getrennte Struktur- und Referenzbefunde mit fiktiven Daten.
 
