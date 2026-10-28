@@ -4,8 +4,8 @@
     "title": "Schnellstart",
     "paragraphs": [
       "Umgebung und API-Version oben auswählen. V3 ist die Voreinstellung. V2 wird ausdrücklich gewählt, ein automatischer Rückfall findet nicht statt.",
-      "Für eine Destination genügt ihre UUID. Ohne Zugangsdaten ruft Inspect ausschließlich veröffentlichte Konfiguration und öffentliche Schlüssel ab. Prüfungen starten erst mit Ihrem Klick.",
-      "Die App benötigt für öffentliche Abfragen Internetzugang. Lokale JWK- und Schema-Inspektion funktioniert ohne Internet. Diagnoseeingaben und Ergebnisse werden nicht automatisch gespeichert."
+      "Für eine Destination genügt ihre UUID. Ohne Zugangsdaten ruft FBForge Inspect ausschließlich veröffentlichte Konfiguration und öffentliche Schlüssel ab. Prüfungen starten erst mit Ihrem Klick.",
+      "Die App benötigt für öffentliche Abfragen Internetzugang. Lokale JWK- und Schema-Inspektion funktioniert ohne Internet. Diagnoseeingaben und Ergebnisse werden nicht automatisch gespeichert. Unter Darstellung wählen Sie Hell, Dunkel oder System. Nur diese Darstellungspräferenz wird lokal gespeichert; ohne verfügbaren Browserspeicher funktioniert die Auswahl für die laufende Sitzung."
     ]
   },
   {
@@ -22,8 +22,8 @@
     "title": "Routing und PVOG",
     "paragraphs": [
       "Eine Routingabfrage benötigt einen 14-stelligen LeiKa-Schlüssel und einen AGS, ARS oder eine über die Gebietssuche ausgewählte Gebiets-ID. Ein vorangestelltes DE wird bei AGS/ARS entfernt.",
-      "Inspect lädt Seiten innerhalb eines festen Budgets und behält alle Kontexte. Dieselbe Destination in mehreren Behördenkontexten wird nicht global dedupliziert. Fehler, Ratenlimits und abgebrochene Paginierung bedeuten einen unbekannten oder unvollständigen Bestand.",
-      "STAGE besitzt keine eigene Routing-API. Inspect zeigt hierfür ausdrücklich die PROD-Routingquelle. Diese Ergebnisse beweisen keine STAGE-Zustellbarkeit. TEST nutzt die TEST-Routingquelle.",
+      "FBForge Inspect lädt Seiten innerhalb eines festen Budgets und behält alle Kontexte. Dieselbe Destination in mehreren Behördenkontexten wird nicht global dedupliziert. Fehler, Ratenlimits und abgebrochene Paginierung bedeuten einen unbekannten oder unvollständigen Bestand.",
+      "STAGE besitzt keine eigene Routing-API. FBForge Inspect zeigt hierfür ausdrücklich die PROD-Routingquelle. Diese Ergebnisse beweisen keine STAGE-Zustellbarkeit. TEST nutzt die TEST-Routingquelle.",
       "PVOG-Daten sind zusätzliche öffentliche Evidenz. Abweichungen zwischen PVOG und Routing belegen keine Ursache oder Fehlentscheidung im Routing. Antwortzeitpunkte und jeweilige Quellen müssen gemeinsam betrachtet werden."
     ]
   },
@@ -40,7 +40,7 @@
     "title": "Öffentliche Schlüssel und Zertifikate",
     "paragraphs": [
       "JWK/JWKS können eingefügt, aus einer lokalen Datei geladen oder per öffentlicher HTTPS-URL abgerufen werden. Private und symmetrische Schlüssel werden abgewiesen. Bitte ausschließlich öffentliche Daten verwenden.",
-      "Inspect prüft JWK-Felder, kid, RSA-Größe, Algorithmus und key_ops. Der öffentliche Schlüssel muss zum ersten x5c-Zertifikat passen. Zertifikatslaufzeit, Kettensignaturen und PKIX-Vertrauen sind eigenständige Befunde.",
+      "FBForge Inspect prüft JWK-Felder, kid, RSA-Größe, Algorithmus und key_ops. Der öffentliche Schlüssel muss zum ersten x5c-Zertifikat passen. Zertifikatslaufzeit, Kettensignaturen und PKIX-Vertrauen sind eigenständige Befunde.",
       "Die Wurzel aus x5c gilt nicht automatisch als vertrauenswürdig. Für PKIX sind unabhängig bezogene öffentliche CA-Zertifikate als PEM auszuwählen. Die Zugehörigkeit dieser CA zur Verwaltungs-PKI muss unabhängig feststehen. Ohne gewählten Anker bleibt Vertrauen unbekannt.",
       "TEST erlaubt selbst erzeugte Testzertifikate. Ein erfolgreicher TEST-Einzelbefund beweist keine Produktionstauglichkeit. STAGE und PROD benötigen das Profil der Verwaltungs-PKI."
     ]
@@ -58,7 +58,7 @@
     "id": "schemas",
     "title": "Fachschemata lesen",
     "paragraphs": [
-      "Inspect zeigt die Struktur eines JSON Schema oder XSD sowie Referenzen. Es erzeugt keine Beispieldaten und validiert keine Fachdateninstanzen. Eine eingelesene Struktur ist kein Nachweis vollständiger Schema-Gültigkeit.",
+      "FBForge Inspect zeigt die Struktur eines JSON Schema oder XSD sowie Referenzen. Es erzeugt keine Beispieldaten und validiert keine Fachdateninstanzen. Eine eingelesene Struktur ist kein Nachweis vollständiger Schema-Gültigkeit.",
       "DTD, externe XML-Entities und automatische Fremdreferenzauflösung sind deaktiviert. Eine weitere öffentliche HTTPS-Referenz kann einzeln über einen neuen, ausdrücklichen Abruf untersucht werden. URNs müssen nicht als URL auflösbar sein."
     ]
   },

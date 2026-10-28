@@ -33,7 +33,7 @@ npm run test:ui
 npm run docs:build
 ```
 
-Die UI-Tests benötigen einen zu Playwright passenden Chromium. Ein bereits installierter Browser kann ausdrücklich über `INSPECT_CHROMIUM_EXECUTABLE` gewählt werden. Die Tests verwenden isolierte Kontexte. Vier Workflows verwenden synthetische IPC-Antworten, vier weitere prüfen lokale Datei-, Schlüssel- und Parsergrenzen; drei davon rufen über eine reine Testbrücke den echten zuvor gebauten Java-Kern auf. Deshalb zuerst `npm run build:engine` ausführen. Sie ersetzen keinen nativen Windows-/WebView2-Test. Die Java-Tests verwenden synthetische Zertifikate und signierte OCSP-/CRL-Fixtures, ohne externe Dienste.
+Die UI-Tests benötigen einen zu Playwright passenden Chromium. Ein bereits installierter Browser kann ausdrücklich über `INSPECT_CHROMIUM_EXECUTABLE` gewählt werden. Die Tests verwenden isolierte Kontexte. Vier Workflows verwenden synthetische IPC-Antworten, vier prüfen lokale Datei-, Schlüssel- und Parsergrenzen (drei davon über den echten Java-Kern), weitere prüfen Systemdarstellung, optionale Präferenzspeicherung und die Toolbar. Deshalb zuerst `npm run build:engine` ausführen. Sie ersetzen keinen nativen Windows-/WebView2-Test. Die Java-Tests verwenden synthetische Zertifikate und signierte OCSP-/CRL-Fixtures, ohne externe Dienste.
 
 Node-Tests laufen mit `--test-isolation=none`, damit die hier verwendete Node-24-Laufzeit die einzelnen exportbezogenen Tests zuverlässig ausführt. Maven `package` führt die Kerntests aus. Es gibt keine Git-Hooks und keinen automatischen Veröffentlichungsweg.
 

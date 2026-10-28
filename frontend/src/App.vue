@@ -8,10 +8,11 @@ import DiagnosisForm from './DiagnosisForm.vue';
 import Results from './Results.vue';
 import Icon from './Icon.vue';
 import help from '../../docs/help.json';
+import { useTheme } from './useTheme';
+const { appearance } = useTheme();
 const page = ref<Page>('start'),
   environment = ref('TEST'),
-  apiVersion = ref('v3'),
-  dark = ref(matchMedia('(prefers-color-scheme: dark)').matches);
+  apiVersion = ref('v3');
 const busy = ref(false),
   report = ref<Report | null>(null),
   error = ref(''),
@@ -29,9 +30,6 @@ const exportReport = computed(() =>
 const previewText = computed(() =>
   exportReport.value ? JSON.stringify(exportReport.value, null, 2) : '',
 );
-watch(dark, (value) => (document.documentElement.dataset.theme = value ? 'dark' : 'light'), {
-  immediate: true,
-});
 watch(preview, async (value) => {
   if (value) {
     raw.value = false;
@@ -153,9 +151,16 @@ async function save() {
     <div class="workspace">
       <header class="topbar">
         <div class="breadcrumb">
-          Inspect <span>/</span> <strong>{{ active.label }}</strong>
+          FBForge Inspect <span>/</span> <strong>{{ active.label }}</strong>
         </div>
         <div class="toolbar">
+          <span
+            class="environment-tag"
+            :data-environment="environment"
+            :title="`Umgebung ${environment}; keine Sicherheitsbewertung`"
+            aria-hidden="true"
+            >{{ environment }}</span
+          >
           <label
             >Umgebung<select v-model="environment" :disabled="busy">
               <option>TEST</option>
@@ -167,13 +172,13 @@ async function save() {
               <option value="v3">v3</option>
               <option value="v2">v2</option>
             </select></label
-          ><button
-            class="icon-button"
-            :aria-label="dark ? 'Helles Design aktivieren' : 'Dunkles Design aktivieren'"
-            @click="dark = !dark"
+          ><label
+            >Darstellung<select v-model="appearance">
+              <option value="system">System</option>
+              <option value="light">Hell</option>
+              <option value="dark">Dunkel</option>
+            </select></label
           >
-            <Icon name="sun" />
-          </button>
         </div>
       </header>
       <main id="main-content" tabindex="-1">
@@ -222,7 +227,7 @@ async function save() {
           <div class="principles">
             <span><i class="local-dot"></i> Ohne Zugangsdaten</span
             ><span><i class="local-dot"></i> Öffentliche Quellen</span
-            ><span><i class="local-dot"></i> Keine automatische Speicherung</span>
+            ><span><i class="local-dot"></i> Keine automatische Diagnosespeicherung</span>
           </div></template
         >
         <template v-else-if="!['help', 'about'].includes(page)"

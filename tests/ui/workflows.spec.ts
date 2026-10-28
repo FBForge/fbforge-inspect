@@ -112,7 +112,7 @@ test('private JWK is rejected before invocation', async ({ page }) => {
 test('both themes have no horizontal overflow and navigation is keyboard reachable', async ({
   page,
 }) => {
-  await page.getByRole('button', { name: 'Dunkles Design aktivieren' }).click();
+  await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption('dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.screenshot({ path: 'test-results/start-dark.png' });
   await page.setViewportSize({ width: 700, height: 650 });

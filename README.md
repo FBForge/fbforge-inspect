@@ -4,7 +4,7 @@
 
 Öffentliche FIT-Connect- und PVOG-Schnittstellen verstehen, Konfiguration prüfen und Befunde lokal weitergeben. Eine eigenständige Desktop-App ohne Anmeldung, Backendserver oder Telemetrie.
 
-Inspect ergänzt Integrationstests um nachvollziehbare Diagnosen. Es nutzt ausschließlich öffentliche Schnittstellen und implementiert deren dokumentierte Verträge unabhängig. Kein offizielles Produkt der FITKO.
+FBForge Inspect ergänzt Integrationstests um nachvollziehbare Diagnosen. Es nutzt ausschließlich öffentliche Schnittstellen und implementiert deren dokumentierte Verträge unabhängig. Kein offizielles Produkt der FITKO.
 
 ## Funktionen in 0.1.0
 
@@ -15,7 +15,7 @@ Inspect ergänzt Integrationstests um nachvollziehbare Diagnosen. Es nutzt aussc
 - **Öffentliche Schlüssel:** JWK/JWKS aus Datei, Zwischenablage oder HTTPS. RSA, Algorithmen, Schlüsseloperationen, x5c-Zuordnung, Laufzeit und PKIX gegen ausdrücklich ausgewählte öffentliche CA-Anker. Optionale signaturgeprüfte OCSP-/CRL-Diagnose.
 - **Fachschemata:** Struktur und Referenzen von JSON Schema und XSD, sichere XML-Verarbeitung. Keine Fachdaten erforderlich.
 - **Berichte:** Lokales JSON oder eigenständiges HTML mit Exportvorschau. Rohantworten werden nur nach ausdrücklicher Auswahl exportiert.
-- Helles und dunkles Design, Tastaturbedienung und vollständig gebündelte Hilfe.
+- Helles und dunkles Design sowie laufend aktualisierte Systemeinstellung, Tastaturbedienung und vollständig gebündelte Hilfe.
 
 ## Starten
 
@@ -33,7 +33,7 @@ Installer werden erst nach Abnahme veröffentlicht. Solange noch kein Release vo
 
 Ein bestätigter Einzelbefund ist keine Freigabe der gesamten Integration. Unbekannt bleibt unbekannt, beispielsweise bei fehlendem Vertrauensanker, nicht verifizierbarem Sperrstatus, Ratenlimit oder unvollständiger Paginierung. Öffentliche Lesbarkeit beweist keine Sende- oder Empfangsfähigkeit.
 
-V2 und V3 werden ausdrücklich ausgewählt. Routing verwendet die öffentliche Routing API v2. STAGE besitzt keine eigene Routing-API, Inspect kennzeichnet dort die verwendete PROD-Routingquelle. PVOG STAGE wird mit TEST, PVOG PROD mit dem produktiven Routing verglichen.
+V2 und V3 werden ausdrücklich ausgewählt. Routing verwendet die öffentliche Routing API v2. STAGE besitzt keine eigene Routing-API, FBForge Inspect kennzeichnet dort die verwendete PROD-Routingquelle. PVOG STAGE wird mit TEST, PVOG PROD mit dem produktiven Routing verglichen.
 
 Kein Senden/Empfangen, keine Konten, keine Verwaltungsoperationen, kein BPMN-Import, keine Schema-Instanzvalidierung und keine interne Routing-Rekonstruktion. Authentifizierte Unternehmensproxies und private TLS-CAs werden in 0.1.0 nicht eingerichtet.
 

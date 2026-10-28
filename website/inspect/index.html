@@ -8,23 +8,166 @@
       content="FBForge Inspect: öffentliche FIT-Connect- und PVOG-Diagnose als lokale Open-Source-Desktop-App. Destination, Routing, Schlüssel und v3-Prozessnachrichten prüfen."
     />
     <title>FBForge Inspect · Öffentliche Diagnose</title>
-    <link rel="stylesheet" href="/fbforge-v5.css" />
+    <meta name="theme-color" content="#fafafa" />
+    <link rel="canonical" href="https://fbforge.de/inspect/" />
+    <link rel="icon" href="/assets/fbforge-favicon-v1.svg" type="image/svg+xml" />
+    <script src="/theme-v8.js"></script>
+    <link
+      rel="preload"
+      href="/assets/fonts/InterVariable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="/fbforge-v8.css" />
+    <link rel="stylesheet" href="/brand-v1.css" />
+    <script src="/fbforge-v7.js" defer></script>
     <link rel="stylesheet" href="/inspect/inspect.css" />
-    <link rel="icon" type="image/png" href="/inspect/inspect.png" />
   </head>
-  <body>
-    <header class="inspect-header container">
-      <a class="brand" href="/" aria-label="FBForge Startseite"
-        >FB<span class="brand-light">Forge</span></a
-      >
-      <nav aria-label="Projekt">
-        <a href="#funktionen">Funktionen</a><a href="/inspect/hilfe/0.1/">Hilfe</a
-        ><a href="https://github.com/FBForge/fbforge-inspect" rel="noopener noreferrer"
-          >Quellcode ↗</a
+  <body class="inspect-page">
+    <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+    <header class="site-header">
+      <div class="container nav">
+        <a class="brand" href="/" aria-label="FBForge Startseite"
+          ><span class="brand-symbol" aria-hidden="true"
+            ><svg
+              class="brand-emblem"
+              viewBox="0 0 140 144"
+              fill="none"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                fill="currentColor"
+                d="M8 12H74V26H32V43H73L59 57H32V78L61 102V132H19L27 123L48 117V107L24 91L18 83V25Z"
+              />
+              <path
+                fill="currentColor"
+                d="M78 12H94C111 12 122 23 122 38C122 48 117 56 109 61C119 66 124 75 124 85C124 98 114 106 99 110L80 121V126L103 132H69V101L99 82H101C107 82 111 77 111 71C111 64 106 59 99 59H68L81 45H98C105 45 110 40 110 34C110 28 105 26 98 26H78Z"
+              />
+              <path
+                class="brand-flame"
+                d="M64 96C56 91 53 86 55 80C57 74 63 72 63 65C72 71 74 77 69 84C74 81 76 78 76 74C82 84 75 91 64 96Z"
+              /></svg></span
+          ><span>FB<span class="brand-light">Forge</span></span></a
         >
-      </nav>
+        <nav id="navigation" class="nav-links" aria-label="Hauptnavigation">
+          <a href="/inspect/">FBForge Inspect</a><a href="/inspect/hilfe/0.1/">Anleitung</a
+          ><a href="https://github.com/FBForge/fbforge-inspect">Quellcode</a>
+        </nav>
+        <div class="theme-control" data-theme-control role="group" aria-label="Farbschema" hidden>
+          <button
+            class="theme-button"
+            type="button"
+            data-theme-option="light"
+            aria-label="Helles Farbschema"
+            aria-pressed="false"
+            title="Hell"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"
+              />
+            </svg>
+          </button>
+          <button
+            class="theme-button"
+            type="button"
+            data-theme-option="dark"
+            aria-label="Dunkles Farbschema"
+            aria-pressed="false"
+            title="Dunkel"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M20.9 13.1A9 9 0 0 1 10.9 3.1a9 9 0 1 0 10 10Z" />
+            </svg>
+          </button>
+          <button
+            class="theme-button"
+            type="button"
+            data-theme-option="system"
+            aria-label="Automatisches Farbschema – Systemeinstellung"
+            aria-pressed="true"
+            title="Automatisch – folgt Ihrer Systemeinstellung"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <rect x="3" y="4" width="18" height="13" rx="2" />
+              <path d="M8 21h8m-4-4v4" />
+            </svg>
+          </button>
+        </div>
+        <a class="nav-github" href="https://github.com/FBForge" aria-label="FBForge auf GitHub"
+          ><svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18" /></svg
+          ><span>GitHub</span></a
+        >
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-controls="navigation"
+          aria-expanded="false"
+          hidden
+        >
+          Menü
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+      </div>
+      <div class="reading-progress" aria-hidden="true"></div>
     </header>
-    <main>
+    <main id="inhalt" tabindex="-1">
       <section class="inspect-hero container">
         <div>
           <p class="eyebrow">FBFORGE INSPECT · DESKTOP</p>
@@ -101,13 +244,14 @@
       </section>
       <section class="container inspect-section inspect-facts">
         <div>
-          <p class="eyebrow">AUF DEINEM GERÄT</p>
+          <p class="eyebrow">AUF IHREM GERÄT</p>
           <h2>Ohne Konto.<br /><span class="muted">Mit nachvollziehbaren Grenzen.</span></h2>
         </div>
         <div>
           <p>
-            Inspect führt öffentliche Leseabfragen aus. Es benötigt keine FIT-Connect-Zugangsdaten
-            und keinen gehosteten Dienst. Keine Telemetrie, keine automatische Speicherung.
+            FBForge Inspect führt öffentliche Leseabfragen aus. Es benötigt keine
+            FIT-Connect-Zugangsdaten und keinen gehosteten Dienst. Keine Telemetrie, keine
+            automatische Speicherung.
           </p>
           <p>
             Die App ersetzt keine authentifizierten Integrationstests und erteilt keine
@@ -116,7 +260,7 @@
           </p>
           <p>
             Für Windows x64 mit WebView2. Java wird mit der App gebündelt. Ein Installer wird erst
-            nach Abnahme veröffentlicht. Aktuell findest du Quellcode und Bauanleitung auf GitHub.
+            nach Abnahme veröffentlicht. Aktuell finden Sie Quellcode und Bauanleitung auf GitHub.
           </p>
           <p>
             <a
@@ -129,12 +273,75 @@
         </div>
       </section>
     </main>
-    <footer class="container inspect-footer">
-      <span>© 2026 Fabian Braun · FBForge</span>
-      <nav aria-label="Rechtliches">
-        <a href="/impressum">Impressum</a><a href="/datenschutz">Datenschutz</a>
-      </nav>
-      <span>Unabhängiges Projekt. Kein offizielles Produkt der FITKO.</span>
+    <footer class="footer">
+      <div class="container footer-top">
+        <a class="brand" href="/" aria-label="FBForge Startseite"
+          ><span class="brand-symbol" aria-hidden="true"
+            ><svg
+              class="brand-emblem"
+              viewBox="0 0 140 144"
+              fill="none"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                fill="currentColor"
+                d="M8 12H74V26H32V43H73L59 57H32V78L61 102V132H19L27 123L48 117V107L24 91L18 83V25Z"
+              />
+              <path
+                fill="currentColor"
+                d="M78 12H94C111 12 122 23 122 38C122 48 117 56 109 61C119 66 124 75 124 85C124 98 114 106 99 110L80 121V126L103 132H69V101L99 82H101C107 82 111 77 111 71C111 64 106 59 99 59H68L81 45H98C105 45 110 40 110 34C110 28 105 26 98 26H78Z"
+              />
+              <path
+                class="brand-flame"
+                d="M64 96C56 91 53 86 55 80C57 74 63 72 63 65C72 71 74 77 69 84C74 81 76 78 76 74C82 84 75 91 64 96Z"
+              /></svg></span
+          ><span>FB<span class="brand-light">Forge</span></span></a
+        >
+        <p>Offene Software. Für echte Aufgaben.</p>
+        <a class="text-link" href="#inhalt"
+          >Nach oben
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="m5 15 7-7 7 7" /></svg
+        ></a>
+      </div>
+      <div class="container footer-bottom">
+        <span>© <span data-year>2026</span> FBForge</span>
+        <nav aria-label="Weitere Links">
+          <a href="/impressum">Impressum</a><a href="/datenschutz">Datenschutz</a
+          ><a href="https://github.com/FBForge" rel="noopener noreferrer"
+            >GitHub
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M14 3h7v7m0-7L10 14" />
+              <path d="M10 3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-4" /></svg
+          ></a>
+        </nav>
+        <span class="footer-location">UNABHÄNGIG &amp; OFFEN</span>
+      </div>
     </footer>
   </body>
 </html>

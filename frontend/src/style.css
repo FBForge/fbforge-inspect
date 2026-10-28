@@ -1039,3 +1039,31 @@ pre {
 .help-topic {
   scroll-margin-top: 20px;
 }
+
+.environment-tag {
+  padding: 3px 7px;
+  border: 1px solid;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #0092cb;
+  color: #061927;
+  border-color: #0092cb;
+}
+.environment-tag[data-environment='STAGE'] {
+  background: #fcbf49;
+  color: #312700;
+  border-color: #b39200;
+}
+.environment-tag[data-environment='PROD'] {
+  background: #90be6d;
+  color: #17330c;
+  border-color: #507e30;
+}
+@media (forced-colors: active) {
+  .environment-tag {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+}
