@@ -4,7 +4,7 @@
 
 Öffentliche FIT-Connect- und PVOG-Schnittstellen verstehen, Konfiguration prüfen und Befunde lokal weitergeben. Eine eigenständige Desktop-App ohne Anmeldung, Backendserver oder Telemetrie.
 
-**In Entwicklung · Zielversion 0.1.0.** Noch kein freigegebener Windows-Installer. Screenshots und Anleitung beschreiben den Entwicklungsstand; sie ersetzen keine native Windows-/NVDA-Abnahme.
+**In Entwicklung.** Noch kein freigegebener Windows-Installer. Screenshots und Anleitung beschreiben den Entwicklungsstand; sie ersetzen keine native Windows-/NVDA-Abnahme.
 
 FBForge Inspect ergänzt Integrationstests um nachvollziehbare Diagnosen. Es nutzt ausschließlich öffentliche Schnittstellen und implementiert deren dokumentierte Verträge unabhängig. Kein offizielles Produkt der FITKO.
 
