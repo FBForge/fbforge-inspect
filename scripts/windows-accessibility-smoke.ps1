@@ -205,6 +205,7 @@ automaticUpdates = disabled
     $null = Check-Spoken 'Destination-ID' $editType
     $null = Check-Spoken 'Umgebung' ([System.Windows.Automation.ControlType]::ComboBox)
     $null = Check-Spoken 'API' ([System.Windows.Automation.ControlType]::ComboBox)
+    $null = Check-Spoken 'Darstellung' ([System.Windows.Automation.ControlType]::ComboBox)
     foreach ($name in @('Routing prüfen','Prozessnachricht prüfen','Schlüssel prüfen','Fachschemata')) {
         $control = Check-Spoken $name $buttonType
         Invoke-Control $control
@@ -217,7 +218,7 @@ automaticUpdates = disabled
     [IO.File]::WriteAllText((Join-Path $env:RUNNER_TEMP 'fbforge-accessibility-result.json'), ($report | ConvertTo-Json -Depth 5), [Text.UTF8Encoding]::new($false))
 } catch {
     # The test never enters credentials. Log only known synthetic control names.
-    $knownNames = @('Umgebung','API','Destination prüfen','Destination-ID','Routing prüfen','Prozessnachricht prüfen','Schlüssel prüfen','Fachschemata','JSON Schema / XSD','Hilfe')
+    $knownNames = @('Umgebung','API','Darstellung','Destination prüfen','Destination-ID','Routing prüfen','Prozessnachricht prüfen','Schlüssel prüfen','Fachschemata','JSON Schema / XSD','Hilfe')
     $focused = [System.Windows.Automation.AutomationElement]::FocusedElement
     if ($focused) {
         $label = if ($knownNames -contains $focused.Current.Name) { $focused.Current.Name } else { '(other control)' }

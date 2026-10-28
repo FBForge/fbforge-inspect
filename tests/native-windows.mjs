@@ -62,7 +62,7 @@ try {
   results.push('Native WebView2 frontend loaded');
   await page.screenshot({ path: join(output, 'windows-start.png') });
   await page
-    .getByRole('navigation')
+    .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('button', { name: 'Fachschemata', exact: true })
     .click();
   await page
@@ -78,10 +78,11 @@ try {
   await expect(page.getByRole('dialog').locator('pre')).not.toContainText('rawResponses');
   await page.keyboard.press('Escape');
   results.push('Native export preview excludes raw responses by default');
-  await page.getByRole('button', { name: 'Dunkles Design aktivieren' }).click();
+  await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption('dark');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.screenshot({ path: join(output, 'windows-schema-dark.png') });
   await page
-    .getByRole('navigation')
+    .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('button', { name: 'Schlüssel prüfen', exact: true })
     .click();
   await page
