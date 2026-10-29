@@ -28,7 +28,7 @@
     "active": true,
     "targets": ["nsis"],
     "category": "DeveloperTool",
-    "shortDescription": "Öffentliche Diagnose für FIT-Connect und PVOG",
+    "shortDescription": "Zustellpunkte, Routing und PVOG-Adressierung prüfen",
     "resources": { "resources/engine/": "engine/" },
     "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
     "windows": {

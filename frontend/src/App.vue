@@ -126,7 +126,7 @@ async function save() {
     <aside class="sidebar">
       <div class="brand">
         <img src="/inspect.png" alt="" />
-        <div>FBForge <strong>Inspect</strong><span>Öffentliche Diagnose</span></div>
+        <div>FBForge <strong>Inspect</strong><span>Zustellpunkte und Routing</span></div>
       </div>
       <div class="nav-label">ARBEITSBEREICH</div>
       <nav aria-label="Hauptnavigation">
@@ -157,7 +157,7 @@ async function save() {
           <span
             class="environment-tag"
             :data-environment="environment"
-            :title="`Umgebung ${environment}; keine Sicherheitsbewertung`"
+            :title="`Umgebung ${environment}. Keine Sicherheitsbewertung.`"
             aria-hidden="true"
             >{{ environment }}</span
           >

@@ -1,70 +1,41 @@
 # FBForge Inspect
 
-<img src="assets/brand/inspect-source.png" alt="FBForge Inspect" width="112" />
+<img src="assets/brand/inspect-source.png" alt="" width="80" height="80">
 
-Öffentliche FIT-Connect- und PVOG-Schnittstellen verstehen, Konfiguration prüfen und Befunde lokal weitergeben. Eine eigenständige Desktop-App ohne Anmeldung, Backendserver oder Telemetrie.
+Desktop-Werkzeug für FIT-Connect-Zustellpunkte, Routing und PVOG-Adressierung. Für Entwickler und Integratoren.
 
-**In Entwicklung.** Noch kein freigegebener Windows-Installer. Screenshots und Anleitung beschreiben den Entwicklungsstand. Sie ersetzen keine native Windows-/NVDA-Abnahme.
+- Zustellpunkte über API v2/v3 abrufen und Konfiguration, Leistungen, Regionen und öffentliche Schlüssel prüfen.
+- Routing-Ziele und Gebiete suchen, Ergebniskontexte erhalten und PVOG-Adressierungssignaturen ergänzen.
+- V3-Prozessnachrichten und zusammengehörige Konfigurationserwartungen prüfen.
+- Öffentliche JWK/JWKS, Zertifikatsketten und Sperrstatus untersuchen.
+- JSON Schema und XSD lokal einlesen, Struktur und Referenzen nachvollziehen.
+- Befunde als JSON oder HTML speichern. Rohantworten nur nach ausdrücklicher Auswahl einschließen.
 
-FBForge Inspect ergänzt Integrationstests um die Diagnose öffentlich erreichbarer Endpunkte und ihrer Konfigurationsdaten. Es ist ein privat entwickeltes Open-Source-Projekt und implementiert die dokumentierten Schnittstellen unabhängig.
+Für **Windows x64 und FIT-Connect TEST, STAGE und PROD**. Java wird mitgeliefert. Lokale Schlüssel- und Schemainspektion funktionieren offline. Die Anwendung benötigt keine Zugangsdaten und führt keine Verwaltungsoperationen oder Zustellungen aus.
 
-## Funktionen in 0.1.0
+## Entwicklungsstand
 
-- **Destination v2/v3:** Status, Typ, Metadaten, Leistungen, Prozessnachrichten, Regionen, Fachdatenschemareferenzen und öffentliche Verschlüsselungsschlüssel. Optionaler Versionsvergleich und zusammengehörige Konfigurationserwartungen.
-- **Routing:** LeiKa mit AGS, ARS oder Gebiets-ID, öffentliche Gebietssuche, begrenzte vollständige Paginierung und erhaltene Ergebniskontexte. Optionale PVOG-Adressierungssignaturen mit eigener Quellenangabe.
-- **Adressierungssignaturen:** Dekodierung und Verifikation getrennt, PS512 und fest gewählte öffentliche FIT-Connect-Schlüsselquellen. Leistung und ARS werden im gemeinsamen signierten Kontext verglichen.
-- **Prozessnachrichten:** Öffentliche v3-Suche anhand von Modell, Nachricht und Region. Optionale paarbezogene Limits zwischen zwei Destinationen.
-- **Öffentliche Schlüssel:** JWK/JWKS aus Datei, Zwischenablage oder HTTPS. RSA, Algorithmen, Schlüsseloperationen, x5c-Zuordnung, Laufzeit und PKIX gegen ausdrücklich ausgewählte öffentliche CA-Anker. Optionale signaturgeprüfte OCSP-/CRL-Diagnose.
-- **Fachdatenschemata:** Struktur und Referenzen von JSON Schema und XSD, sichere XML-Verarbeitung. Keine Fachdaten erforderlich.
-- **Berichte:** Lokales JSON oder eigenständiges HTML mit Exportvorschau. Rohantworten werden nur nach ausdrücklicher Auswahl exportiert.
-- Helles und dunkles Design sowie laufend aktualisierte Systemeinstellung, Tastaturbedienung und vollständig gebündelte Hilfe.
+**0.1.0 wird für die Abnahme vorbereitet.** Der vollständige Quellstand liegt auf [release/0.1.0](https://github.com/FBForge/fbforge-inspect/tree/release/0.1.0). `main` enthält derzeit den Projekteinstieg. Ein freigegebener Installer ist noch nicht veröffentlicht.
 
-## Starten
+Die [CI-Prüfung](https://github.com/FBForge/fbforge-inspect/actions/workflows/verify.yml) baut den Windows-Kandidaten und prüft den nativen WebView2-/Java-Durchlauf sowie NVDA-Sprachsequenzen. Ein erfolgreicher Build ersetzt keine vollständige Funktions- und Installationsabnahme. Ein unsignierter Testkandidat ist kein signierter Release.
 
-Die erste Zielplattform ist **Windows x64** mit WebView2. Der Installer bündelt eine reduzierte Java-25-Laufzeit. Ein separat installiertes Java ist für die App nicht erforderlich. Internet wird ausschließlich für ausdrücklich gestartete öffentliche Abfragen benötigt. Lokale JWK- und Schema-Inspektion funktionieren offline.
+## Einstieg
 
-Installer werden erst nach Abnahme veröffentlicht. Solange noch kein Release vorhanden ist, sind die [Bauanleitung](BUILDING.md) und der Quellcode der verfügbare Einstieg. Hier gibt es keinen Platzhalter-Download.
+1. Den Quellstand von `release/0.1.0` mit der [Bauanleitung](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/BUILDING.md) bauen.
+2. FBForge Inspect starten und Umgebung sowie API-Version wählen.
+3. Einen Zustellpunkt prüfen oder eine lokale Schlüssel- beziehungsweise Schemadatei einlesen.
+4. Befunde und Quellen prüfen und bei Bedarf einen Bericht lokal speichern.
 
-1. Umgebung und API-Version wählen. Standard ist TEST / v3.
-2. **Destination prüfen** öffnen und die UUID eingeben.
-3. Prüfung starten und Befunde samt Quellen lesen.
-4. Bei Bedarf erwartete Leistung, Region oder Schema ergänzen.
-5. Berichtsvorschau prüfen und lokal speichern.
+Die [Anleitung mit Bildern und Beispielen](https://fbforge.de/inspect/hilfe/0.1/) und die gebündelte Offline-Hilfe beschreiben dieselben Abläufe. Helle, dunkle und automatische Darstellung sind verfügbar.
 
-## Quellen richtig zuordnen
+## Quellen und Grenzen
 
-Fachdatenschemata sind bei der jeweiligen Leistung im FIT-Connect-Zustellpunkt hinterlegt. PVOG liefert Adressierungssignaturen (Destination Signatures) und gegebenenfalls EfA-Parameter. Diese PVOG-Informationen werden von den Fachdatenschemata aus dem Zustellpunkt getrennt betrachtet.
+Fachdatenschemata sind bei der jeweiligen Leistung im FIT-Connect-Zustellpunkt hinterlegt. PVOG liefert Adressierungssignaturen (Destination Signatures) und gegebenenfalls EfA-Parameter.
 
-## Ergebnisse richtig einordnen
+STAGE besitzt keine eigene Routing-API. Die Anwendung kennzeichnet dort die verwendete PROD-Routingquelle. Fehlende Vertrauensanker, ungeklärte Sperrstatus und unvollständige Ergebnisse bleiben ausdrücklich ungeklärt. Eine Diagnose ist keine Freigabe der gesamten Integration.
 
-Ein bestätigter Einzelbefund ist keine Freigabe der gesamten Integration. Unbekannt bleibt unbekannt, beispielsweise bei fehlendem Vertrauensanker, nicht verifizierbarem Sperrstatus, Ratenlimit oder unvollständiger Paginierung. Öffentliche Lesbarkeit beweist keine Sende- oder Empfangsfähigkeit.
+[Architektur](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/docs/ARCHITECTURE.md) · [Lokal bauen](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/BUILDING.md) · [Mitwirken](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/CONTRIBUTING.md) · [Issues](https://github.com/FBForge/fbforge-inspect/issues) · [Sicherheit](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/SECURITY.md)
 
-V2 und V3 werden ausdrücklich ausgewählt. Routing verwendet die öffentliche Routing API v2. STAGE besitzt keine eigene Routing-API, FBForge Inspect kennzeichnet dort die verwendete PROD-Routingquelle. PVOG STAGE wird mit TEST, PVOG PROD mit dem produktiven Routing verglichen.
+## Lizenz
 
-Kein Senden/Empfangen, keine Konten, keine Verwaltungsoperationen, kein BPMN-Import, keine Schema-Instanzvalidierung und keine interne Routing-Rekonstruktion. Authentifizierte Unternehmensproxies und private TLS-CAs werden in 0.1.0 nicht eingerichtet.
-
-Die [Hilfequelle](docs/help.json), [Architektur](docs/ARCHITECTURE.md), [öffentlichen Quellen](docs/SOURCES.md) und [Sicherheitsgrenzen](SECURITY.md) erklären Details und Grenzen.
-
-## Entwickeln
-
-Tauri 2 · Vue 3 · TypeScript · Vite · Rust · Java 25. Versionen sind in package-lock.json, desktop/Cargo.lock und engine/pom.xml festgelegt.
-
-```sh
-npm ci
-npm run build
-npm run test
-npm run licenses:collect
-npm run desktop:dev
-```
-
-Für Rust-Abhängigkeiten muss zuvor `cargo fetch --locked --manifest-path desktop/Cargo.toml` erfolgreich gewesen sein. Details zur Zielplattform und den Prüfungen stehen in [BUILDING.md](BUILDING.md).
-
-Lizenz: [EUPL-1.2](LICENSE). Fremdkomponenten: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) und `licenses/`.
-
-## Einblick in den Entwicklungsstand
-
-![Startansicht mit Endpunktabfragen und lokaler Dateiprüfung](docs/images/start.png)
-
-Die bebilderte Anleitung wird aus derselben [fachlichen Quelle](docs/help.json) für App und Website erzeugt. Das [lokale Schema-Beispiel](docs/images/schema.png) zeigt ausdrücklich getrennte Struktur- und Referenzbefunde mit fiktiven Daten.
-
-`npm run website:export` erstellt ausschließlich die öffentlichen Produktseiten, Hilfe und Bilder unter `dist-website/`. Der Export enthält ein Quellstand-/Prüfsummenmanifest für die spätere Übernahme in den FBForge-Webauftritt. Er veröffentlicht keine Website.
+[EUPL-1.2](LICENSE). Siehe auch [Drittanbieter-Lizenzen](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/THIRD_PARTY_NOTICES.md).
