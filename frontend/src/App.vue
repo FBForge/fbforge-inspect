@@ -23,6 +23,9 @@ const busy = ref(false),
 const form = ref<InstanceType<typeof DiagnosisForm>>();
 let requestId = 0;
 const exportDialog = ref<HTMLDialogElement>();
+const exportTrigger = ref<HTMLButtonElement>();
+const exportError = ref('');
+const saving = ref(false);
 const active = computed(() => pages.find((p) => p.id === page.value)!);
 const exportReport = computed(() =>
   report.value ? reportForExport(report.value, raw.value) : null,
@@ -33,8 +36,12 @@ const previewText = computed(() =>
 watch(preview, async (value) => {
   if (value) {
     raw.value = false;
+    exportError.value = '';
     await nextTick();
     exportDialog.value?.showModal();
+  } else {
+    await nextTick();
+    exportTrigger.value?.focus();
   }
 });
 function clear() {
@@ -107,7 +114,9 @@ async function openSchema(url: string) {
   form.value?.setSchema(url);
 }
 async function save() {
-  if (!exportReport.value) return;
+  if (!exportReport.value || saving.value) return;
+  saving.value = true;
+  exportError.value = '';
   try {
     const content = format.value === 'html' ? reportHtml(exportReport.value) : previewText.value;
     const saved = await invoke<boolean>('save_report', { content, format: format.value });
@@ -116,7 +125,9 @@ async function save() {
       status.value = 'Bericht lokal gespeichert';
     }
   } catch {
-    error.value = 'Bericht konnte nicht gespeichert werden.';
+    exportError.value = 'Bericht konnte nicht gespeichert werden.';
+  } finally {
+    saving.value = false;
   }
 }
 </script>
@@ -190,7 +201,12 @@ async function save() {
             </h1>
             <p>{{ active.description }}</p>
           </div>
-          <button v-if="report" class="button secondary" @click="preview = true">
+          <button
+            v-if="report"
+            ref="exportTrigger"
+            class="button secondary"
+            @click="preview = true"
+          >
             Bericht exportieren
           </button>
         </div>
@@ -316,27 +332,38 @@ async function save() {
     v-if="preview"
     class="export-dialog"
     aria-labelledby="export-title"
-    @cancel="preview = false"
+    :aria-busy="saving ? 'true' : undefined"
+    @cancel.prevent="!saving && (preview = false)"
   >
     <div class="section-heading">
       <h2 id="export-title">Bericht vor dem Speichern prüfen</h2>
-      <button class="icon-button" aria-label="Schließen" @click="preview = false">×</button>
+      <button
+        class="icon-button"
+        aria-label="Schließen"
+        :disabled="saving"
+        @click="preview = false"
+      >
+        ×
+      </button>
     </div>
     <p>
       Dieser Umfang wird als lokale Datei gespeichert. Prüfen Sie die Angaben vor dem Weitergeben.
     </p>
     <div class="form-grid">
       <label
-        >Format<select v-model="format">
+        >Format<select v-model="format" :disabled="saving">
           <option value="html">Eigenständiges HTML</option>
           <option value="json">JSON</option>
         </select></label
-      ><label class="check"><input v-model="raw" type="checkbox" />Rohantworten einschließen</label>
+      ><label class="check"
+        ><input v-model="raw" type="checkbox" :disabled="saving" />Rohantworten einschließen</label
+      >
     </div>
+    <p v-if="exportError" class="notice error-notice" role="alert">{{ exportError }}</p>
     <pre class="export-preview">{{ previewText }}</pre>
     <div class="form-footer">
-      <button class="button secondary" @click="preview = false">Abbrechen</button
-      ><button class="button primary" @click="save">Speicherort wählen</button>
+      <button class="button secondary" :disabled="saving" @click="preview = false">Abbrechen</button
+      ><button class="button primary" :disabled="saving" @click="save">Speicherort wählen</button>
     </div>
   </dialog>
 </template>

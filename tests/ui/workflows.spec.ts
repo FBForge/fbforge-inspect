@@ -2,14 +2,18 @@ import { test, expect } from '@playwright/test';
 const uuid = '00000000-0000-4000-8000-000000000001';
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    const state = { calls: [] as unknown[] };
+    const state = { calls: [] as unknown[], saveOutcomes: [] as (boolean | string)[] };
     Object.assign(window, {
       inspectTest: state,
       isTauri: true,
       __TAURI_INTERNALS__: {
         invoke: async (command: string, args: Record<string, any>) => {
           state.calls.push({ command, args });
-          if (command === 'save_report') return true;
+          if (command === 'save_report') {
+            const outcome = state.saveOutcomes.shift() ?? true;
+            if (outcome === 'failure') throw new Error('synthetic write failure');
+            return outcome;
+          }
           if (command === 'cancel') return;
           const request = args.request;
           return {
@@ -126,4 +130,51 @@ test('both themes have no horizontal overflow and navigation is keyboard reachab
     .getByRole('button', { name: 'Hilfe', exact: true })
     .click();
   await expect(page.getByRole('heading', { name: 'Schnellstart' })).toBeVisible();
+});
+
+test('export cancellation keeps the preview and write failures are announced inside the dialog', async ({
+  page,
+}) => {
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Destination prüfen', exact: true })
+    .click();
+  await page.getByRole('textbox', { name: 'Destination-ID', exact: true }).fill(uuid);
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  await page.getByRole('button', { name: 'Bericht exportieren' }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('combobox', { name: 'Format', exact: true }).selectOption('json');
+  await page.evaluate(() => {
+    (window as any).inspectTest.saveOutcomes = [false, 'failure', true];
+  });
+  await dialog.getByRole('button', { name: 'Speicherort wählen', exact: true }).click();
+  await expect(dialog).toBeVisible();
+  await expect(page.getByRole('status')).not.toContainText(['Bericht lokal gespeichert']);
+  await dialog.getByRole('button', { name: 'Speicherort wählen', exact: true }).click();
+  await expect(dialog.getByRole('alert')).toContainText('Bericht konnte nicht gespeichert werden.');
+  await dialog.getByRole('button', { name: 'Speicherort wählen', exact: true }).click();
+  await expect(dialog).not.toBeVisible();
+  const saves = await page.evaluate(() =>
+    (window as any).inspectTest.calls.filter((call: any) => call.command === 'save_report'),
+  );
+  expect(saves).toHaveLength(3);
+  for (const save of saves) {
+    expect(save.args.format).toBe('json');
+    expect(JSON.parse(save.args.content).rawResponses).toBeUndefined();
+  }
+  await expect(page.getByRole('button', { name: 'Bericht exportieren' })).toBeFocused();
+});
+
+test('closing the export preview returns keyboard focus to its trigger', async ({ page }) => {
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Destination prüfen', exact: true })
+    .click();
+  await page.getByRole('textbox', { name: 'Destination-ID', exact: true }).fill(uuid);
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  const trigger = page.getByRole('button', { name: 'Bericht exportieren' });
+  await trigger.click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
 });
