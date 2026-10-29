@@ -21,10 +21,38 @@ Add-Type -AssemblyName UIAutomationTypes
 Add-Type -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Collections.Generic;
 public static class InspectSaveWindow {
     [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr window, uint flags);
     [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId(IntPtr window, out uint process);
     public static uint ProcessId(IntPtr window) { uint process; GetWindowThreadProcessId(window, out process); return process; }
+    private delegate bool VisitWindow(IntPtr window, IntPtr parameter);
+    [DllImport("user32.dll")] private static extern bool EnumChildWindows(IntPtr window, VisitWindow visit, IntPtr parameter);
+    [DllImport("user32.dll")] private static extern int GetDlgCtrlID(IntPtr window);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int GetClassName(IntPtr window, StringBuilder name, int size);
+    [DllImport("user32.dll")] private static extern bool IsWindowEnabled(IntPtr window);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern IntPtr SendMessage(IntPtr window, uint message, IntPtr parameter, string text);
+    private static string ClassName(IntPtr window) { var name = new StringBuilder(256); GetClassName(window, name, name.Capacity); return name.ToString(); }
+    public static IntPtr FindChild(IntPtr root, int id, string expectedClass) {
+        IntPtr found = IntPtr.Zero;
+        EnumChildWindows(root, (window, parameter) => {
+            if (GetDlgCtrlID(window) == id && ClassName(window).Equals(expectedClass, StringComparison.OrdinalIgnoreCase) && IsWindowEnabled(window)) { found = window; return false; }
+            return true;
+        }, IntPtr.Zero);
+        return found;
+    }
+    public static string DescribeChildren(IntPtr root) {
+        var controls = new List<string>();
+        EnumChildWindows(root, (window, parameter) => {
+            var name = ClassName(window);
+            if (name == "Button" || name == "Edit" || name.StartsWith("ComboBox")) controls.Add(GetDlgCtrlID(window) + ":" + name);
+            return controls.Count < 50;
+        }, IntPtr.Zero);
+        return string.Join(",", controls);
+    }
+    public static bool SetText(IntPtr window, string text) { return SendMessage(window, 0x000C, IntPtr.Zero, text) != IntPtr.Zero; }
+    public static void Click(IntPtr window) { SendMessage(window, 0x00F5, IntPtr.Zero, null); }
 }
 '@
 $processCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ProcessIdProperty, $ApplicationProcessId)
@@ -49,33 +77,23 @@ $dialogHandle = [InspectSaveWindow]::GetAncestor([IntPtr]$dialog.Current.NativeW
 if ($dialogHandle -eq [IntPtr]::Zero -or [InspectSaveWindow]::ProcessId($dialogHandle) -ne $ApplicationProcessId) { throw 'save_dialog_wrong_native_owner' }
 $dialog = [System.Windows.Automation.AutomationElement]::FromHandle($dialogHandle)
 if ($dialog.Current.ProcessId -ne $ApplicationProcessId) { throw 'save_dialog_wrong_owner' }
-function Find-DialogControl([string]$Id, $Type) {
-    $idCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty, $Id)
-    $typeCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty, $Type)
-    $condition = [System.Windows.Automation.AndCondition]::new($idCondition, $typeCondition)
-    $controlDeadline = [DateTime]::UtcNow.AddSeconds(15)
+function Wait-NativeControl([int]$Id, [string]$Class) {
+    $controlDeadline = [DateTime]::UtcNow.AddSeconds(10)
     do {
-        $control = $dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $condition)
-        if ($control -and $control.Current.IsEnabled) { return $control }
+        $control = [InspectSaveWindow]::FindChild($dialogHandle, $Id, $Class)
+        if ($control -ne [IntPtr]::Zero) {
+            if ([InspectSaveWindow]::ProcessId($control) -ne $ApplicationProcessId) { throw 'save_dialog_wrong_control_owner' }
+            return $control
+        }
         Start-Sleep -Milliseconds 200
     } while ([DateTime]::UtcNow -lt $controlDeadline)
-    return $null
+    throw ('save_dialog_native_control_missing id=' + $Id + ' class=' + $Class + ' observedIdsAndClasses=' + [InspectSaveWindow]::DescribeChildren($dialogHandle))
 }
 if ($Mode -eq 'save') {
-    $filenameInput = Find-DialogControl '1001' ([System.Windows.Automation.ControlType]::Edit)
-    if (-not $filenameInput) { throw 'save_dialog_filename_edit_missing' }
-    $valuePattern = $null
-    if (-not $filenameInput.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern, [ref]$valuePattern)) { throw 'save_dialog_filename_not_editable' }
-    $valuePattern.SetValue($destination)
+    $filenameInput = Wait-NativeControl 1001 'Edit'
+    if (-not [InspectSaveWindow]::SetText($filenameInput, $destination)) { throw 'save_dialog_filename_not_set' }
 }
-$buttonId = if ($Mode -eq 'save') { '1' } else { '2' }
-$button = Find-DialogControl $buttonId ([System.Windows.Automation.ControlType]::Button)
-if (-not $button) {
-    $buttonCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::Button)
-    $observed = @($dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants, $buttonCondition) | ForEach-Object { $_.Current.AutomationId + ':' + $_.Current.ClassName })
-    throw ('save_dialog_action_missing rootClass=' + $dialog.Current.ClassName + ' buttonIdsAndClasses=' + ($observed -join ','))
-}
-$invokePattern = $null
-if (-not $button.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern, [ref]$invokePattern)) { throw 'save_dialog_action_unavailable' }
-$invokePattern.Invoke()
+$buttonId = if ($Mode -eq 'save') { 1 } else { 2 }
+$button = Wait-NativeControl $buttonId 'Button'
+[InspectSaveWindow]::Click($button)
 Write-Output ('Native owned Save dialog action: ' + $Mode)
