@@ -2,7 +2,7 @@
 
 ## 0.1.0 – noch nicht veröffentlicht
 
-Erste Desktop-Version von FBForge Inspect für öffentliche FIT-Connect- und PVOG-Diagnosen.
+Erste Desktop-Version von FBForge Inspect zum Prüfen öffentlicher FIT-Connect-Zustellpunkte, Routing-Ergebnisse und PVOG-Adressierungsdaten.
 
 - Destination v2/v3 und expliziter Versionsvergleich.
 - Routing mit Gebietssuche, Kontexten und optionaler PVOG-Evidenz.

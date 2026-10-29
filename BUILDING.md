@@ -1,8 +1,6 @@
 # Bauen und prüfen
 
-Benötigt werden Node ab 22.13, npm, Java/JDK 25 mit Maven sowie Rust ab 1.90. Die aktuell festgelegten Tauri-Abhängigkeiten können neuere Rust-Versionen benötigen. Der jeweils erfolgreich geprüfte Compiler wird im lokalen Abnahmeprotokoll festgehalten. Verwende für Windows den MSVC-Toolchain und die C++-Buildwerkzeuge von Visual Studio. Für lokale Linux-Entwicklung benötigt Tauri GTK 3, WebKitGTK 4.1, libsoup 3 und deren Entwicklungspakete.
-
-Es gibt keinen Baseline-Build vor der Projekterstellung, da das Repository leer angelegt wurde.
+Benötigt werden Node ab 22.13, npm, Java/JDK 25 mit Maven sowie Rust. Die CI verwendet Node 24 und Rust 1.96.0 mit rustfmt und Clippy. Verwenden Sie diese Rust-Version für den festgeschriebenen Abhängigkeitsbaum. Verwende für Windows den MSVC-Toolchain und die C++-Buildwerkzeuge von Visual Studio. Für lokale Linux-Entwicklung benötigt Tauri GTK 3, WebKitGTK 4.1, libsoup 3 und deren Entwicklungspakete.
 
 ## Entwicklung
 
@@ -33,7 +31,7 @@ npm run test:ui
 npm run docs:build
 ```
 
-Die UI-Tests benötigen einen zu Playwright passenden Chromium. Ein bereits installierter Browser kann ausdrücklich über `INSPECT_CHROMIUM_EXECUTABLE` gewählt werden. Die Tests verwenden isolierte Kontexte. Vier Workflows verwenden synthetische IPC-Antworten, vier prüfen lokale Datei-, Schlüssel- und Parsergrenzen (drei davon über den echten Java-Kern), weitere prüfen Systemdarstellung, optionale Präferenzspeicherung und die Toolbar. Deshalb zuerst `npm run build:engine` ausführen. Sie ersetzen keinen nativen Windows-/WebView2-Test. Die Java-Tests verwenden synthetische Zertifikate und signierte OCSP-/CRL-Fixtures, ohne externe Dienste.
+Die UI-Tests benötigen einen zu Playwright passenden Chromium. Ein bereits installierter Browser kann ausdrücklich über `INSPECT_CHROMIUM_EXECUTABLE` gewählt werden. Die Tests verwenden isolierte Kontexte. Sie prüfen Diagnoseabläufe mit synthetischen IPC-Antworten, lokale Datei- und Parsergrenzen sowie öffentliche RSA-Schlüssel über den echten Java-Kern, Systemdarstellung, Präferenzspeicherung, Toolbar und Exportdialoge. Deshalb zuerst `npm run build:engine` ausführen und für die Tests dasselbe `JAVA_HOME` verwenden. Sie ersetzen keinen nativen Windows-/WebView2-Test. Die Java-Tests verwenden synthetische Zertifikate und signierte OCSP-/CRL-Fixtures ohne externe Dienste.
 
 Node-Tests laufen mit `--test-isolation=none`, damit die hier verwendete Node-24-Laufzeit die einzelnen exportbezogenen Tests zuverlässig ausführt. Maven `package` führt die Kerntests aus. Es gibt keine Git-Hooks und keinen automatischen Veröffentlichungsweg.
 
