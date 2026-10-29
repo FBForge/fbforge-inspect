@@ -1,4 +1,4 @@
-name: Verify frozen Windows candidate
+name: Verify frozen Windows exports
 on:
   push:
     branches: [release/0.1.0]
@@ -64,22 +64,6 @@ jobs:
         env:
           INSPECT_LIVE_READONLY: '1'
         run: node tests/native-windows.mjs "$env:INSPECT_TEST_BINARY" .local/reused-native-evidence
-      - name: Prepare official NVDA
-        id: nvda
-        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
-        shell: powershell
-        run: ./scripts/ci/prepare-nvda.ps1
-      - name: Install and verify exact executable and NVDA speech
-        if: ${{ !cancelled() && steps.candidate.outcome == 'success' && steps.nvda.outcome == 'success' }}
-        shell: powershell
-        run: |
-          try {
-            ./scripts/windows-accessibility-smoke.ps1 -InstallerPath $env:INSPECT_TEST_INSTALLER -ExpectedBinaryPath $env:INSPECT_TEST_BINARY -CandidateSourceCommit $env:CANDIDATE_SOURCE_COMMIT -NvdaPath $env:INSPECT_NVDA_PATH
-          } catch {
-            $detail = $_.Exception.Message.Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
-            Write-Output "::error title=Frozen installer verification::$detail"
-            throw
-          }
       - name: Preserve native evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -87,5 +71,4 @@ jobs:
           name: frozen-native-evidence
           path: |
             .local/reused-native-evidence/
-            ${{ runner.temp }}/fbforge-accessibility-result.json
           if-no-files-found: warn

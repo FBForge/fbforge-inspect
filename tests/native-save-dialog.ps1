@@ -18,6 +18,15 @@ $destination = if ($Mode -eq 'save') { Join-Path $directory $FileName } else { $
 if ($destination -and (Test-Path -LiteralPath $destination)) { throw 'save_dialog_refuses_overwrite' }
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
+Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public static class InspectSaveWindow {
+    [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr window, uint flags);
+    [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId(IntPtr window, out uint process);
+    public static uint ProcessId(IntPtr window) { uint process; GetWindowThreadProcessId(window, out process); return process; }
+}
+'@
 $processCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ProcessIdProperty, $ApplicationProcessId)
 $dialogCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ClassNameProperty, '#32770')
 $dialog = $null
@@ -35,6 +44,10 @@ do {
     Start-Sleep -Milliseconds 200
 } while ([DateTime]::UtcNow -lt $deadline)
 if (-not $dialog) { throw 'save_dialog_not_found' }
+# Resolve the real HWND root, rather than a UIA fragment rooted at the shell pane.
+$dialogHandle = [InspectSaveWindow]::GetAncestor([IntPtr]$dialog.Current.NativeWindowHandle, 2)
+if ($dialogHandle -eq [IntPtr]::Zero -or [InspectSaveWindow]::ProcessId($dialogHandle) -ne $ApplicationProcessId) { throw 'save_dialog_wrong_native_owner' }
+$dialog = [System.Windows.Automation.AutomationElement]::FromHandle($dialogHandle)
 if ($dialog.Current.ProcessId -ne $ApplicationProcessId) { throw 'save_dialog_wrong_owner' }
 function Find-DialogControl([string]$Id, $Type) {
     $idCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty, $Id)
@@ -60,7 +73,7 @@ $button = Find-DialogControl $buttonId ([System.Windows.Automation.ControlType]:
 if (-not $button) {
     $buttonCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::Button)
     $observed = @($dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants, $buttonCondition) | ForEach-Object { $_.Current.AutomationId + ':' + $_.Current.ClassName })
-    throw ('save_dialog_action_missing buttonIdsAndClasses=' + ($observed -join ','))
+    throw ('save_dialog_action_missing rootClass=' + $dialog.Current.ClassName + ' buttonIdsAndClasses=' + ($observed -join ','))
 }
 $invokePattern = $null
 if (-not $button.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern, [ref]$invokePattern)) { throw 'save_dialog_action_unavailable' }
