@@ -44,6 +44,7 @@ jobs:
           github-token: ${{ github.token }}
           path: .local/frozen-candidate
       - name: Verify every candidate file against its manifest
+        id: candidate
         shell: pwsh
         run: |
           $installers = @(Get-ChildItem .local/frozen-candidate -Recurse -Filter '*-setup.exe')
@@ -64,9 +65,12 @@ jobs:
           INSPECT_LIVE_READONLY: '1'
         run: node tests/native-windows.mjs "$env:INSPECT_TEST_BINARY" .local/reused-native-evidence
       - name: Prepare official NVDA
+        id: nvda
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
         shell: powershell
         run: ./scripts/ci/prepare-nvda.ps1
       - name: Install and verify exact executable and NVDA speech
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' && steps.nvda.outcome == 'success' }}
         shell: powershell
         run: |
           try {

@@ -76,6 +76,7 @@ jobs:
       - run: npm run stage:engine
       - run: cargo test --locked --manifest-path desktop/Cargo.toml
       - name: Build unsigned NSIS candidate
+        id: package
         shell: powershell
         run: ./scripts/build-windows.ps1 -InspectJavaHome $env:JAVA_HOME
       - name: Real WebView2 and bundled Java round trip
@@ -83,9 +84,12 @@ jobs:
           INSPECT_LIVE_READONLY: '1'
         run: node tests/native-windows.mjs .local/artifacts/windows-x64/fbforge-inspect.exe .local/native-evidence
       - name: Prepare official NVDA with pinned integrity check
+        id: nvda
+        if: ${{ !cancelled() && steps.package.outcome == 'success' }}
         shell: powershell
         run: ./scripts/ci/prepare-nvda.ps1
       - name: Installed candidate, native keyboard and actual NVDA speech
+        if: ${{ !cancelled() && steps.package.outcome == 'success' && steps.nvda.outcome == 'success' }}
         shell: powershell
         run: |
           $setup = @(Get-ChildItem .local/artifacts/windows-x64 -Filter '*-setup.exe')
