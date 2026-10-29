@@ -108,6 +108,7 @@ jobs:
           path: |
             .local/artifacts/windows-x64/
             .local/native-evidence/
+            .local/installed-native-evidence/
             ${{ runner.temp }}/fbforge-accessibility-result.json
           if-no-files-found: warn
           include-hidden-files: true

@@ -232,8 +232,26 @@ automaticUpdates = disabled
     $null = Check-Spoken 'JSON Schema / XSD' $editType
     $help = Check-Spoken 'Hilfe' $buttonType
     Invoke-Control $help
+    # Repeat the proven native engine/export flow against the installed resources,
+    # after stopping the screen reader and its app so they cannot intercept input.
+    if ($taskNvda -and -not $taskNvda.HasExited) { $taskNvda.Kill(); $taskNvda.WaitForExit() }
+    if ($taskNvda) { $taskNvda.Dispose(); $taskNvda = $null }
+    $null = $taskApp.CloseMainWindow()
+    if (-not $taskApp.WaitForExit(10000)) { $taskApp.Kill(); $taskApp.WaitForExit() }
+    $taskApp.Dispose(); $taskApp = $null; $taskWindow = $null
+    $repository = Split-Path $PSScriptRoot -Parent
+    $probeScript = Join-Path $repository 'tests\native-windows.mjs'
+    $probeOutput = Join-Path $repository '.local\installed-native-evidence'
+    $node = (Get-Command node.exe -CommandType Application).Source
+    $probeInfo = Start-Clean $node ('"' + $probeScript + '" "' + $binary + '" "' + $probeOutput + '"')
+    $probeInfo.EnvironmentVariables['CANDIDATE_SOURCE_COMMIT'] = $CandidateSourceCommit
+    $probe = [Diagnostics.Process]::Start($probeInfo)
+    try {
+        if (-not $probe.WaitForExit(240000)) { $probe.Kill(); $probe.WaitForExit(); throw 'a11y_installed_native_probe_timeout' }
+        if ($probe.ExitCode -ne 0) { throw 'a11y_installed_native_probe_failed' }
+    } finally { $probe.Dispose() }
     Write-Output ('Actual NVDA 2026.2 speech and native Tab navigation: ' + $checks.Count + ' labels passed')
-    $report = [ordered]@{ application = 'FBForge Inspect'; nvda = $ready.nvdaVersion; installerSha256 = (Get-FileHash -LiteralPath $InstallerPath -Algorithm SHA256).Hash.ToLowerInvariant(); harnessCommit = $env:GITHUB_SHA; candidateSourceCommit = $CandidateSourceCommit; runId = $env:GITHUB_RUN_ID; installedBinarySha256 = (Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash.ToLowerInvariant(); candidate = $(if ($ExpectedBinaryPath) { 'installed EXE matched expected SHA-256' } else { 'installer SHA-256 checked' }); scope = 'Installed Windows WebView; generated speech sequences with silent synthesizer, not an auditory usability assessment'; checks = @($checks.ToArray()); initialWebViewActivation = 'one pointer click in empty Destination-ID field'; keyboardTab = 'passed'; modalFocusRestoration = 'not tested' }
+    $report = [ordered]@{ application = 'FBForge Inspect'; nvda = $ready.nvdaVersion; installerSha256 = (Get-FileHash -LiteralPath $InstallerPath -Algorithm SHA256).Hash.ToLowerInvariant(); harnessCommit = $env:GITHUB_SHA; candidateSourceCommit = $CandidateSourceCommit; runId = $env:GITHUB_RUN_ID; installedBinarySha256 = (Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash.ToLowerInvariant(); candidate = $(if ($ExpectedBinaryPath) { 'installed EXE matched expected SHA-256' } else { 'installer SHA-256 checked' }); scope = 'Installed Windows WebView; generated speech sequences with silent synthesizer, not an auditory usability assessment'; checks = @($checks.ToArray()); initialWebViewActivation = 'one pointer click in empty Destination-ID field'; keyboardTab = 'passed'; installedNativeEngineAndExports = 'passed'; modalFocusRestoration = 'verified by native export probe' }
     [IO.File]::WriteAllText((Join-Path $env:RUNNER_TEMP 'fbforge-accessibility-result.json'), ($report | ConvertTo-Json -Depth 5), [Text.UTF8Encoding]::new($false))
 } catch {
     # The test never enters credentials. Log only known synthetic control names.
