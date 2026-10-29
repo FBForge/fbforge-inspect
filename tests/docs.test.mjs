@@ -34,6 +34,10 @@ test('exported guide uses the product website shell and preserves every help top
   assert.ok(guide.includes('<ol>'));
   assert.ok(guide.includes('<pre><code>'));
   assert.ok(!product.includes('releases/download/'));
+  const introduction = product.match(/<p class="inspect-lead">([\s\S]*?)<\/p>/)[1];
+  assert.ok(introduction.includes('Zustellpunkte in FIT-Connect prüfen.'));
+  assert.ok(introduction.includes('FIT-Connect und PVOG'));
+  assert.ok(!introduction.includes(';'));
   assert.ok(product.includes('Leistung im FIT-Connect-Zustellpunkt'));
   assert.ok(product.includes('Adressierungssignaturen (Destination Signatures)'));
   assert.ok(product.includes('EfA-Parameter'));

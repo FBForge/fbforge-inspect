@@ -4,7 +4,7 @@
 
 Öffentliche FIT-Connect- und PVOG-Schnittstellen verstehen, Konfiguration prüfen und Befunde lokal weitergeben. Eine eigenständige Desktop-App ohne Anmeldung, Backendserver oder Telemetrie.
 
-**In Entwicklung.** Noch kein freigegebener Windows-Installer. Screenshots und Anleitung beschreiben den Entwicklungsstand; sie ersetzen keine native Windows-/NVDA-Abnahme.
+**In Entwicklung.** Noch kein freigegebener Windows-Installer. Screenshots und Anleitung beschreiben den Entwicklungsstand. Sie ersetzen keine native Windows-/NVDA-Abnahme.
 
 FBForge Inspect ergänzt Integrationstests um die Diagnose öffentlich erreichbarer Endpunkte und ihrer Konfigurationsdaten. Es ist ein privat entwickeltes Open-Source-Projekt und implementiert die dokumentierten Schnittstellen unabhängig.
 
@@ -67,4 +67,4 @@ Lizenz: [EUPL-1.2](LICENSE). Fremdkomponenten: [THIRD_PARTY_NOTICES.md](THIRD_PA
 
 Die bebilderte Anleitung wird aus derselben [fachlichen Quelle](docs/help.json) für App und Website erzeugt. Das [lokale Schema-Beispiel](docs/images/schema.png) zeigt ausdrücklich getrennte Struktur- und Referenzbefunde mit fiktiven Daten.
 
-`npm run website:export` erstellt ausschließlich die öffentlichen Produktseiten, Hilfe und Bilder unter `dist-website/`. Der Export enthält ein Quellstand-/Prüfsummenmanifest für die spätere Übernahme in den FBForge-Webauftritt; er veröffentlicht keine Website.
+`npm run website:export` erstellt ausschließlich die öffentlichen Produktseiten, Hilfe und Bilder unter `dist-website/`. Der Export enthält ein Quellstand-/Prüfsummenmanifest für die spätere Übernahme in den FBForge-Webauftritt. Er veröffentlicht keine Website.
