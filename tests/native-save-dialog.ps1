@@ -43,18 +43,29 @@ public static class InspectSaveWindow {
         }, IntPtr.Zero);
         return found;
     }
-    public static IntPtr FindFilenameInput(IntPtr root) {
-        IntPtr found = IntPtr.Zero;
+    [DllImport("user32.dll", EntryPoint = "SendMessageW", CharSet = CharSet.Unicode)] private static extern IntPtr ReadMessage(IntPtr window, uint message, IntPtr parameter, StringBuilder text);
+    [DllImport("user32.dll", EntryPoint = "SendMessageW")] private static extern IntPtr NativeMessage(IntPtr window, uint message, UIntPtr parameter, IntPtr value);
+    public static string ReadText(IntPtr window) {
+        var text = new StringBuilder(1024);
+        ReadMessage(window, 0x000D, (IntPtr)text.Capacity, text);
+        return text.ToString();
+    }
+    public static IntPtr FindFilenameInput(IntPtr root, string expectedDefault) {
+        var matches = new List<IntPtr>();
         EnumChildWindows(root, (window, parameter) => {
             if (ClassName(window) != "Edit" || !IsWindowEnabled(window)) return true;
-            // The modern common dialog uses 41477 for the filename combo/edit;
-            // legacy dialogs use cmb13 (1148). Search can reuse Edit ID 1001.
-            for (var parent = window; parent != IntPtr.Zero && parent != root; parent = GetParent(parent)) {
-                if (GetDlgCtrlID(parent) == 41477 || GetDlgCtrlID(parent) == 1148) { found = window; return false; }
-            }
+            // Identify the field by the exact default filename supplied by Inspect,
+            // rather than shell-dependent IDs reused by search and address controls.
+            var value = ReadText(window);
+            if (value == expectedDefault || value == "fbforge-inspect") matches.Add(window);
             return true;
         }, IntPtr.Zero);
-        return found;
+        return matches.Count == 1 ? matches[0] : IntPtr.Zero;
+    }
+    public static bool TypeFilename(IntPtr window, string text) {
+        NativeMessage(window, 0x00B1, UIntPtr.Zero, (IntPtr)(-1)); // Select the default filename.
+        foreach (char character in text) NativeMessage(window, 0x0102, (UIntPtr)character, (IntPtr)1);
+        return ReadText(window).Equals(text, StringComparison.OrdinalIgnoreCase);
     }
     public static string DescribeChildren(IntPtr root) {
         var controls = new List<string>();
@@ -107,13 +118,13 @@ if ($Mode -eq 'save') {
     $filenameDeadline = [DateTime]::UtcNow.AddSeconds(10)
     $filenameInput = [IntPtr]::Zero
     do {
-        $filenameInput = [InspectSaveWindow]::FindFilenameInput($dialogHandle)
+        $filenameInput = [InspectSaveWindow]::FindFilenameInput($dialogHandle, ('fbforge-inspect' + [IO.Path]::GetExtension($FileName)))
         if ($filenameInput -ne [IntPtr]::Zero) { break }
         Start-Sleep -Milliseconds 200
     } while ([DateTime]::UtcNow -lt $filenameDeadline)
     if ($filenameInput -eq [IntPtr]::Zero) { throw ('save_dialog_filename_missing observedIdsAndClasses=' + [InspectSaveWindow]::DescribeChildren($dialogHandle)) }
     if ([InspectSaveWindow]::ProcessId($filenameInput) -ne $ApplicationProcessId) { throw 'save_dialog_wrong_filename_owner' }
-    if (-not [InspectSaveWindow]::SetText($filenameInput, $destination)) { throw 'save_dialog_filename_not_set' }
+    if (-not [InspectSaveWindow]::TypeFilename($filenameInput, $destination)) { throw 'save_dialog_filename_not_set' }
 }
 $buttonId = if ($Mode -eq 'save') { 1 } else { 2 }
 $button = Wait-NativeControl $buttonId 'Button'
