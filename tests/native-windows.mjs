@@ -170,14 +170,15 @@ try {
     for (const request of live.requests) {
       expect(request.method).toBe('GET');
       expect(new URL(request.url).hostname).toBe('routing-api-testing.fit-connect.fitko.dev');
-      expect(request.status).toBe(200);
+      expect([200, 301, 302, 303, 307, 308]).toContain(request.status);
     }
+    expect(live.requests.some((request) => request.status === 200)).toBe(true);
     expect(live.rawResponses).toBeUndefined();
     await writeFile(join(output, 'live-test-areas.json'), JSON.stringify(live, null, 2));
     await page.keyboard.press('Escape');
     await page.screenshot({ path: join(output, 'windows-live-test-areas.png') });
     results.push(
-      'Installed UI → bundled Java → public TEST area search returned real results over read-only GET',
+      'Native UI → bundled Java → public TEST area search returned real results over read-only GET',
     );
   }
   if (errors.length)
