@@ -30,6 +30,7 @@ public static class InspectSaveWindow {
     private delegate bool VisitWindow(IntPtr window, IntPtr parameter);
     [DllImport("user32.dll")] private static extern bool EnumChildWindows(IntPtr window, VisitWindow visit, IntPtr parameter);
     [DllImport("user32.dll")] private static extern int GetDlgCtrlID(IntPtr window);
+    [DllImport("user32.dll")] private static extern IntPtr GetParent(IntPtr window);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int GetClassName(IntPtr window, StringBuilder name, int size);
     [DllImport("user32.dll")] private static extern bool IsWindowEnabled(IntPtr window);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern IntPtr SendMessage(IntPtr window, uint message, IntPtr parameter, string text);
@@ -38,6 +39,19 @@ public static class InspectSaveWindow {
         IntPtr found = IntPtr.Zero;
         EnumChildWindows(root, (window, parameter) => {
             if (GetDlgCtrlID(window) == id && ClassName(window).Equals(expectedClass, StringComparison.OrdinalIgnoreCase) && IsWindowEnabled(window)) { found = window; return false; }
+            return true;
+        }, IntPtr.Zero);
+        return found;
+    }
+    public static IntPtr FindFilenameInput(IntPtr root) {
+        IntPtr found = IntPtr.Zero;
+        EnumChildWindows(root, (window, parameter) => {
+            if (ClassName(window) != "Edit" || !IsWindowEnabled(window)) return true;
+            // cmb13 (1148) identifies the filename control. Other shell edits
+            // can reuse ID 1001, including the folder search field.
+            for (var parent = window; parent != IntPtr.Zero && parent != root; parent = GetParent(parent)) {
+                if (GetDlgCtrlID(parent) == 1148) { found = window; return false; }
+            }
             return true;
         }, IntPtr.Zero);
         return found;
@@ -90,7 +104,15 @@ function Wait-NativeControl([int]$Id, [string]$Class) {
     throw ('save_dialog_native_control_missing id=' + $Id + ' class=' + $Class + ' observedIdsAndClasses=' + [InspectSaveWindow]::DescribeChildren($dialogHandle))
 }
 if ($Mode -eq 'save') {
-    $filenameInput = Wait-NativeControl 1001 'Edit'
+    $filenameDeadline = [DateTime]::UtcNow.AddSeconds(10)
+    $filenameInput = [IntPtr]::Zero
+    do {
+        $filenameInput = [InspectSaveWindow]::FindFilenameInput($dialogHandle)
+        if ($filenameInput -ne [IntPtr]::Zero) { break }
+        Start-Sleep -Milliseconds 200
+    } while ([DateTime]::UtcNow -lt $filenameDeadline)
+    if ($filenameInput -eq [IntPtr]::Zero) { throw ('save_dialog_filename_missing observedIdsAndClasses=' + [InspectSaveWindow]::DescribeChildren($dialogHandle)) }
+    if ([InspectSaveWindow]::ProcessId($filenameInput) -ne $ApplicationProcessId) { throw 'save_dialog_wrong_filename_owner' }
     if (-not [InspectSaveWindow]::SetText($filenameInput, $destination)) { throw 'save_dialog_filename_not_set' }
 }
 $buttonId = if ($Mode -eq 'save') { 1 } else { 2 }
