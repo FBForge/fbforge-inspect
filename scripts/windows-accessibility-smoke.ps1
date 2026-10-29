@@ -2,6 +2,7 @@
 param(
     [Parameter(Mandatory)][string]$InstallerPath,
     [string]$ExpectedBinaryPath,
+    [string]$CandidateSourceCommit = $env:GITHUB_SHA,
     [ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedInstallerSha256,
     [Parameter(Mandatory)][string]$NvdaPath
 )
@@ -177,7 +178,15 @@ automaticUpdates = disabled
     $setup = Start-Process -FilePath ([IO.Path]::GetFullPath($InstallerPath)) -ArgumentList ('/S /D=' + $taskInstall) -PassThru
     if (-not $setup.WaitForExit(120000) -or $setup.ExitCode -ne 0) { throw 'a11y_install_failed' }
     $binary = Join-Path $taskInstall 'fbforge-inspect.exe'
-    if ($ExpectedBinaryPath -and (Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath $ExpectedBinaryPath -Algorithm SHA256).Hash) { throw 'a11y_binary_revision_mismatch' }
+    if ($ExpectedBinaryPath) {
+        $installedHash = (Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash
+        $expectedHash = (Get-FileHash -LiteralPath $ExpectedBinaryPath -Algorithm SHA256).Hash
+        if ($installedHash -ne $expectedHash) {
+            $installedInfo = Get-Item -LiteralPath $binary
+            $expectedInfo = Get-Item -LiteralPath $ExpectedBinaryPath
+            throw ('a11y_binary_revision_mismatch installed=' + $installedHash + ' expected=' + $expectedHash + ' installedBytes=' + $installedInfo.Length + ' expectedBytes=' + $expectedInfo.Length + ' installedVersion=' + $installedInfo.VersionInfo.ProductVersion + ' expectedVersion=' + $expectedInfo.VersionInfo.ProductVersion)
+        }
+    }
     $taskApp = [Diagnostics.Process]::Start((Start-Clean $binary))
     $taskWindow = Wait-Check {
         if ($taskApp.HasExited) { throw 'a11y_app_exited' }
@@ -214,7 +223,7 @@ automaticUpdates = disabled
     $help = Check-Spoken 'Hilfe' $buttonType
     Invoke-Control $help
     Write-Output ('Actual NVDA 2026.2 speech and native Tab navigation: ' + $checks.Count + ' labels passed')
-    $report = [ordered]@{ application = 'FBForge Inspect'; nvda = $ready.nvdaVersion; installerSha256 = (Get-FileHash -LiteralPath $InstallerPath -Algorithm SHA256).Hash.ToLowerInvariant(); harnessCommit = $env:GITHUB_SHA; runId = $env:GITHUB_RUN_ID; candidate = $(if ($ExpectedBinaryPath) { 'current build' } else { 'pinned previously verified installer' }); scope = 'Installed Windows WebView; generated speech sequences with silent synthesizer, not an auditory usability assessment'; checks = @($checks.ToArray()); initialWebViewActivation = 'one pointer click in empty Destination-ID field'; keyboardTab = 'passed'; modalFocusRestoration = 'not tested' }
+    $report = [ordered]@{ application = 'FBForge Inspect'; nvda = $ready.nvdaVersion; installerSha256 = (Get-FileHash -LiteralPath $InstallerPath -Algorithm SHA256).Hash.ToLowerInvariant(); harnessCommit = $env:GITHUB_SHA; candidateSourceCommit = $CandidateSourceCommit; runId = $env:GITHUB_RUN_ID; candidate = $(if ($ExpectedBinaryPath) { 'current build' } else { 'pinned previously verified installer' }); scope = 'Installed Windows WebView; generated speech sequences with silent synthesizer, not an auditory usability assessment'; checks = @($checks.ToArray()); initialWebViewActivation = 'one pointer click in empty Destination-ID field'; keyboardTab = 'passed'; modalFocusRestoration = 'not tested' }
     [IO.File]::WriteAllText((Join-Path $env:RUNNER_TEMP 'fbforge-accessibility-result.json'), ($report | ConvertTo-Json -Depth 5), [Text.UTF8Encoding]::new($false))
 } catch {
     # The test never enters credentials. Log only known synthetic control names.

@@ -1,0 +1,86 @@
+name: Verify installed 0.1.0 candidate
+on:
+  push:
+    branches: [release/0.1.0]
+    paths:
+      - .github/workflows/installed-candidate.yml
+      - scripts/windows-accessibility-smoke.ps1
+      - scripts/ci/nvda-capture.py
+      - scripts/ci/prepare-nvda.ps1
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: installed-inspect-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  installed:
+    runs-on: windows-2025
+    timeout-minutes: 15
+    env:
+      CANDIDATE_RUN_ID: '40808209353'
+      CANDIDATE_SOURCE_COMMIT: 11c92fd30d6ab6a682a8b34d625317b84ac4af4f
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Confirm the source of the frozen candidate
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $observed = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:CANDIDATE_RUN_ID" --jq .head_sha
+          if ($LASTEXITCODE -ne 0 -or $observed.Trim() -ne $env:CANDIDATE_SOURCE_COMMIT) { throw 'candidate_source_mismatch' }
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: windows-unsigned-candidate
+          run-id: ${{ env.CANDIDATE_RUN_ID }}
+          github-token: ${{ github.token }}
+          path: .local/frozen-candidate
+      - name: Verify every candidate file against its manifest
+        shell: pwsh
+        run: |
+          $installers = @(Get-ChildItem .local/frozen-candidate -Recurse -Filter '*-setup.exe')
+          if ($installers.Count -ne 1) { throw 'expected_one_candidate_installer' }
+          $candidateRoot = $installers[0].Directory.FullName
+          $manifest = Join-Path $candidateRoot SHA256SUMS.txt
+          foreach ($line in Get-Content -LiteralPath $manifest) {
+            if ($line -notmatch '^([a-f0-9]{64})  (.+)$') { throw 'invalid_candidate_manifest' }
+            $expected = $Matches[1]
+            $file = [IO.Path]::GetFullPath((Join-Path $candidateRoot $Matches[2]))
+            if (-not $file.StartsWith($candidateRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) { throw 'candidate_path_escape' }
+            if ((Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw 'candidate_checksum_mismatch' }
+          }
+          Add-Content $env:GITHUB_ENV "INSPECT_TEST_INSTALLER=$($installers[0].FullName)"
+          Add-Content $env:GITHUB_ENV "INSPECT_TEST_BINARY=$(Join-Path $candidateRoot fbforge-inspect.exe)"
+          "Frozen candidate source: ``$env:CANDIDATE_SOURCE_COMMIT``. All manifest hashes verified." >> $env:GITHUB_STEP_SUMMARY
+      - name: Check the unchanged native executable
+        shell: pwsh
+        run: node tests/native-windows.mjs "$env:INSPECT_TEST_BINARY" .local/reused-native-evidence
+      - name: Prepare official NVDA
+        shell: powershell
+        run: ./scripts/ci/prepare-nvda.ps1
+      - name: Install, compare exact binary and run NVDA
+        shell: powershell
+        run: |
+          try {
+            ./scripts/windows-accessibility-smoke.ps1 -InstallerPath $env:INSPECT_TEST_INSTALLER -ExpectedBinaryPath $env:INSPECT_TEST_BINARY -CandidateSourceCommit $env:CANDIDATE_SOURCE_COMMIT -NvdaPath $env:INSPECT_NVDA_PATH
+          } catch {
+            $detail = $_.Exception.Message.Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+            Write-Output "::error title=Frozen installer verification::$detail"
+            throw
+          }
+      - name: Preserve installed-candidate evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: installed-candidate-evidence
+          path: |
+            .local/reused-native-evidence/
+            ${{ runner.temp }}/fbforge-accessibility-result.json
+          if-no-files-found: warn
