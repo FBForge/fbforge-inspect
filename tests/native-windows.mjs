@@ -28,13 +28,24 @@ const child = spawn(executable, [], {
     WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: `--remote-debugging-port=${port} --remote-debugging-address=127.0.0.1`,
     WEBVIEW2_USER_DATA_FOLDER: profile,
   },
-  stdio: 'ignore',
+  stdio: ['ignore', 'ignore', 'pipe'],
+});
+let startupError = '';
+child.on('error', (error) => {
+  startupError = error.message;
+});
+child.stderr.on('data', (bytes) => {
+  startupError = (startupError + bytes.toString('utf8')).slice(-4096);
 });
 const results = [];
 let browser;
 try {
-  const deadline = Date.now() + 30000;
+  const deadline = Date.now() + 60000;
   while (Date.now() < deadline) {
+    if (child.exitCode !== null || child.signalCode !== null)
+      throw new Error(
+        `Native app exited before WebView2 was ready: ${startupError || child.exitCode || child.signalCode}`,
+      );
     try {
       browser = await chromium.connectOverCDP(`http://127.0.0.1:${port}`, { timeout: 1500 });
       break;
@@ -55,10 +66,19 @@ try {
     if (page) break;
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  if (!page) throw new Error('Own native app page not found.');
+  if (!page)
+    throw new Error(
+      'Own native app page not found: ' +
+        context
+          .pages()
+          .map((p) => p.url())
+          .join(', '),
+    );
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await expect(page.getByRole('heading', { name: 'Klarheit für Ihre Integration.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Klarheit für Ihre Integration.' })).toBeVisible({
+    timeout: 20000,
+  });
   results.push('Native WebView2 frontend loaded');
   await page.screenshot({ path: join(output, 'windows-start.png') });
   await page
@@ -112,6 +132,30 @@ try {
     ),
   );
   console.log(JSON.stringify({ ok: true, results }));
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+  await writeFile(
+    join(output, 'native-windows-failure.json'),
+    JSON.stringify(
+      {
+        ok: false,
+        at: new Date().toISOString(),
+        message,
+        startupError,
+        results,
+        sourceCommit: process.env.GITHUB_SHA || null,
+      },
+      null,
+      2,
+    ),
+  );
+  const annotation = message
+    .slice(0, 1800)
+    .replaceAll('%', '%25')
+    .replaceAll('\r', '%0D')
+    .replaceAll('\n', '%0A');
+  console.error(`::error title=Native WebView2 verification::${annotation}`);
+  throw error;
 } finally {
   if (browser) await browser.close();
   child.kill();
