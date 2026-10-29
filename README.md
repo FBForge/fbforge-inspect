@@ -1,33 +1,41 @@
 # FBForge Inspect
 
-Ein privat entwickeltes Open-Source-Werkzeug zur Diagnose öffentlich erreichbarer
-FIT-Connect-Endpunkte und ihrer Konfigurationsdaten. Ergänzend unterstützt die
-Anwendung die lokale Prüfung von Schlüsseln, Zertifikaten und Fachdatenschemata.
+<img src="assets/brand/inspect-source.png" alt="" width="80" height="80">
 
-**In Entwicklung. Version 0.1.0 ist in Arbeit.** Es gibt noch keinen freigegebenen
-Installer. Der aktuelle Implementierungsstand liegt im Branch
-[`release/0.1.0`](https://github.com/FBForge/fbforge-inspect/tree/release/0.1.0).
-Dieser Hauptbranch enthält zunächst die Projektvorstellung und die Lizenz.
+Desktop-Werkzeug für FIT-Connect-Zustellpunkte, Routing und PVOG-Adressierung. Für Entwickler und Integratoren.
 
-## Geplanter und implementierter Umfang
+- Zustellpunkte über API v2/v3 abrufen und Konfiguration, Leistungen, Regionen und öffentliche Schlüssel prüfen.
+- Routing-Ziele und Gebiete suchen, Ergebniskontexte erhalten und PVOG-Adressierungssignaturen ergänzen.
+- V3-Prozessnachrichten und zusammengehörige Konfigurationserwartungen prüfen.
+- Öffentliche JWK/JWKS, Zertifikatsketten und Sperrstatus untersuchen.
+- JSON Schema und XSD lokal einlesen, Struktur und Referenzen nachvollziehen.
+- Befunde als JSON oder HTML speichern. Rohantworten nur nach ausdrücklicher Auswahl einschließen.
 
-- Konfiguration von FIT-Connect-Zustellpunkten und Ergebnisse öffentlicher Routing-Abfragen untersuchen.
-- Adressierungssignaturen aus PVOG nachvollziehen; dort können außerdem EfA-Parameter hinterlegt sein.
-- Öffentliche Schlüssel und Zertifikate sowie die Struktur von JSON Schema und XSD lokal prüfen.
-- Befunde lokal anzeigen und bei Bedarf als JSON- oder HTML-Bericht speichern.
+Für **Windows x64 und FIT-Connect TEST, STAGE und PROD**. Java wird mitgeliefert. Lokale Schlüssel- und Schemainspektion funktionieren offline. Die Anwendung benötigt keine Zugangsdaten und führt keine Verwaltungsoperationen oder Zustellungen aus.
 
-Fachdatenschemata sind bei der jeweiligen Leistung im FIT-Connect-Zustellpunkt
-hinterlegt. Die genannten Funktionen werden im Entwicklungsbranch dokumentiert;
-die abschließende Windows- und NVDA-Abnahme steht noch aus.
+## Entwicklungsstand
 
-## Dokumentation und Projektstand
+**0.1.0 wird für die Abnahme vorbereitet.** Der vollständige Quellstand liegt auf [release/0.1.0](https://github.com/FBForge/fbforge-inspect/tree/release/0.1.0). `main` enthält derzeit den Projekteinstieg. Ein freigegebener Installer ist noch nicht veröffentlicht.
 
-- [Projektvorstellung auf fbforge.de](https://fbforge.de/inspect/)
-- [Anleitung zum Entwicklungsstand](https://fbforge.de/inspect/hilfe/0.1/)
-- [Entwicklungsbranch mit Quellcode und Prüfhinweisen](https://github.com/FBForge/fbforge-inspect/tree/release/0.1.0)
+Die [CI-Prüfung](https://github.com/FBForge/fbforge-inspect/actions/workflows/verify.yml) baut den Windows-Kandidaten und prüft den nativen WebView2-/Java-Durchlauf sowie NVDA-Sprachsequenzen. Ein erfolgreicher Build ersetzt keine vollständige Funktions- und Installationsabnahme. Ein unsignierter Testkandidat ist kein signierter Release.
+
+## Einstieg
+
+1. Den Quellstand von `release/0.1.0` mit der [Bauanleitung](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/BUILDING.md) bauen.
+2. FBForge Inspect starten und Umgebung sowie API-Version wählen.
+3. Einen Zustellpunkt prüfen oder eine lokale Schlüssel- beziehungsweise Schemadatei einlesen.
+4. Befunde und Quellen prüfen und bei Bedarf einen Bericht lokal speichern.
+
+Die [Anleitung mit Bildern und Beispielen](https://fbforge.de/inspect/hilfe/0.1/) und die gebündelte Offline-Hilfe beschreiben dieselben Abläufe. Helle, dunkle und automatische Darstellung sind verfügbar.
+
+## Quellen und Grenzen
+
+Fachdatenschemata sind bei der jeweiligen Leistung im FIT-Connect-Zustellpunkt hinterlegt. PVOG liefert Adressierungssignaturen (Destination Signatures) und gegebenenfalls EfA-Parameter.
+
+STAGE besitzt keine eigene Routing-API. Die Anwendung kennzeichnet dort die verwendete PROD-Routingquelle. Fehlende Vertrauensanker, ungeklärte Sperrstatus und unvollständige Ergebnisse bleiben ausdrücklich ungeklärt. Eine Diagnose ist keine Freigabe der gesamten Integration.
+
+[Architektur](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/docs/ARCHITECTURE.md) · [Lokal bauen](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/BUILDING.md) · [Mitwirken](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/CONTRIBUTING.md) · [Issues](https://github.com/FBForge/fbforge-inspect/issues) · [Sicherheit](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/SECURITY.md)
 
 ## Lizenz
 
-[European Union Public Licence 1.2 (EUPL-1.2)](LICENSE).
-
-FBForge ist ein privates Open-Source-Projekt von Fabian Braun.
+[EUPL-1.2](LICENSE). Siehe auch [Drittanbieter-Lizenzen](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/THIRD_PARTY_NOTICES.md).
