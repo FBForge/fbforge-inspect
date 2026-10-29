@@ -1,12 +1,14 @@
 // Manual invocation only. Uses a temporary WebView2 profile and loopback debugging for this process.
 import { chromium, expect } from '@playwright/test';
-import { spawn, spawnSync } from 'node:child_process';
+import { spawn, spawnSync, execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { mkdir, mkdtemp, writeFile, readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join, dirname, resolve } from 'node:path';
 import net from 'node:net';
+import { reportHtml } from '../frontend/src/reports.ts';
 if (process.platform !== 'win32') throw new Error('This probe requires Windows.');
 if (!process.argv[2] || !process.argv[3])
   throw new Error('Usage: node tests/native-windows.mjs <exe> <evidence-dir>');
@@ -136,6 +138,69 @@ try {
   await expect(page.getByRole('dialog').locator('pre')).not.toContainText('rawResponses');
   await page.keyboard.press('Escape');
   results.push('Native export preview excludes raw responses by default');
+  const reportDirectory = join(profile, 'saved-reports');
+  await mkdir(reportDirectory);
+  const controlSaveDialog = async (mode, fileName) => {
+    const args = [
+      '-NoProfile',
+      '-NonInteractive',
+      '-File',
+      fileURLToPath(new URL('./native-save-dialog.ps1', import.meta.url)),
+      '-ApplicationProcessId',
+      String(child.pid),
+      '-Mode',
+      mode,
+      '-TestDirectory',
+      reportDirectory,
+    ];
+    if (fileName) args.push('-FileName', fileName);
+    const result = await promisify(execFile)(
+      join(process.env.SystemRoot, 'System32/WindowsPowerShell/v1.0/powershell.exe'),
+      args,
+      {
+        encoding: 'utf8',
+        timeout: 35000,
+        windowsHide: true,
+        env: { ...process.env, RUNNER_TEMP: process.env.RUNNER_TEMP || tmpdir() },
+      },
+    );
+    process.stdout.write(result.stdout);
+  };
+  await page.getByRole('button', { name: 'Bericht exportieren' }).click();
+  const exportDialog = page.getByRole('dialog');
+  await exportDialog.getByRole('button', { name: 'Speicherort wählen' }).click();
+  await controlSaveDialog('cancel');
+  await expect(exportDialog).toBeVisible();
+  await expect(exportDialog.getByRole('button', { name: 'Speicherort wählen' })).toBeEnabled();
+  results.push('Cancelling the real Windows Save dialog preserves the export preview');
+  await page.screenshot({ path: join(output, 'windows-export-preview.png') });
+  for (const format of ['json', 'html']) {
+    for (const raw of [false, true]) {
+      if (!(await exportDialog.isVisible()))
+        await page.getByRole('button', { name: 'Bericht exportieren' }).click();
+      await exportDialog
+        .getByRole('combobox', { name: 'Format', exact: true })
+        .selectOption(format);
+      await exportDialog
+        .getByRole('checkbox', { name: 'Rohantworten einschließen' })
+        .setChecked(raw);
+      const preview = JSON.parse(await exportDialog.locator('pre').innerText());
+      if (raw) expect(preview).toHaveProperty('rawResponses');
+      else expect(preview.rawResponses).toBeUndefined();
+      const fileName = `native-report-${raw ? 'raw' : 'default'}.${format}`;
+      await exportDialog.getByRole('button', { name: 'Speicherort wählen' }).click();
+      await controlSaveDialog('save', fileName);
+      await expect(exportDialog).toHaveCount(0);
+      const saved = await readFile(join(reportDirectory, fileName), 'utf8');
+      expect(saved).toBe(
+        format === 'json' ? JSON.stringify(preview, null, 2) : reportHtml(preview),
+      );
+      await expect(page.getByRole('button', { name: 'Bericht exportieren' })).toBeFocused();
+      results.push(
+        `Native ${format.toUpperCase()} Save dialog and file contents passed (${raw ? 'raw enabled' : 'raw excluded'})`,
+      );
+    }
+  }
   await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption('dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.screenshot({ path: join(output, 'windows-schema-dark.png') });

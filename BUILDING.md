@@ -55,7 +55,11 @@ dieselbe EXE, die der native Test verwendet. Die installierte Datei wird weiterh
 vollständig per SHA-256 verglichen, ohne Ausnahmen für einzelne Bytes.
 
 
-Eine echte native Probe kann unter Windows mit `node tests/native-windows.mjs <Pfad-zur-EXE> <Belegordner>` gestartet werden. Sie startet nur die angegebene App mit einem temporären WebView2-Profil, prüft den vollständigen IPC-Weg und beendet den Prozess danach. Der lokale Debug-Port gilt ausschließlich für diesen Testprozess.
+Eine echte native Probe kann unter Windows mit `node tests/native-windows.mjs <Pfad-zur-EXE> <Belegordner>` gestartet werden. Sie startet nur die angegebene App mit einem temporären WebView2-Profil, prüft den vollständigen IPC-Weg und beendet den Prozess danach. Der lokale Debug-Port gilt ausschließlich für diesen Testprozess. Die Probe
+bedient zusätzlich den echten Windows-Speicherdialog über UI Automation,
+beschränkt auf den eigenen App-Prozess. Sie prüft Abbruch sowie JSON und HTML
+jeweils mit und ohne Rohantworten und vergleicht die gespeicherten Dateien mit
+der Vorschau. Dateien werden nur im eigenen temporären Testverzeichnis angelegt.
 
 ## Vor der Veröffentlichung
 

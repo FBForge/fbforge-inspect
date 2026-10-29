@@ -180,3 +180,28 @@ test(
     assert.match(result.stderr, /ui_policy_context_denied/);
   },
 );
+
+test(
+  'native Save dialog helper rejects an unrelated process before accessing UI Automation',
+  { skip: !available && 'Linux PowerShell harness unavailable' },
+  () => {
+    const result = spawnSync(
+      pwsh,
+      [
+        '-NoProfile',
+        '-NonInteractive',
+        '-File',
+        'tests/native-save-dialog.ps1',
+        '-ApplicationProcessId',
+        String(process.pid),
+        '-Mode',
+        'cancel',
+        '-TestDirectory',
+        tmpdir(),
+      ],
+      { encoding: 'utf8', timeout: 10000 },
+    );
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /save_dialog_wrong_process/);
+  },
+);
