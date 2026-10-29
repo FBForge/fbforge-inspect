@@ -26,8 +26,10 @@ do {
     $windows = [System.Windows.Automation.AutomationElement]::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children, $processCondition)
     foreach ($window in $windows) {
         if ($window.Current.ClassName -eq '#32770') { $dialog = $window; break }
-        $dialog = $window.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $dialogCondition)
-        if ($dialog) { break }
+        $nestedDialog = $window.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $dialogCondition)
+        # The shell folder pane can itself be a nested #32770. Search the owning
+        # top-level window so the filename field and action buttons remain in scope.
+        if ($nestedDialog) { $dialog = $window; break }
     }
     if ($dialog) { break }
     Start-Sleep -Milliseconds 200
