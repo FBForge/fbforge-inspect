@@ -49,6 +49,14 @@ Das Skript erstellt ein neues temporäres Windows-Buildverzeichnis, installiert 
 
 Der Installer richtet WebView2 bei Bedarf über den offiziellen Bootstrapper ein, wofür Internetzugang erforderlich ist. Die gebündelte Java-Laufzeit benötigt keinen zusätzlichen Download beim App-Start. Die EXE allein ist kein portables Distributionspaket, sie benötigt das zugehörige Ressourcenverzeichnis.
 
+Die unterstützten Buildbefehle verwenden `--no-binary-patching`. Tauri würde
+sonst vor der NSIS-Bündelung die interne Bundle-Kennung von `UNK` auf `NSS`
+ändern und die lose EXE anschließend zurücksetzen. Inspect verwendet keinen
+Updater und benötigt diese Kennzeichnung nicht. Der Installer enthält dadurch
+dieselbe EXE, die der native Test verwendet. Die installierte Datei wird weiterhin
+vollständig per SHA-256 verglichen, ohne Ausnahmen für einzelne Bytes.
+
+
 Eine echte native Probe kann unter Windows mit `node tests/native-windows.mjs <Pfad-zur-EXE> <Belegordner>` gestartet werden. Sie startet nur die angegebene App mit einem temporären WebView2-Profil, prüft den vollständigen IPC-Weg und beendet den Prozess danach. Der lokale Debug-Port gilt ausschließlich für diesen Testprozess.
 
 ## Vor der Veröffentlichung

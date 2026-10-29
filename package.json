@@ -17,7 +17,7 @@
     "test:ui": "playwright test",
     "stage:engine": "node scripts/stage-engine.mjs",
     "desktop:dev": "npm run build:engine && npm run stage:engine && cd desktop && tauri dev",
-    "desktop:build": "npm run build && npm run stage:engine && cd desktop && tauri build",
+    "desktop:build": "npm run build && npm run stage:engine && cd desktop && tauri build --no-binary-patching",
     "docs:build": "node scripts/build-help.mjs",
     "licenses:collect": "node scripts/collect-licenses.mjs",
     "format": "prettier --write frontend/src docs/help.json scripts/*.mjs tests *.json *.ts desktop/tauri.conf.json desktop/capabilities/*.json",

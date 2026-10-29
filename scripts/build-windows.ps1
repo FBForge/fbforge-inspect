@@ -44,7 +44,7 @@ try {
   $inspectProbeResult = $inspectProbe | & '.\desktop\resources\engine\runtime\bin\java.exe' -jar '.\desktop\resources\engine\inspect-engine.jar'
   if ($LASTEXITCODE -or !($inspectProbeResult | ConvertFrom-Json).ok) { throw 'Windows-Laufzeitprobe fehlgeschlagen.' }
   Push-Location desktop
-  try { & node.exe '..\node_modules\@tauri-apps\cli\tauri.js' build --ci; if ($LASTEXITCODE) { throw 'Tauri-Windows-Build fehlgeschlagen.' } }
+  try { & node.exe '..\node_modules\@tauri-apps\cli\tauri.js' build --ci --no-binary-patching; if ($LASTEXITCODE) { throw 'Tauri-Windows-Build fehlgeschlagen.' } }
   finally { Pop-Location }
   $inspectArtifacts = Join-Path $inspectSource '.local\artifacts\windows-x64'
   New-Item -ItemType Directory -Force $inspectArtifacts | Out-Null

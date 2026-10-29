@@ -59,6 +59,7 @@ function global:robocopy {
 function global:npm.cmd { $global:LASTEXITCODE = 0 }
 function global:cargo.exe { $global:LASTEXITCODE = 0 }
 function global:node.exe {
+  if (-not ($args -contains '--no-binary-patching')) { throw 'NSIS payload must preserve the exact tested executable' }
   $null = New-Item -ItemType Directory -Path target/release/engine, target/release/bundle/nsis -Force
   Set-Content target/release/fbforge-inspect.exe 'synthetic executable'
   Set-Content target/release/engine/inspect-engine.jar 'synthetic engine'
