@@ -47,10 +47,10 @@ public static class InspectSaveWindow {
         IntPtr found = IntPtr.Zero;
         EnumChildWindows(root, (window, parameter) => {
             if (ClassName(window) != "Edit" || !IsWindowEnabled(window)) return true;
-            // cmb13 (1148) identifies the filename control. Other shell edits
-            // can reuse ID 1001, including the folder search field.
+            // The modern common dialog uses 41477 for the filename combo/edit;
+            // legacy dialogs use cmb13 (1148). Search can reuse Edit ID 1001.
             for (var parent = window; parent != IntPtr.Zero && parent != root; parent = GetParent(parent)) {
-                if (GetDlgCtrlID(parent) == 1148) { found = window; return false; }
+                if (GetDlgCtrlID(parent) == 41477 || GetDlgCtrlID(parent) == 1148) { found = window; return false; }
             }
             return true;
         }, IntPtr.Zero);
