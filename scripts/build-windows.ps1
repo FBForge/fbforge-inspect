@@ -54,8 +54,11 @@ try {
   if ($LASTEXITCODE -ge 8) { throw 'Kopieren der gebündelten Laufzeit fehlgeschlagen.' }
   Copy-Item '.\desktop\target\release\bundle\nsis\*.exe' $inspectArtifacts
   Copy-Item LICENSE,THIRD_PARTY_NOTICES.md $inspectArtifacts
-  $inspectHashes = Get-ChildItem $inspectArtifacts -File | Where-Object Name -ne 'SHA256SUMS.txt' | Get-FileHash -Algorithm SHA256 | ForEach-Object { $_.Hash.ToLower() + '  ' + (Split-Path $_.Path -Leaf) }
+  $inspectHashes = Get-ChildItem $inspectArtifacts -File -Recurse | Where-Object Name -ne 'SHA256SUMS.txt' | Sort-Object FullName | Get-FileHash -Algorithm SHA256 | ForEach-Object { $_.Hash.ToLower() + '  ' + $_.Path.Substring($inspectArtifacts.Length + 1).Replace('\', '/') }
   [IO.File]::WriteAllLines((Join-Path $inspectArtifacts 'SHA256SUMS.txt'), $inspectHashes, (New-Object Text.UTF8Encoding($false)))
   Write-Output "Unsigned Windows build: $inspectArtifacts"
   Write-Output "Build workspace retained for review: $inspectWorkRoot"
 } finally { Pop-Location }
+# Robocopy codes 0 through 7 are successful. Do not let a retained code 1
+# turn a completed build into a GitHub PowerShell wrapper failure.
+$global:LASTEXITCODE = 0

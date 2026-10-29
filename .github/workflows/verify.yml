@@ -30,6 +30,9 @@ jobs:
         run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy && rustup default 1.96.0
       - run: npm ci
       - run: npm run build
+      - name: PowerShell for Windows packaging regression tests
+        shell: pwsh
+        run: $PSVersionTable.PSVersion.ToString()
       - run: node --test --test-isolation=none tests/*.test.mjs
       - run: npm run format:check
       - run: npm run docs:build
