@@ -17,11 +17,13 @@ Für **Windows x64 und FIT-Connect TEST, STAGE und PROD**. Java wird mitgeliefer
 
 **0.1.0 wird für die Abnahme vorbereitet.** Der vollständige Quellstand liegt auf [release/0.1.0](https://github.com/FBForge/fbforge-inspect/tree/release/0.1.0). `main` enthält derzeit den Projekteinstieg. Ein freigegebener Installer ist noch nicht veröffentlicht.
 
-Die [CI-Prüfung](https://github.com/FBForge/fbforge-inspect/actions/workflows/verify.yml) baut den Windows-Kandidaten und prüft den nativen WebView2-/Java-Durchlauf sowie NVDA-Sprachsequenzen. Ein erfolgreicher Build ersetzt keine vollständige Funktions- und Installationsabnahme. Ein unsignierter Testkandidat ist kein signierter Release.
+Die [CI-Prüfung](https://github.com/FBForge/fbforge-inspect/actions/workflows/verify.yml) baut den Windows-Kandidaten und prüft den nativen WebView2-/Java-Durchlauf, die Berichtsdateien über den Windows-Speicherdialog sowie NVDA-Sprachsequenzen. Ein erfolgreicher Build ersetzt keine vollständige Funktions- und Installationsabnahme. Ein unsignierter Testkandidat ist kein signierter Release.
+
+Zum Testen öffnen Sie einen erfolgreichen CI-Lauf für `release/0.1.0` und laden unter **Artifacts** das Paket `windows-unsigned-candidate` herunter. Nach dem Entpacken den `*-setup.exe`-Installer verwenden. `SHA256SUMS.txt` enthält die Prüfsummen. Das Paket ist unsigniert und noch kein veröffentlichter Release. Der Download der Actions-Artefakte benötigt eine GitHub-Anmeldung.
 
 ## Einstieg
 
-1. Den Quellstand von `release/0.1.0` mit der [Bauanleitung](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/BUILDING.md) bauen.
+1. Den Windows-Testkandidaten installieren oder den Quellstand von `release/0.1.0` mit der [Bauanleitung](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/BUILDING.md) bauen.
 2. FBForge Inspect starten und Umgebung sowie API-Version wählen.
 3. Einen Zustellpunkt prüfen oder eine lokale Schlüssel- beziehungsweise Schemadatei einlesen.
 4. Befunde und Quellen prüfen und bei Bedarf einen Bericht lokal speichern.
