@@ -73,6 +73,13 @@ Proben unter einem gewöhnlichen, nicht erhöhten Windows-Benutzer starten.
 
 Der Windows-NVDA-Job benötigt eine interaktive Desktop-Sitzung des Runners. Fehlt sie, schlägt der Job fehl; das gilt nicht als bestandene Barrierefreiheitsprüfung. Ein angelegter Workflow ist noch kein erfolgreicher CI-Lauf. Erst die Artefakte des aktuellen Commits belegen Windows-Build und native Prüfungen.
 
+Die Windows-CI aktiviert zusätzlich `INSPECT_LIVE_READONLY=1`: In der echten
+installierbaren Oberfläche wird die öffentliche TEST-Gebietssuche nach Bonn
+gestartet. Der Test verlangt mindestens ein Ergebnis, HTTP 200 und ausschließlich
+GET-Anfragen an den TEST-Routinghost. Er speichert den Befund ohne Rohantworten
+als Beleg. Dies führt keine Zustellung oder Verwaltungsoperation aus und ersetzt
+nicht die Abnahme repräsentativer eigener Destinationen, PVOG-Kontexte oder PKI.
+
 Für die abschließende menschliche Abnahme: frisch installieren, ohne systemweit installiertes Java starten, alle Diagnosearten mit repräsentativen öffentlichen Daten prüfen, JSON/HTML mit und ohne Rohantworten speichern, den nativen Speicherdialog abbrechen und bestätigen, alle Formulare mit Tastatur und NVDA bedienen, Hell/Dunkel und 200-%-Skalierung prüfen und deinstallieren. Reale PKI-/Routing-/Destination-Daten und Netzwerkausfälle bleiben eigenständige Integrationsprüfungen.
 
 ## Abhängigkeiten vor einer Abnahme prüfen

@@ -79,6 +79,8 @@ jobs:
         shell: powershell
         run: ./scripts/build-windows.ps1 -InspectJavaHome $env:JAVA_HOME
       - name: Real WebView2 and bundled Java round trip
+        env:
+          INSPECT_LIVE_READONLY: '1'
         run: node tests/native-windows.mjs .local/artifacts/windows-x64/fbforge-inspect.exe .local/native-evidence
       - name: Prepare official NVDA with pinned integrity check
         shell: powershell

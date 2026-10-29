@@ -149,6 +149,37 @@ try {
   await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('Private oder symmetrische Schlüssel');
   results.push('Native private-key rejection passed');
+  if (process.env.INSPECT_LIVE_READONLY === '1') {
+    await page.getByRole('combobox', { name: 'Umgebung', exact: true }).selectOption('TEST');
+    await page
+      .getByRole('navigation', { name: 'Hauptnavigation' })
+      .getByRole('button', { name: 'Routing prüfen', exact: true })
+      .click();
+    await page.getByText('Gebiet über Ortsnamen finden', { exact: true }).click();
+    await page.getByRole('textbox', { name: 'Ortsname', exact: true }).fill('Bonn');
+    await page.getByRole('button', { name: 'Gebiete suchen', exact: true }).click();
+    await expect(page.getByRole('heading', { name: /Gefundene Gebiete/ })).toBeVisible({
+      timeout: 90000,
+    });
+    await page.getByRole('button', { name: 'Bericht exportieren' }).click();
+    const live = JSON.parse(await page.getByRole('dialog').locator('pre').innerText());
+    expect(live.operation).toBe('areas');
+    expect(live.environment).toBe('TEST');
+    expect(live.data.areas.length).toBeGreaterThan(0);
+    expect(live.requests.length).toBeGreaterThan(0);
+    for (const request of live.requests) {
+      expect(request.method).toBe('GET');
+      expect(new URL(request.url).hostname).toBe('routing-api-testing.fit-connect.fitko.dev');
+      expect(request.status).toBe(200);
+    }
+    expect(live.rawResponses).toBeUndefined();
+    await writeFile(join(output, 'live-test-areas.json'), JSON.stringify(live, null, 2));
+    await page.keyboard.press('Escape');
+    await page.screenshot({ path: join(output, 'windows-live-test-areas.png') });
+    results.push(
+      'Installed UI → bundled Java → public TEST area search returned real results over read-only GET',
+    );
+  }
   if (errors.length)
     throw new Error('Native renderer reported runtime errors: ' + errors.join('\n'));
   const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
