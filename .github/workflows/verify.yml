@@ -70,6 +70,8 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: cargo fetch --locked --manifest-path desktop/Cargo.toml
+      - name: Check localized labels with Windows PowerShell
+        run: node --test --test-isolation=none tests/windows-encoding.test.mjs
       - run: npm run licenses:collect
       - run: npm run stage:engine
       - run: cargo test --locked --manifest-path desktop/Cargo.toml
@@ -86,7 +88,13 @@ jobs:
         run: |
           $setup = @(Get-ChildItem .local/artifacts/windows-x64 -Filter '*-setup.exe')
           if ($setup.Count -ne 1) { throw 'expected_one_installer' }
-          ./scripts/windows-accessibility-smoke.ps1 -InstallerPath $setup[0].FullName -ExpectedBinaryPath .local/artifacts/windows-x64/fbforge-inspect.exe -NvdaPath $env:INSPECT_NVDA_PATH
+          try {
+            ./scripts/windows-accessibility-smoke.ps1 -InstallerPath $setup[0].FullName -ExpectedBinaryPath .local/artifacts/windows-x64/fbforge-inspect.exe -NvdaPath $env:INSPECT_NVDA_PATH
+          } catch {
+            $detail = $_.Exception.Message.Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+            Write-Output "::error title=Installed Windows NVDA verification::$detail"
+            throw
+          }
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
