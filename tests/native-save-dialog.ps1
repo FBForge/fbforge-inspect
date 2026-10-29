@@ -30,7 +30,6 @@ public static class InspectSaveWindow {
     private delegate bool VisitWindow(IntPtr window, IntPtr parameter);
     [DllImport("user32.dll")] private static extern bool EnumChildWindows(IntPtr window, VisitWindow visit, IntPtr parameter);
     [DllImport("user32.dll")] private static extern int GetDlgCtrlID(IntPtr window);
-    [DllImport("user32.dll")] private static extern IntPtr GetParent(IntPtr window);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int GetClassName(IntPtr window, StringBuilder name, int size);
     [DllImport("user32.dll")] private static extern bool IsWindowEnabled(IntPtr window);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern IntPtr SendMessage(IntPtr window, uint message, IntPtr parameter, string text);
@@ -76,7 +75,6 @@ public static class InspectSaveWindow {
         }, IntPtr.Zero);
         return string.Join(",", controls);
     }
-    public static bool SetText(IntPtr window, string text) { return SendMessage(window, 0x000C, IntPtr.Zero, text) != IntPtr.Zero; }
     public static void Click(IntPtr window) { SendMessage(window, 0x00F5, IntPtr.Zero, null); }
 }
 '@

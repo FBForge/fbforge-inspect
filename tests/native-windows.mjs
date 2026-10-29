@@ -255,6 +255,8 @@ try {
       {
         ok: true,
         at: new Date().toISOString(),
+        sourceCommit: process.env.CANDIDATE_SOURCE_COMMIT || process.env.GITHUB_SHA || null,
+        harnessCommit: process.env.GITHUB_SHA || null,
         applicationSha256: sha256(await readFile(executable)),
         engineSha256: sha256(
           await readFile(join(dirname(executable), 'engine/inspect-engine.jar')),
@@ -278,7 +280,8 @@ try {
         message,
         startupError,
         results,
-        sourceCommit: process.env.GITHUB_SHA || null,
+        sourceCommit: process.env.CANDIDATE_SOURCE_COMMIT || process.env.GITHUB_SHA || null,
+        harnessCommit: process.env.GITHUB_SHA || null,
       },
       null,
       2,
