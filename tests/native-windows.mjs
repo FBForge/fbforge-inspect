@@ -1,6 +1,7 @@
 // Manual invocation only. Uses a temporary WebView2 profile and loopback debugging for this process.
 import { chromium, expect } from '@playwright/test';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { mkdir, mkdtemp, writeFile, readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
@@ -12,7 +13,7 @@ if (!process.argv[2] || !process.argv[3])
 const executable = resolve(process.argv[2]),
   output = resolve(process.argv[3]);
 await mkdir(output, { recursive: true });
-const profile = await mkdtemp(join(tmpdir(), 'inspect-webview-test-'));
+const profile = await mkdtemp(join(process.env.RUNNER_TEMP || tmpdir(), 'inspect-webview-test-'));
 const port = await new Promise((resolve, reject) => {
   const server = net.createServer();
   server.once('error', reject);
@@ -21,6 +22,41 @@ const port = await new Promise((resolve, reject) => {
     server.close(() => resolve(address.port));
   });
 });
+const hosted = process.env.RUNNER_ENVIRONMENT === 'github-hosted';
+const policyScript = fileURLToPath(
+  new URL('../scripts/ci/webview-test-policy.ps1', import.meta.url),
+);
+function testPolicy(mode) {
+  const result = spawnSync(
+    join(process.env.SystemRoot, 'System32/WindowsPowerShell/v1.0/powershell.exe'),
+    [
+      '-NoProfile',
+      '-NonInteractive',
+      '-File',
+      policyScript,
+      '-Mode',
+      mode,
+      '-Directory',
+      profile,
+      '-Port',
+      String(port),
+    ],
+    { encoding: 'utf8', timeout: 15000 },
+  );
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.error || result.status !== 0)
+    throw new Error(
+      `Temporary WebView2 test policy ${mode} failed: ${result.stderr || result.error?.message || result.status}`,
+    );
+}
+if (hosted) {
+  try {
+    testPolicy('enable');
+  } catch (error) {
+    testPolicy('disable');
+    throw error;
+  }
+}
 const child = spawn(executable, [], {
   cwd: dirname(executable),
   env: {
@@ -61,7 +97,9 @@ try {
       .pages()
       .find(
         (p) =>
-          p.url().startsWith('http://tauri.localhost') || p.url().startsWith('tauri://localhost'),
+          p.url().startsWith('http://tauri.localhost/') ||
+          p.url().startsWith('https://tauri.localhost/') ||
+          p.url().startsWith('tauri://localhost/'),
       );
     if (page) break;
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -157,6 +195,10 @@ try {
   console.error(`::error title=Native WebView2 verification::${annotation}`);
   throw error;
 } finally {
-  if (browser) await browser.close();
-  child.kill();
+  try {
+    if (browser) await browser.close();
+  } finally {
+    child.kill();
+    if (hosted) testPolicy('disable');
+  }
 }

@@ -145,3 +145,37 @@ test(
     }
   },
 );
+
+test(
+  'hosted WebView2 test overrides reject a different repository before registry access',
+  { skip: !available && 'Linux PowerShell harness unavailable' },
+  () => {
+    const result = spawnSync(
+      pwsh,
+      [
+        '-NoProfile',
+        '-NonInteractive',
+        '-File',
+        'scripts/ci/webview-test-policy.ps1',
+        '-Mode',
+        'enable',
+        '-Directory',
+        tmpdir(),
+        '-Port',
+        '9222',
+      ],
+      {
+        encoding: 'utf8',
+        timeout: 10000,
+        env: {
+          ...process.env,
+          GITHUB_REPOSITORY: 'unrelated/repository',
+          GITHUB_EVENT_NAME: 'push',
+          RUNNER_ENVIRONMENT: 'github-hosted',
+        },
+      },
+    );
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /ui_policy_context_denied/);
+  },
+);

@@ -61,6 +61,16 @@ Windows-Neuinstallation in einem separaten Testbenutzer, Start ohne installierte
 
 Die native Probe `tests/native-windows.mjs` prüft WebView2 und den tatsächlichen IPC-Weg. Danach installiert `scripts/windows-accessibility-smoke.ps1` genau den gebauten Installer in ein temporäres Verzeichnis, gleicht die EXE-Prüfsumme ab und prüft Tastaturnavigation und von **NVDA 2026.2 tatsächlich erzeugte Sprachsequenzen**. Der stille Synthesizer vermeidet Audioausgabe; dies ist keine hörende Usability-Abnahme. Die NVDA-Vorbereitung prüft den Download gegen eine feste SHA-256-Summe. Die Testhilfen folgen dem EUPL-lizenzierten Connect-Vorbild (Referenz `6708441`). Sie werden nicht in der App mitgeliefert.
 
+Erhöht gestartete WebView2-Hosts ignorieren Umgebungsüberschreibungen. Auf dem
+wegwerfbaren GitHub-Hosted-Runner richtet die Probe deshalb nach dem Connect-
+Vorbild kurzzeitig anwendungsspezifische WebView2-Testparameter für
+`fbforge-inspect.exe` und `de.fbforge.inspect` ein. Der Debug-Port bindet nur an
+Loopback, das Profil liegt unter `RUNNER_TEMP`. Vorhandene Überschreibungen
+werden nicht ersetzt. Der Helfer prüft Repository, Runnerkontext und Pfade und
+entfernt die eigenen Einträge im Abschlussweg. Es gibt keine Wildcard-Regel
+und keine solche Änderung durch den ausgelieferten Installer. Lokale native
+Proben unter einem gewöhnlichen, nicht erhöhten Windows-Benutzer starten.
+
 Der Windows-NVDA-Job benötigt eine interaktive Desktop-Sitzung des Runners. Fehlt sie, schlägt der Job fehl; das gilt nicht als bestandene Barrierefreiheitsprüfung. Ein angelegter Workflow ist noch kein erfolgreicher CI-Lauf. Erst die Artefakte des aktuellen Commits belegen Windows-Build und native Prüfungen.
 
 Für die abschließende menschliche Abnahme: frisch installieren, ohne systemweit installiertes Java starten, alle Diagnosearten mit repräsentativen öffentlichen Daten prüfen, JSON/HTML mit und ohne Rohantworten speichern, den nativen Speicherdialog abbrechen und bestätigen, alle Formulare mit Tastatur und NVDA bedienen, Hell/Dunkel und 200-%-Skalierung prüfen und deinstallieren. Reale PKI-/Routing-/Destination-Daten und Netzwerkausfälle bleiben eigenständige Integrationsprüfungen.
