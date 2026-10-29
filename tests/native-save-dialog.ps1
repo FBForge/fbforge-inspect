@@ -37,7 +37,14 @@ if ($dialog.Current.ProcessId -ne $ApplicationProcessId) { throw 'save_dialog_wr
 function Find-DialogControl([string]$Id, $Type) {
     $idCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::AutomationIdProperty, $Id)
     $typeCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty, $Type)
-    $dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants, [System.Windows.Automation.AndCondition]::new($idCondition, $typeCondition))
+    $condition = [System.Windows.Automation.AndCondition]::new($idCondition, $typeCondition)
+    $controlDeadline = [DateTime]::UtcNow.AddSeconds(15)
+    do {
+        $control = $dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $condition)
+        if ($control -and $control.Current.IsEnabled) { return $control }
+        Start-Sleep -Milliseconds 200
+    } while ([DateTime]::UtcNow -lt $controlDeadline)
+    return $null
 }
 if ($Mode -eq 'save') {
     $filenameInput = Find-DialogControl '1001' ([System.Windows.Automation.ControlType]::Edit)
@@ -48,7 +55,11 @@ if ($Mode -eq 'save') {
 }
 $buttonId = if ($Mode -eq 'save') { '1' } else { '2' }
 $button = Find-DialogControl $buttonId ([System.Windows.Automation.ControlType]::Button)
-if (-not $button) { throw 'save_dialog_action_missing' }
+if (-not $button) {
+    $buttonCondition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ControlTypeProperty, [System.Windows.Automation.ControlType]::Button)
+    $observed = @($dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants, $buttonCondition) | ForEach-Object { $_.Current.AutomationId + ':' + $_.Current.ClassName })
+    throw ('save_dialog_action_missing buttonIdsAndClasses=' + ($observed -join ','))
+}
 $invokePattern = $null
 if (-not $button.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern, [ref]$invokePattern)) { throw 'save_dialog_action_unavailable' }
 $invokePattern.Invoke()
