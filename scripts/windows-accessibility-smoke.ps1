@@ -184,7 +184,17 @@ automaticUpdates = disabled
         if ($installedHash -ne $expectedHash) {
             $installedInfo = Get-Item -LiteralPath $binary
             $expectedInfo = Get-Item -LiteralPath $ExpectedBinaryPath
-            throw ('a11y_binary_revision_mismatch installed=' + $installedHash + ' expected=' + $expectedHash + ' installedBytes=' + $installedInfo.Length + ' expectedBytes=' + $expectedInfo.Length + ' installedVersion=' + $installedInfo.VersionInfo.ProductVersion + ' expectedVersion=' + $expectedInfo.VersionInfo.ProductVersion)
+            $installedBytes = [IO.File]::ReadAllBytes($binary)
+            $expectedBytes = [IO.File]::ReadAllBytes($ExpectedBinaryPath)
+            $differenceCount = 0
+            $firstDifferences = [Collections.Generic.List[string]]::new()
+            for ($offset = 0; $offset -lt [Math]::Min($installedBytes.Length, $expectedBytes.Length); $offset++) {
+                if ($installedBytes[$offset] -ne $expectedBytes[$offset]) {
+                    $differenceCount++
+                    if ($firstDifferences.Count -lt 32) { $firstDifferences.Add(('{0:X}:{1:X2}/{2:X2}' -f $offset, $installedBytes[$offset], $expectedBytes[$offset])) }
+                }
+            }
+            throw ('a11y_binary_revision_mismatch differences=' + $differenceCount + ' firstOffsetsInstalledExpected=' + ($firstDifferences -join ',') + ' installed=' + $installedHash + ' expected=' + $expectedHash + ' installedBytes=' + $installedInfo.Length + ' expectedBytes=' + $expectedInfo.Length + ' installedVersion=' + $installedInfo.VersionInfo.ProductVersion + ' expectedVersion=' + $expectedInfo.VersionInfo.ProductVersion)
         }
     }
     $taskApp = [Diagnostics.Process]::Start((Start-Clean $binary))
