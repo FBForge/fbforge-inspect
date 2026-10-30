@@ -12,7 +12,7 @@ flowchart LR
 
 Die Vue-Oberfläche besitzt keinen direkten Netzwerkzugriff auf externe APIs. Der Rust-Host stellt ausschließlich `diagnose`, `cancel` und `save_report` bereit. Er startet pro Prüflauf einen gebündelten Java-Prozess, begrenzt Ein- und Ausgabe und beendet ihn bei Abbruch oder Zeitüberschreitung. Es gibt keinen lokalen HTTP-Server und kein Shell-Plugin. Der Entwicklungsmodus kann den lokal installierten Java-Befehl verwenden, eine Release-App benötigt ihre gebündelte Laufzeit.
 
-Der Java-Kern implementiert die öffentlichen API-Verträge eigenständig. Er enthält keinen FIT-Connect-SDK-Adapter. `Api` übernimmt Destination, Routing, Prozesssuche und PVOG-Seiten, `KeyDiagnostics` die JWK-Regeln, `Certificates` PKIX und Sperrstatus, `Signatures` Adressierungssignaturen, `Schemas` sichere Strukturinspektion und `PublicHttp` die gemeinsame Transportgrenze.
+Der Java-Kern implementiert die öffentlichen API-Verträge eigenständig. Er enthält keinen FIT-Connect-SDK-Adapter. `Api` übernimmt Destination, Routing und Prozesssuche, `Pvog` erhält die Zuständigkeitsseiten und ergänzt Leistungs- und Onlinedienstquellen mit expliziten Kontextpfaden. `KeyDiagnostics` übernimmt die JWK-Regeln, `Certificates` PKIX und Sperrstatus, `Signatures` Adressierungssignaturen, `Schemas` sichere Strukturinspektion und `PublicHttp` die gemeinsame Transportgrenze. Die vollständige Feldzuordnung steht in [PVOG-MAPPING.md](PVOG-MAPPING.md).
 
 ## IPC v1
 
@@ -28,7 +28,7 @@ Ein Befund hat Status, Titel, Erklärung, Feldpfad, Quelle, nächsten Schritt un
 
 ## Grenzen
 
-2 MiB Eingabe, 4 MiB je Antwort, 20 MiB Gesamtantwortbudget, 40 HTTP-Abrufe, 120 Sekunden Netzbudget, maximal 20 Routingseiten und 10 PVOG-Seiten. Höchstens 20 Adressierungssignaturen werden verifiziert, weitere Kontexte bleiben ausdrücklich ungeprüft. Der Host beendet einen Lauf spätestens nach 150 Sekunden. Schlüsselsätze sind auf 32 Schlüssel und x5c-Ketten auf zehn Zertifikate begrenzt. Schemaansichten haben Tiefen- und Knotengrenzen.
+2 MiB Eingabe, 4 MiB je Antwort, 20 MiB Gesamtantwortbudget, 40 HTTP-Abrufe, 120 Sekunden Netzbudget, maximal 20 Routingseiten und 10 PVOG-Seiten. PVOG ergänzt höchstens zehn verschiedene Onlinedienste; wiederholte Transferkontexte bleiben trotz Abrufcache getrennt. Höchstens 20 Adressierungssignaturen werden verifiziert, weitere Kontexte bleiben ausdrücklich ungeprüft. Der Host beendet einen Lauf spätestens nach 150 Sekunden. Schlüsselsätze sind auf 32 Schlüssel und x5c-Ketten auf zehn Zertifikate begrenzt. Schemaansichten sind auf 4.000 Strukturknoten und eine maximale Verschachtelungstiefe von 48 begrenzt. Ein führender UTF-8-BOM wird beim lokalen Schemaeinlesen berücksichtigt. Bei XSD zählen Dokumentationsannotationen und Appinfo nicht als Strukturknoten; Schemaversion und Zielnamensraum werden getrennt vom Dialekt geführt.
 
 `PublicHttp` prüft DNS-Ergebnisse auf öffentliche IP-Adressen und verbindet den Socket mit genau einer geprüften Adresse. TLS-SNI und Hostnamenprüfung verwenden weiterhin den ursprünglichen Hostnamen. Jede Umleitung wird erneut geprüft. Private Netze, Zugangsdaten-URLs, Sonderports, TLS-Downgrades und übergroße Antworten werden blockiert. Komprimierte HTTP-Antworten werden nicht akzeptiert.
 

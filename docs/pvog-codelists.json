@@ -1,0 +1,221 @@
+{
+  "transferzustaendigkeittyp": {
+    "uri": "urn:xoev-de:fim:codeliste:xzufi.transferzustaendigkeittyp",
+    "version": "1",
+    "entries": [
+      {
+        "code": "001",
+        "Typ": "Formular",
+        "type": "form"
+      },
+      {
+        "code": "002",
+        "Typ": "Kontaktperson",
+        "type": "contact person"
+      },
+      {
+        "code": "003",
+        "Typ": "Onlinedienst",
+        "type": "online service"
+      },
+      {
+        "code": "004",
+        "Typ": "Organisationseinheit",
+        "type": "organizational unit"
+      }
+    ]
+  },
+  "zustaendigkeitsrolle": {
+    "uri": "urn:xoev-de:fim:codeliste:xzufi.zustaendigkeitsrolle",
+    "version": "1",
+    "entries": [
+      {
+        "code": "02",
+        "Rolle": "Zuständige Stelle",
+        "role": "Competent office"
+      },
+      {
+        "code": "03",
+        "Rolle": "Ansprechpunkt",
+        "role": "Contact point"
+      },
+      {
+        "code": "11",
+        "Rolle": "Einheitlicher Ansprechpartner",
+        "role": "Single point of contact"
+      },
+      {
+        "code": "19",
+        "Rolle": "Andere Einheitliche Stelle",
+        "role": "Other single point of contact"
+      }
+    ]
+  },
+  "kommunikationssystemtyp": {
+    "uri": "urn:xoev-de:fim:codeliste:xzufi.kommunikationssystemtyp",
+    "version": "1",
+    "entries": [
+      {
+        "code": "001",
+        "Typ": "EGVP",
+        "type": "EGVP"
+      },
+      {
+        "code": "002",
+        "Typ": "E-Mail-Client",
+        "type": "E-mail client"
+      },
+      {
+        "code": "003",
+        "Typ": "Anwendung mit Webservice-Schnittstelle",
+        "type": "Application with web service interface"
+      },
+      {
+        "code": "004",
+        "Typ": "System mit Anbindung an FIT-Connect",
+        "type": "System with connection to FIT-Connect"
+      },
+      {
+        "code": "005",
+        "Typ": "ThAVEL",
+        "type": "ThAVEL"
+      },
+      {
+        "code": "006",
+        "Typ": "System mit OSCI-Schnittstelle",
+        "type": "System with OSCI interface"
+      },
+      {
+        "code": "007",
+        "Typ": "Kommunales Fallmanagement Hessen",
+        "type": "Municipal case management Hesse"
+      },
+      {
+        "code": "008",
+        "Typ": "Fallmanagement Mecklenburg-Vorpommern",
+        "type": "Case management Mecklenburg-Western Pomerania"
+      },
+      {
+        "code": "009",
+        "Typ": "beBPo",
+        "type": "beBPo"
+      },
+      {
+        "code": "010",
+        "Typ": "Inbox Universalantrag Brandenburg",
+        "type": "Inbox universal application Brandenburg"
+      },
+      {
+        "code": "011",
+        "Typ": "beA",
+        "type": "beA"
+      },
+      {
+        "code": "012",
+        "Typ": "eAkte staatlicher Behörden in Bayern",
+        "type": "eAkte of state authorities in Bavaria"
+      },
+      {
+        "code": "013",
+        "Typ": "E-Rechnungsplattform",
+        "type": "E-billing platform"
+      },
+      {
+        "code": "014",
+        "Typ": "Bezahldienst",
+        "type": "Payment service"
+      },
+      {
+        "code": "015",
+        "Typ": "Peppol",
+        "type": "Peppol"
+      }
+    ]
+  },
+  "efaparameter": {
+    "uri": "urn:xoev-de:fim:codeliste:xzufi.efaparameter",
+    "version": "2",
+    "entries": [
+      {
+        "code": "efa.callback.url",
+        "Parameter": "Callback-URL",
+        "parameter": "Callback URL",
+        "type": "url",
+        "cardinality": "0..1",
+        "multilanguage": "0"
+      },
+      {
+        "code": "efa.contact.url",
+        "Parameter": "Link zum Kontaktformular",
+        "parameter": "Link to the contact form",
+        "type": "url",
+        "cardinality": "0..1",
+        "multilanguage": "1"
+      },
+      {
+        "code": "efa.datenschutzerklaerung.url",
+        "Parameter": "Link zur Datenschutzerklärung",
+        "parameter": "Link to privacy statement",
+        "type": "url",
+        "cardinality": "0..1",
+        "multilanguage": "1"
+      },
+      {
+        "code": "efa.feedback.url",
+        "Parameter": "Link zur Feedback-Seite",
+        "parameter": "Link to the feedback page",
+        "type": "url",
+        "cardinality": "0..1",
+        "multilanguage": "1"
+      },
+      {
+        "code": "efa.impressum.url",
+        "Parameter": "Link zum Impressum",
+        "parameter": "Link to the imprint",
+        "type": "url",
+        "cardinality": "0..1",
+        "multilanguage": "1"
+      },
+      {
+        "code": "efa.payment.endpointid",
+        "Parameter": "EndpointID",
+        "parameter": "EndpointID",
+        "type": "id",
+        "cardinality": "0..1",
+        "multilanguage": "0"
+      },
+      {
+        "code": "efa.payment.originatorid",
+        "Parameter": "OriginatorID",
+        "parameter": "OriginatorID",
+        "type": "id",
+        "cardinality": "0..1",
+        "multilanguage": "0"
+      },
+      {
+        "code": "efa.payment.paymentitem",
+        "Parameter": "PaymentItem",
+        "parameter": "PaymentItem",
+        "type": "JSON-Objekt",
+        "cardinality": "0..*",
+        "multilanguage": "0"
+      },
+      {
+        "code": "efa.uebermittlungKontaktdaten",
+        "Parameter": "Zustimmung für Übermittlung von Kontaktdaten",
+        "parameter": "Consent for the transmission of contact data",
+        "type": "boolean",
+        "cardinality": "0..1",
+        "multilanguage": "0"
+      },
+      {
+        "code": "efa.​accessibility.url",
+        "Parameter": "Link zur Barrierefreiheitserklärung",
+        "parameter": "Link to Accessibility Statement",
+        "type": "url",
+        "cardinality": "0..1",
+        "multilanguage": "1"
+      }
+    ]
+  }
+}

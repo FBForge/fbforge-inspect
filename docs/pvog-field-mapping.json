@@ -1,0 +1,7383 @@
+{
+  "2.2.0": {
+    "Amount": {
+      "file": "xsd/xzufi-basisdatentypen.xsd",
+      "bases": [
+        "xs:decimal"
+      ],
+      "fields": [
+        {
+          "name": "currencyCode",
+          "type": "xs:string",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Auskunftshinweismodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "inhalt",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "Bearbeitungsdauermodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "bearbeitungsdauer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:FristOhneTyp",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "BegriffImKontext": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "begriff",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "typ",
+          "minOccurs": "0",
+          "type": "xzufi:Code.BegriffImKontextTyp",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "BegriffImKontextModul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "begriffImKontext",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:BegriffImKontext",
+          "kind": "element",
+          "minOccurs": "1"
+        }
+      ]
+    },
+    "Code.BegriffImKontextTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Codeliste.BegriffImKontextTyp",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.begriffimkontexttyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "1.0",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.BezirkDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:bezirk",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.BundeslandDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:bundesland",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.DokumentTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:fim:codeliste:dokumenttyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.GemeindeschluesselDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:ags",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Gemeindeteilschluessel": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "required",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Identifizierungsmittel": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:identifizierungsmittel",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.KlassifizierungBenutzerdefiniert": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "required",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Kostentyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Codeliste.Kostentyp",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.kostentyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "1.0",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.KreisDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:kreis",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.LeiKaLeistung": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:fim:leika:leistung",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.LeiKaTypisierung": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:fim:leika:typisierung",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Leistungsadressat": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Codeliste.Leistungsadressat",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.leistungsadressat",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "1.0",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Leistungstextmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:xzufi:codeliste:leistungstextmodulleika",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.OnlinedienstDynamischerParameterTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Codeliste.OnlinedienstDynamischerParameterTyp",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.onlinedienstdynamischerparametertyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "1",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.OnlinedienstLinkTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:onlinedienstlinktyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Rechtsform": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "required",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.RegionalschluesselDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:rs",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.SDGInformationsbereich": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": " urn:xoev-de:fim:codeliste:sdginformationsbereich",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Signatur": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Codeliste.Signatur",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.signatur",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "2.0",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.StaatDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:staat",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.StaatsangehoerigkeitDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:staatsangehoerigkeit",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.TextmodultypIndividuell": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "required",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Vertrauensniveau": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:vertrauensniveau",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Wirtschaftszweig2008Destatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:destatis:wirtschaftszweigklassifikationen:klassifikation_der_wirtschaftszweige",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Zahlungsweise": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:xzufi:codeliste:zahlungsweise",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Zeiteinheit": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Codeliste.Zeiteinheit",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.zeiteinheit",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "1.1",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Zustaendigkeitskriterium": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Codeliste.Zustaendigkeitskriterium",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.zustaendigkeitskriterium",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "1.0",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Zustaendigkeitsrolle": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "minOccurs": "0",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:xzufi:codeliste:zustaendigkeitsrolle",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Codeliste.BegriffImKontextTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "Codeliste.Fristtyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "Codeliste.Kostentyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "Codeliste.Leistungsadressat": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "Codeliste.OnlinedienstDynamischerParameterTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "Codeliste.Signatur": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "Codeliste.Zeiteinheit": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "Codeliste.Zustaendigkeitskriterium": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "Dokument": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "typ",
+          "type": "xzufi:DokumentTyp_Erweiterbar",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "referenzFormularID",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "angabeSignatur",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Signatur",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "DokumentTyp_Erweiterbar": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Code.DokumentTyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "nichtGelisteterWert",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Dokumentmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "dokumentEingehend",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Dokument",
+          "kind": "element"
+        },
+        {
+          "name": "dokumentAusgehend",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Dokument",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "FachlicheFreigabeModul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "fachlichFreigegebenAm",
+          "minOccurs": "0",
+          "type": "xs:date",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "fachlichFreigegebenDurch",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        }
+      ]
+    },
+    "FristAuswahl": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "fristDauer",
+          "type": "xzufi:FristDauer",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "fristStichtag",
+          "type": "xzufi:FristStichtag",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "FristDauer": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "dauer",
+          "type": "xs:int",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "einheit",
+          "type": "xzufi:Code.Zeiteinheit",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "dauerBis",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "einheitBis",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Zeiteinheit",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "FristMitTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "typ",
+          "type": "xzufi:Fristtyp_Erweiterbar",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "fristauswahl",
+          "type": "xzufi:FristAuswahl",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "FristOhneTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "fristauswahl",
+          "type": "xzufi:FristAuswahl",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "FristStichtag": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "von",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "datum",
+          "type": "xs:date",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "monatTag",
+          "type": "xs:gMonthDay",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "tag",
+          "type": "xs:gDay",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bis",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "datum",
+          "type": "xs:date",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "monatTag",
+          "type": "xs:gMonthDay",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "tag",
+          "type": "xs:gDay",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Fristmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "frist",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:FristMitTyp",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "Fristtyp_Erweiterbar": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "code",
+          "type": "xzufi:Codeliste.Fristtyp",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.fristtyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "1.2",
+          "kind": "attribute"
+        },
+        {
+          "name": "nichtGelisteterWert",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Gebiet": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "typ",
+          "type": "xzufi:Gebietstyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "uebergeordnetesGebietID",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "untergeordnetesGebietID",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "verwaltungspolitischeKodierung",
+          "minOccurs": "0",
+          "type": "xzufi:VerwaltungspolitischeKodierung",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "kurzbezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "herausgeber",
+          "minOccurs": "0",
+          "type": "xzufi:Herausgeber",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "versionsinformation",
+          "minOccurs": "0",
+          "type": "xzufi:Versionsinformation",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "Gebietsklasse": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Kategorieklasse"
+      ],
+      "fields": [
+        {
+          "name": "kurzbezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        }
+      ]
+    },
+    "Gebietstyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "klasse",
+          "type": "xzufi:Gebietsklasse",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "kurzbezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        }
+      ]
+    },
+    "Herausgeber": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "kurzbezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "standardZustaendigkeitsgebiet",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Gebiet",
+          "kind": "element"
+        }
+      ]
+    },
+    "HyperlinkErweitert": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "uri",
+          "type": "xs:anyURI",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "titel",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "languageCode",
+          "type": "xs:language",
+          "use": "optional",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Identifikator": {
+      "file": "xsd/xzufi-basisdatentypen.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": [
+        {
+          "name": "schemeAgencyID",
+          "type": "xs:token",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeAgencyName",
+          "type": "xs:string",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeDataURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeID",
+          "type": "xs:token",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeName",
+          "type": "xs:string",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeVersionID",
+          "type": "xs:token",
+          "use": "optional",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Kategorieklasse": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "version",
+          "minOccurs": "0",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Kosten": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "typ",
+          "type": "xzufi:KostenTyp_Erweiterbar",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kostenauswahl",
+          "type": "xzufi:Kostenauswahl",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "vorkasse",
+          "minOccurs": "0",
+          "type": "xs:boolean",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "linkKostenbildung",
+          "minOccurs": "0",
+          "type": "xs:anyURI",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "KostenFix": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "betrag",
+          "type": "xzufi:Amount",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "KostenFrei": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "beschreibungKostenfreiheit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        }
+      ]
+    },
+    "KostenTyp_Erweiterbar": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Code.Kostentyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "nichtGelisteterWert",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "KostenVariabel": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "betragUntergrenze",
+          "minOccurs": "0",
+          "type": "xzufi:Amount",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "betragObergrenze",
+          "minOccurs": "0",
+          "type": "xzufi:Amount",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibungVariabilitaet",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        }
+      ]
+    },
+    "Kostenauswahl": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "kostenFix",
+          "type": "xzufi:KostenFix",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kostenFrei",
+          "type": "xzufi:KostenFrei",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kostenVariabel",
+          "type": "xzufi:KostenVariabel",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Kostenmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "kosten",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Kosten",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "Leistung": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "struktur",
+          "minOccurs": "0",
+          "type": "xzufi:Leistungsstruktur",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "referenzLeiKa",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.LeiKaLeistung",
+          "kind": "element"
+        },
+        {
+          "name": "modulText",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Textmodul",
+          "kind": "element"
+        },
+        {
+          "name": "modulTextIndividuell",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:TextmodulIndividuell",
+          "kind": "element"
+        },
+        {
+          "name": "modulFrist",
+          "minOccurs": "0",
+          "type": "xzufi:Fristmodul",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "modulKosten",
+          "minOccurs": "0",
+          "type": "xzufi:Kostenmodul",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "modulBearbeitungsdauer",
+          "minOccurs": "0",
+          "type": "xzufi:Bearbeitungsdauermodul",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "modulBegriffImKontext",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:BegriffImKontextModul",
+          "kind": "element"
+        },
+        {
+          "name": "modulFachlicheFreigabe",
+          "minOccurs": "0",
+          "type": "xzufi:FachlicheFreigabeModul",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "modulAuskunftshinweis",
+          "minOccurs": "0",
+          "type": "xzufi:Auskunftshinweismodul",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "modulDokument",
+          "minOccurs": "0",
+          "type": "xzufi:Dokumentmodul",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "modulUrsprungsportal",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:UrsprungsportalModul",
+          "kind": "element"
+        },
+        {
+          "name": "typisierung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.LeiKaTypisierung",
+          "kind": "element"
+        },
+        {
+          "name": "vertrauensniveau",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Vertrauensniveau",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "leistungsadressat",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.Leistungsadressat",
+          "kind": "element"
+        },
+        {
+          "name": "kennzeichenSchriftformerfordernis",
+          "minOccurs": "0",
+          "type": "xs:boolean",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kategorie",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Leistungskategorie",
+          "kind": "element"
+        },
+        {
+          "name": "klassifizierung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.KlassifizierungBenutzerdefiniert",
+          "kind": "element"
+        },
+        {
+          "name": "informationsbereichSDG",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.SDGInformationsbereich",
+          "kind": "element"
+        },
+        {
+          "name": "idLeistungImKontext",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "idProzess",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "herausgeber",
+          "minOccurs": "0",
+          "type": "xzufi:Herausgeber",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeitGebietID",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "kennzeichenEA",
+          "minOccurs": "0",
+          "type": "xs:boolean",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "relevantFuerWirtschaftszweig",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Wirtschaftszweig_Spezifizierbar",
+          "kind": "element"
+        },
+        {
+          "name": "relevantFuerRechtsform",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.Rechtsform",
+          "kind": "element"
+        },
+        {
+          "name": "relevantFuerStaatsangehoerigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.StaatsangehoerigkeitDestatis",
+          "kind": "element"
+        },
+        {
+          "name": "versionsinformation",
+          "minOccurs": "0",
+          "type": "xzufi:Versionsinformation",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "sprachversion",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Sprachversion",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "Leistungskategorie": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "klasse",
+          "type": "xzufi:LeistungskategorieKlasse",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "LeistungskategorieKlasse": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Kategorieklasse"
+      ],
+      "fields": []
+    },
+    "Leistungsmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "id",
+          "minOccurs": "0",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "Leistungsstruktur": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": []
+    },
+    "Onlinedienst": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "kurzbezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "teaser",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "link",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:OnlinedienstLink",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "parameter",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:OnlinedienstParameter",
+          "kind": "element"
+        },
+        {
+          "name": "durchfuehrungStaatsangehoerigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.StaatsangehoerigkeitDestatis",
+          "kind": "element"
+        },
+        {
+          "name": "durchfuehrungSprachen",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Sprache",
+          "kind": "element"
+        },
+        {
+          "name": "zahlungsweise",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.Zahlungsweise",
+          "kind": "element"
+        },
+        {
+          "name": "vertrauensniveau",
+          "type": "xzufi:Code.Vertrauensniveau",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "identifizierungsmittel",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.Identifizierungsmittel",
+          "kind": "element"
+        },
+        {
+          "name": "logo",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "hilfeLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        },
+        {
+          "name": "hilfeText",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "herausgeber",
+          "minOccurs": "0",
+          "type": "xzufi:Herausgeber",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "versionsinformation",
+          "minOccurs": "0",
+          "type": "xzufi:Versionsinformation",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "sprachversion",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Sprachversion",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "OnlinedienstDynamischerParameter": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "typ",
+          "type": "xzufi:Code.OnlinedienstDynamischerParameterTyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "parameterName",
+          "type": "xs:string",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "OnlinedienstErweitert": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Onlinedienst"
+      ],
+      "fields": [
+        {
+          "name": "zustaendigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zustaendigkeit",
+          "kind": "element"
+        }
+      ]
+    },
+    "OnlinedienstLink": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "typ",
+          "type": "xzufi:Code.OnlinedienstLinkTyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "link",
+          "type": "xs:anyURI",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "dynamischeParameter",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:OnlinedienstDynamischerParameter",
+          "kind": "element"
+        },
+        {
+          "name": "titel",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "languageCode",
+          "type": "xs:language",
+          "use": "optional",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "OnlinedienstParameter": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "parameterName",
+          "type": "xs:string",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "parameterWert",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Sprache": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "languageCode",
+          "type": "xs:language",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "sprachbezeichnungDeutsch",
+          "minOccurs": "0",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "sprachbezeichnungNativ",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Sprachversion": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Sprache"
+      ],
+      "fields": [
+        {
+          "name": "erstelltDatumZeit",
+          "minOccurs": "0",
+          "type": "xs:dateTime",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "erstelltDurch",
+          "minOccurs": "0",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "geaendertDatumZeit",
+          "minOccurs": "0",
+          "type": "xs:dateTime",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "geaendertDurch",
+          "minOccurs": "0",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "version",
+          "minOccurs": "0",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "String.Localized": {
+      "file": "xsd/xzufi-basisdatentypen.xsd",
+      "bases": [
+        "xs:string"
+      ],
+      "fields": [
+        {
+          "name": "languageCode",
+          "type": "xs:language",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Textmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "inhalt",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "leikaTextmodul",
+          "type": "xzufi:Code.Leistungstextmodul",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "leikaTextModulAbweichendeBezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "TextmodulIndividuell": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "inhalt",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "individuellesTextmodultyp",
+          "type": "xzufi:Code.TextmodultypIndividuell",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "UrsprungsportalModul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "uri",
+          "type": "xs:anyURI",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "titel",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "languageCode",
+          "type": "xs:language",
+          "use": "optional",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Versionsinformation": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "erstelltDatumZeit",
+          "minOccurs": "0",
+          "type": "xs:dateTime",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "erstelltDurch",
+          "minOccurs": "0",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "geaendertDatumZeit",
+          "minOccurs": "0",
+          "type": "xs:dateTime",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "geaendertDurch",
+          "minOccurs": "0",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "version",
+          "minOccurs": "0",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "VerwaltungspolitischeKodierung": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "kreis",
+          "minOccurs": "0",
+          "type": "xzufi:Code.KreisDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bezirk",
+          "minOccurs": "0",
+          "type": "xzufi:Code.BezirkDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bundesland",
+          "minOccurs": "0",
+          "type": "xzufi:Code.BundeslandDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gemeindeschluessel",
+          "minOccurs": "0",
+          "type": "xzufi:Code.GemeindeschluesselDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "regionalschluessel",
+          "minOccurs": "0",
+          "type": "xzufi:Code.RegionalschluesselDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gemeindeteilschluessel",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Gemeindeteilschluessel",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "staat",
+          "minOccurs": "0",
+          "type": "xzufi:Code.StaatDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Wirtschaftszweig_Spezifizierbar": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Code.Wirtschaftszweig2008Destatis",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "spezifischeID",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Zeitraum": {
+      "file": "xsd/xzufi-basisdatentypen.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "beginn",
+          "minOccurs": "0",
+          "type": "xs:date",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "ende",
+          "minOccurs": "0",
+          "type": "xs:date",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "zusatz",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        }
+      ]
+    },
+    "Zustaendigkeit": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "minOccurs": "0",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "leistungID",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "gebietID",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "weitereInformation",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "herausgeber",
+          "minOccurs": "0",
+          "type": "xzufi:Herausgeber",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "ZustaendigkeitOrganisationseinheit": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Zustaendigkeit"
+      ],
+      "fields": [
+        {
+          "name": "rolle",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Zustaendigkeitsrolle",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kriterium",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zustaendigkeitskriterium",
+          "kind": "element"
+        }
+      ]
+    },
+    "ZustaendigkeitPerson": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Zustaendigkeit"
+      ],
+      "fields": [
+        {
+          "name": "kriterium",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zustaendigkeitskriterium",
+          "kind": "element"
+        }
+      ]
+    },
+    "ZustaendigkeitTransferObjekt": {
+      "file": "xsd/xzufi-transfer.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "uebergeordnetesObjektID",
+          "minOccurs": "0",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "zustaendigkeit",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zustaendigkeit",
+          "kind": "element",
+          "minOccurs": "1"
+        }
+      ]
+    },
+    "Zustaendigkeitskriterium": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "codeKriterium",
+          "type": "xzufi:ZustaendigkeitskriteriumCode_Erweiterbar",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "auspraegung",
+          "maxOccurs": "unbounded",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "minOccurs": "1"
+        }
+      ]
+    },
+    "ZustaendigkeitskriteriumCode_Erweiterbar": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Code.Zustaendigkeitskriterium",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "nichtGelisteterWert",
+          "type": "xoev-lc:String.Latin",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    }
+  },
+  "2.3.1": {
+    "Amount": {
+      "file": "xsd/xzufi-basisdatentypen.xsd",
+      "bases": [
+        "xs:decimal"
+      ],
+      "fields": [
+        {
+          "name": "currencyCode",
+          "type": "xs:string",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Auskunftshinweismodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "inhalt",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "Bearbeitungsdauermodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "bearbeitungsdauer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:FristOhneTyp",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "BegriffImKontext": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "begriff",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "typ",
+          "minOccurs": "0",
+          "type": "xzufi:Code.BegriffImKontextTyp",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "BegriffImKontextModul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "begriffImKontext",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:BegriffImKontext",
+          "kind": "element",
+          "minOccurs": "1"
+        }
+      ]
+    },
+    "Bild": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "bezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "alternativeBeschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "dateiReferenz",
+          "type": "xzufi:BilddateiReferenz",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "copyright",
+          "minOccurs": "0",
+          "type": "xzufi:Copyright",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "BilddateiReferenz": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "dateiID",
+          "minOccurs": "0",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "dateiURL",
+          "minOccurs": "0",
+          "type": "xs:anyURI",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Code.BegriffImKontextTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "form": "unqualified",
+          "type": "xzufi:Codeliste.BegriffImKontextTyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.begriffimkontexttyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "3",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.BezirkDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:bezirk",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.BundeslandDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:bundesland",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Detaillierungsstufe": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:xprozess:codeliste:detaillierungsstufe",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Dokumentart": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim-datenfelder:codeliste:dokumentart",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.DokumentpflichtangabeGrundKontextabhaengigkeit": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "required",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Dokumentpflichtangabetyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.dokumentpflichtangabetyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.DynamischerParameterTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "form": "unqualified",
+          "type": "xzufi:xzufi.dynamischerparametertyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.dynamischerparametertyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "2",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.EfAParameter": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.efaparameter",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.EinheitlicheStelleTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.einheitlichestelletyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Fristtyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.fristtyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.GemeindeschluesselDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:ags",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Gemeindeteilschluessel": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "required",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Identifizierungsmittel": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.identifizierungsmittel",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Kategorieklassetyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "form": "unqualified",
+          "type": "xzufi:xzufi.kategorieklassetyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.kategorieklassetyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "1",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.KlassifizierungBenutzerdefiniert": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "required",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.KommunikationssystemTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.kommunikationssystemtyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Kostentyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.kostentyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.KreisDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:kreis",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.LeiKaTypisierung": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.typisierung",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Leistungsadressat": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "form": "unqualified",
+          "type": "xzufi:xzufi.leistungsadressat",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.leistungsadressat",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "3",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.LeistungsbezugsortTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.leistungsbezugsorttyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Leistungstextmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.leistungstextmodul",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.OnlinedienstLinkTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.onlinedienstlinktyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.OnlinedienstStatus": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.onlinedienststatus",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.OnlinedienstTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.onlinediensttyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.OrganisationseinheitsrolleFuerOnlinedienst": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.organisationseinheitsrollefueronlinedienst",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Rechtsform": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:xunternehmen:codeliste:rechtsformen",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.RegionalschluesselDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:rs",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Reifegrad": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "required",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.SDGInformationsbereich": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.sdginformationsbereich1",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.SDGInformationsbereich2": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.sdginformationsbereich2",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Signatur": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.signatur",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.StaatDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:staat",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Staatengruppen": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.staatengruppen",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.StaatsangehoerigkeitDestatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:de:bund:destatis:bevoelkerungsstatistik:schluessel:staatsangehoerigkeit",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Status": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:status",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.TextmodultypIndividuell": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "required",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.TransferZustaendigkeitTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "form": "unqualified",
+          "type": "xzufi:xzufi.transferzustaendigkeittyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.transferzustaendigkeittyp",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "1",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Vertrauensniveau": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.vertrauensniveau",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Wirtschaftszweig2008Destatis": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "required",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Zahlungsweise": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.zahlungsweise",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Zeiteinheit": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "form": "unqualified",
+          "type": "xzufi:xzufi.zeiteinheit",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.zeiteinheit",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "3",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Zugangskanal": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "form": "unqualified",
+          "type": "xzufi:xzufi.zugangskanal",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.zugangskanal",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "optional",
+          "fixed": "1",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Zustaendigkeitskriterium": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.zustaendigkeitskriterium",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Code.Zustaendigkeitsrolle": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xoev-code:Code"
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xs:token",
+          "form": "unqualified",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "name",
+          "type": "xs:normalizedString",
+          "form": "unqualified",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "listURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "fixed": "urn:xoev-de:fim:codeliste:xzufi.zustaendigkeitsrolle",
+          "kind": "attribute"
+        },
+        {
+          "name": "listVersionID",
+          "type": "xs:normalizedString",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Codeliste.BegriffImKontextTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "Copyright": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "copyrightHinweis",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "copyrightURL",
+          "minOccurs": "0",
+          "type": "xs:anyURI",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Dokument": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "art",
+          "type": "xzufi:Dokumentart_Erweiterbar",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "formularReferenz",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:FormularReferenz",
+          "kind": "element"
+        },
+        {
+          "name": "angabeSignatur",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Signatur",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "DokumentEingehend": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "pflichtangabetyp",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Dokumentpflichtangabetyp",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "pflichtangabeGrundKontextabhaengigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.DokumentpflichtangabeGrundKontextabhaengigkeit",
+          "kind": "element"
+        },
+        {
+          "name": "kennzeichenAusloeser",
+          "minOccurs": "0",
+          "type": "xs:boolean",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "dokument",
+          "type": "xzufi:Dokument",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Dokumentart_Erweiterbar": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Code.Dokumentart",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "nichtGelisteterWert",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Dokumentmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "dokumentEingehend",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:DokumentEingehend",
+          "kind": "element"
+        },
+        {
+          "name": "dokumentAusgehend",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Dokument",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibungEingehend",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibungAusgehend",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "DynamischerURLParameter": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "typ",
+          "type": "xzufi:Code.DynamischerParameterTyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "parameterName",
+          "type": "xs:string",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "FachlicheFreigabeModul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "fachlichFreigegebenAm",
+          "minOccurs": "0",
+          "type": "xs:date",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "fachlichFreigegebenDurch",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        }
+      ]
+    },
+    "FormularReferenz": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "formularID",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "dokumentsteckbriefID",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "FristAuswahl": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "fristDauer",
+          "type": "xzufi:FristDauer",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "fristStichtag",
+          "type": "xzufi:FristStichtag",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "FristDauer": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "dauer",
+          "type": "xs:int",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "einheit",
+          "type": "xzufi:Code.Zeiteinheit",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "dauerBis",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "einheitBis",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Zeiteinheit",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "FristMitTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "typ",
+          "type": "xzufi:Fristtyp_Erweiterbar",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "fristauswahl",
+          "type": "xzufi:FristAuswahl",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "FristOhneTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "fristauswahl",
+          "type": "xzufi:FristAuswahl",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "FristStichtag": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "von",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "datum",
+          "type": "xs:date",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "monatTag",
+          "type": "xs:gMonthDay",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "tag",
+          "type": "xs:gDay",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bis",
+          "minOccurs": "0",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "datum",
+          "type": "xs:date",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "monatTag",
+          "type": "xs:gMonthDay",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "tag",
+          "type": "xs:gDay",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Fristmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "frist",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:FristMitTyp",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "Fristtyp_Erweiterbar": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Code.Fristtyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "nichtGelisteterWert",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Gebiet": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "typ",
+          "type": "xzufi:Gebietstyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "uebergeordnetesGebietID",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "untergeordnetesGebietID",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "verwaltungspolitischeKodierung",
+          "minOccurs": "0",
+          "type": "xzufi:VerwaltungspolitischeKodierung",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "kurzbezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "herausgeber",
+          "minOccurs": "0",
+          "type": "xzufi:Herausgeber",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "versionsinformation",
+          "minOccurs": "0",
+          "type": "xzufi:Versionsinformation",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "Gebietsklasse": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Kategorieklasse"
+      ],
+      "fields": [
+        {
+          "name": "kurzbezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        }
+      ]
+    },
+    "Gebietstyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "klasse",
+          "type": "xzufi:Gebietsklasse",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "kurzbezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        }
+      ]
+    },
+    "Herausgeber": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "din91379:datatypeD",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "kurzbezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "din91379:datatypeD",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "standardZustaendigkeitsgebiet",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Gebiet",
+          "kind": "element"
+        }
+      ]
+    },
+    "HyperlinkErweitert": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "uri",
+          "type": "xs:anyURI",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "titel",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "languageCode",
+          "type": "xs:language",
+          "use": "optional",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Identifikator": {
+      "file": "xsd/xzufi-basisdatentypen.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": [
+        {
+          "name": "schemeAgencyID",
+          "type": "xs:token",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeAgencyName",
+          "type": "xs:string",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeDataURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeID",
+          "type": "xs:token",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeName",
+          "type": "xs:string",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeURI",
+          "type": "xs:anyURI",
+          "use": "optional",
+          "kind": "attribute"
+        },
+        {
+          "name": "schemeVersionID",
+          "type": "xs:token",
+          "use": "optional",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "InformationsbereichSDG": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "informationsbereichSDG1",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.SDGInformationsbereich",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "informationsbereichSDG2",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.SDGInformationsbereich2",
+          "kind": "element"
+        }
+      ]
+    },
+    "Kategorie": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "uebergeordneteKategorieID",
+          "minOccurs": "0",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "untergeordneteKategorieID",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "klasse",
+          "type": "xzufi:Kategorieklasse",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "piktogrammID",
+          "minOccurs": "0",
+          "type": "xzufi:Bild",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Kategorieklasse": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "typ",
+          "type": "xzufi:Code.Kategorieklassetyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "version",
+          "minOccurs": "0",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Kommunikationssystem": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "kanal",
+          "type": "xzufi:Code.KommunikationssystemTyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kennung",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kennungzusatz",
+          "minOccurs": "0",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kennzeichenOeffentlichAnzeigen",
+          "default": "false",
+          "type": "xs:boolean",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "Kosten": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "typ",
+          "type": "xzufi:KostenTyp_Erweiterbar",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kostenauswahl",
+          "type": "xzufi:Kostenauswahl",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "vorkasse",
+          "minOccurs": "0",
+          "type": "xs:boolean",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "linkKostenbildung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "KostenFix": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "betrag",
+          "type": "xzufi:Amount",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "KostenFrei": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "beschreibungKostenfreiheit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        }
+      ]
+    },
+    "KostenTyp_Erweiterbar": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Code.Kostentyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "nichtGelisteterWert",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "KostenVariabel": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "betragUntergrenze",
+          "minOccurs": "0",
+          "type": "xzufi:Amount",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "betragObergrenze",
+          "minOccurs": "0",
+          "type": "xzufi:Amount",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibungVariabilitaet",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        }
+      ]
+    },
+    "Kostenauswahl": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "kostenFix",
+          "type": "xzufi:KostenFix",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kostenFrei",
+          "type": "xzufi:KostenFrei",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kostenVariabel",
+          "type": "xzufi:KostenVariabel",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Kostenmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "kosten",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Kosten",
+          "kind": "element"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "Leistung": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "struktur",
+          "minOccurs": "0",
+          "type": "xzufi:Leistungsstruktur",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "statusKatalog",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Status",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "statusBibliothek",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Status",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "detailstufe",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Detaillierungsstufe",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "referenzLeistungsschluessel",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "leistungsadressat",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.Leistungsadressat",
+          "kind": "element"
+        },
+        {
+          "name": "bezugsortTyp",
+          "minOccurs": "0",
+          "type": "xzufi:LeistungsbezugsortTyp",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "modulText",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Textmodul",
+          "kind": "element"
+        },
+        {
+          "name": "modulTextIndividuell",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:TextmodulIndividuell",
+          "kind": "element"
+        },
+        {
+          "name": "modulFrist",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Fristmodul",
+          "kind": "element"
+        },
+        {
+          "name": "modulBearbeitungsdauer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Bearbeitungsdauermodul",
+          "kind": "element"
+        },
+        {
+          "name": "modulKosten",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Kostenmodul",
+          "kind": "element"
+        },
+        {
+          "name": "modulDokument",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Dokumentmodul",
+          "kind": "element"
+        },
+        {
+          "name": "modulBegriffImKontext",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:BegriffImKontextModul",
+          "kind": "element"
+        },
+        {
+          "name": "modulFachlicheFreigabe",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:FachlicheFreigabeModul",
+          "kind": "element"
+        },
+        {
+          "name": "modulAuskunftshinweis",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Auskunftshinweismodul",
+          "kind": "element"
+        },
+        {
+          "name": "modulUrsprungsportal",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:UrsprungsportalModul",
+          "kind": "element"
+        },
+        {
+          "name": "typisierung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.LeiKaTypisierung",
+          "kind": "element"
+        },
+        {
+          "name": "vertrauensniveau",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Vertrauensniveau",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kennzeichenFormularFormlos",
+          "minOccurs": "0",
+          "type": "xs:boolean",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kategorie",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Kategorie",
+          "kind": "element"
+        },
+        {
+          "name": "klassifizierung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.KlassifizierungBenutzerdefiniert",
+          "kind": "element"
+        },
+        {
+          "name": "informationsbereicheSDG",
+          "minOccurs": "0",
+          "type": "xzufi:InformationsbereichSDG",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "leistungImKontextID",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "prozessID",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "herausgeber",
+          "minOccurs": "0",
+          "type": "xzufi:Herausgeber",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeitGebietID",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "durchfuehrbarEinheitlicheStelle",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.EinheitlicheStelleTyp",
+          "kind": "element"
+        },
+        {
+          "name": "relevantFuerWirtschaftszweig",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Wirtschaftszweig_Spezifizierbar",
+          "kind": "element"
+        },
+        {
+          "name": "relevantFuerRechtsform",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.Rechtsform",
+          "kind": "element"
+        },
+        {
+          "name": "relevantFuerStaatsangehoerigkeit",
+          "minOccurs": "0",
+          "type": "xzufi:Staatsangaben",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "versionsinformation",
+          "minOccurs": "0",
+          "type": "xzufi:Versionsinformation",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "sprachversion",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Sprachversion",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "LeistungsbezugsortTyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "leistungsbezugsortTyp",
+          "type": "xzufi:Code.LeistungsbezugsortTyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "nichtGelisteterWert",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Leistungsmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "zugangskanal",
+          "type": "xzufi:Code.Zugangskanal",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "id",
+          "minOccurs": "0",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "Leistungsstruktur": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": []
+    },
+    "MaschinelleUebersetzung": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "originalSprache",
+          "type": "xs:language",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "originalID",
+          "minOccurs": "0",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "uebersetztDurch",
+          "minOccurs": "0",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Onlinedienst": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "bezeichnung",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "bezeichnungIntern",
+          "minOccurs": "0",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "idOnlinedienstGlobal",
+          "minOccurs": "0",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "status",
+          "type": "xzufi:Code.OnlinedienstStatus",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "teaser",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "link",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:OnlinedienstLink",
+          "kind": "element"
+        },
+        {
+          "name": "parameterEfA",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:OnlinedienstParameterEfA",
+          "kind": "element"
+        },
+        {
+          "name": "parameterIndividuell",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:OnlinedienstParameterIndividuell",
+          "kind": "element"
+        },
+        {
+          "name": "kategorie",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Kategorie",
+          "kind": "element"
+        },
+        {
+          "name": "typ",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.OnlinedienstTyp",
+          "kind": "element"
+        },
+        {
+          "name": "reifegrad",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.Reifegrad",
+          "kind": "element"
+        },
+        {
+          "name": "identifizierungsmittel",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.Identifizierungsmittel",
+          "kind": "element"
+        },
+        {
+          "name": "vertrauensniveau",
+          "type": "xzufi:Code.Vertrauensniveau",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "zahlungsweisen",
+          "type": "xzufi:OnlinedienstZahlungsweise",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "hilfeLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        },
+        {
+          "name": "hilfeText",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "durchfuehrungStaatsangehoerigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.StaatsangehoerigkeitDestatis",
+          "kind": "element"
+        },
+        {
+          "name": "durchfuehrungWeitereSprachen",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Sprache",
+          "kind": "element"
+        },
+        {
+          "name": "logo",
+          "minOccurs": "0",
+          "type": "xzufi:Bild",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "herausgeber",
+          "minOccurs": "0",
+          "type": "xzufi:Herausgeber",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kennzeichenOeffentlichAnzeigen",
+          "type": "xs:boolean",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "versionsinformation",
+          "minOccurs": "0",
+          "type": "xzufi:Versionsinformation",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "sprachversion",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Sprachversion",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "OnlinedienstErweitert": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Onlinedienst"
+      ],
+      "fields": [
+        {
+          "name": "zustaendigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:ZustaendigkeitOnlinedienst",
+          "kind": "element"
+        }
+      ]
+    },
+    "OnlinedienstLink": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "typ",
+          "type": "xzufi:Code.OnlinedienstLinkTyp",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "link",
+          "type": "xs:anyURI",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "dynamischeParameter",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:DynamischerURLParameter",
+          "kind": "element"
+        },
+        {
+          "name": "titel",
+          "type": "xs:string",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "beschreibung",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "languageCode",
+          "type": "xs:language",
+          "use": "optional",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "OnlinedienstParameterEfA": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "parameterEfA",
+          "type": "xzufi:Code.EfAParameter",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "parameterWert",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "languageCode",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xs:language",
+          "kind": "element"
+        }
+      ]
+    },
+    "OnlinedienstParameterIndividuell": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "parameterName",
+          "type": "xs:string",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "parameterWert",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "languageCode",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xs:language",
+          "kind": "element"
+        }
+      ]
+    },
+    "OnlinedienstZahlungsweise": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "zahlungsweise",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.Zahlungsweise",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "kostenfrei",
+          "fixed": "true",
+          "type": "xs:boolean",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "keineAngabe",
+          "fixed": "true",
+          "type": "xs:boolean",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "OrganisationseinheitOnlinedienstMitRolle": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "rolle",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.OrganisationseinheitsrolleFuerOnlinedienst",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "organisationseinheitID",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Sprache": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "languageCode",
+          "type": "xs:language",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "sprachbezeichnungDeutsch",
+          "minOccurs": "0",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "sprachbezeichnungNativ",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Sprachversion": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Sprache"
+      ],
+      "fields": [
+        {
+          "name": "kennzeichenMaschinelleUebersetzung",
+          "type": "xs:boolean",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "maschinelleUebersetzung",
+          "minOccurs": "0",
+          "type": "xzufi:MaschinelleUebersetzung",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "erstelltDatumZeit",
+          "minOccurs": "0",
+          "type": "xs:dateTime",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "erstelltDurch",
+          "minOccurs": "0",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "geaendertDatumZeit",
+          "minOccurs": "0",
+          "type": "xs:dateTime",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "geaendertDurch",
+          "minOccurs": "0",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "version",
+          "minOccurs": "0",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Staatsangaben": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "staatsangehoerigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.StaatsangehoerigkeitDestatis",
+          "kind": "element"
+        },
+        {
+          "name": "staatengruppe",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.Staatengruppen",
+          "kind": "element"
+        }
+      ]
+    },
+    "String.Localized": {
+      "file": "xsd/xzufi-basisdatentypen.xsd",
+      "bases": [
+        "xs:string"
+      ],
+      "fields": [
+        {
+          "name": "languageCode",
+          "type": "xs:language",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "String.LocalizedHTML": {
+      "file": "xsd/xzufi-basisdatentypen.xsd",
+      "bases": [
+        "xs:string"
+      ],
+      "fields": [
+        {
+          "name": "html",
+          "type": "xs:boolean",
+          "use": "required",
+          "fixed": "true",
+          "kind": "attribute"
+        },
+        {
+          "name": "languageCode",
+          "type": "xs:language",
+          "use": "required",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Textmodul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "inhalt",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "leikaTextmodul",
+          "type": "xzufi:Code.Leistungstextmodul",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "leikaTextModulAbweichendeBezeichnung",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "TextmodulIndividuell": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "inhalt",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.LocalizedHTML",
+          "kind": "element"
+        },
+        {
+          "name": "individuellesTextmodultyp",
+          "type": "xzufi:Code.TextmodultypIndividuell",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "weiterfuehrenderLink",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:HyperlinkErweitert",
+          "kind": "element"
+        }
+      ]
+    },
+    "UrsprungsportalModul": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Leistungsmodul"
+      ],
+      "fields": [
+        {
+          "name": "uri",
+          "type": "xs:anyURI",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "titel",
+          "minOccurs": "0",
+          "type": "xs:string",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "dynamischeParameter",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:DynamischerURLParameter",
+          "kind": "element"
+        },
+        {
+          "name": "languageCode",
+          "type": "xs:language",
+          "use": "optional",
+          "kind": "attribute"
+        }
+      ]
+    },
+    "Versionsinformation": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "erstelltDatumZeit",
+          "minOccurs": "0",
+          "type": "xs:dateTime",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "erstelltDurch",
+          "minOccurs": "0",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "geaendertDatumZeit",
+          "minOccurs": "0",
+          "type": "xs:dateTime",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "geaendertDurch",
+          "minOccurs": "0",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "version",
+          "minOccurs": "0",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "VerwaltungspolitischeKodierung": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "staat",
+          "minOccurs": "0",
+          "type": "xzufi:Code.StaatDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bundesland",
+          "minOccurs": "0",
+          "type": "xzufi:Code.BundeslandDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "bezirk",
+          "minOccurs": "0",
+          "type": "xzufi:Code.BezirkDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "kreis",
+          "minOccurs": "0",
+          "type": "xzufi:Code.KreisDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gemeindeschluessel",
+          "minOccurs": "0",
+          "type": "xzufi:Code.GemeindeschluesselDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gemeindeteilschluessel",
+          "minOccurs": "0",
+          "type": "xzufi:Code.Gemeindeteilschluessel",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "regionalschluessel",
+          "minOccurs": "0",
+          "type": "xzufi:Code.RegionalschluesselDestatis",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Wirtschaftszweig_Spezifizierbar": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Code.Wirtschaftszweig2008Destatis",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "spezifischeID",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "Zeitraum": {
+      "file": "xsd/xzufi-basisdatentypen.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "beginn",
+          "minOccurs": "0",
+          "type": "xs:date",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "ende",
+          "minOccurs": "0",
+          "type": "xs:date",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "zusatz",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        }
+      ]
+    },
+    "Zustaendigkeit": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "id",
+          "minOccurs": "0",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "idSekundaer",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element"
+        },
+        {
+          "name": "leistungID",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "gebietID",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "kommunikationssystem",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Kommunikationssystem",
+          "kind": "element"
+        },
+        {
+          "name": "weitereInformation",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:String.Localized",
+          "kind": "element"
+        },
+        {
+          "name": "positionDarstellung",
+          "minOccurs": "0",
+          "type": "xs:int",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "herausgeber",
+          "minOccurs": "0",
+          "type": "xzufi:Herausgeber",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "gueltigkeit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zeitraum",
+          "kind": "element"
+        }
+      ]
+    },
+    "ZustaendigkeitOnlinedienst": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Zustaendigkeit"
+      ],
+      "fields": [
+        {
+          "name": "organisationseinheit",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:OrganisationseinheitOnlinedienstMitRolle",
+          "kind": "element"
+        }
+      ]
+    },
+    "ZustaendigkeitOrganisationseinheit": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Zustaendigkeit"
+      ],
+      "fields": [
+        {
+          "name": "rolle",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Code.Zustaendigkeitsrolle",
+          "kind": "element",
+          "minOccurs": "1"
+        },
+        {
+          "name": "kriterium",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zustaendigkeitskriterium",
+          "kind": "element"
+        },
+        {
+          "name": "kennzeichenTerminvereinbarungVerpflichtend",
+          "minOccurs": "0",
+          "type": "xs:boolean",
+          "kind": "element",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "ZustaendigkeitPerson": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xzufi:Zustaendigkeit"
+      ],
+      "fields": [
+        {
+          "name": "kriterium",
+          "minOccurs": "0",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zustaendigkeitskriterium",
+          "kind": "element"
+        }
+      ]
+    },
+    "ZustaendigkeitTransferObjekt": {
+      "file": "xsd/xzufi-transfer.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "uebergeordnetesObjektID",
+          "minOccurs": "0",
+          "type": "xzufi:Identifikator",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "uebergeordnetesObjektKlasse",
+          "minOccurs": "0",
+          "type": "xzufi:Code.TransferZustaendigkeitTyp",
+          "kind": "element",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "zustaendigkeit",
+          "maxOccurs": "unbounded",
+          "type": "xzufi:Zustaendigkeit",
+          "kind": "element",
+          "minOccurs": "1"
+        }
+      ]
+    },
+    "Zustaendigkeitskriterium": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "codeKriterium",
+          "type": "xzufi:ZustaendigkeitskriteriumCode_Erweiterbar",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "auspraegung",
+          "maxOccurs": "unbounded",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "minOccurs": "1"
+        }
+      ]
+    },
+    "ZustaendigkeitskriteriumCode_Erweiterbar": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [],
+      "fields": [
+        {
+          "name": "code",
+          "type": "xzufi:Code.Zustaendigkeitskriterium",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        },
+        {
+          "name": "nichtGelisteterWert",
+          "type": "din91379:datatypeC",
+          "kind": "element",
+          "minOccurs": "1",
+          "maxOccurs": "1"
+        }
+      ]
+    },
+    "xzufi.dynamischerparametertyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "xzufi.kategorieklassetyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "xzufi.leistungsadressat": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "xzufi.transferzustaendigkeittyp": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "xzufi.zeiteinheit": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    },
+    "xzufi.zugangskanal": {
+      "file": "xsd/xzufi-baukasten.xsd",
+      "bases": [
+        "xs:token"
+      ],
+      "fields": []
+    }
+  }
+}

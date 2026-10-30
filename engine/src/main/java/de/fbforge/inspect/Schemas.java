@@ -11,7 +11,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /** Structural inspection only. References are enumerated, never fetched implicitly. */
 final class Schemas {
+  private static final Gson SCHEMA_JSON = new GsonBuilder().setStrictness(Strictness.STRICT).create();
+
   static void inspect(String text, Report report) throws Exception {
+    if (text.startsWith("\uFEFF")) text = text.substring(1);
     JsonArray nodes = new JsonArray(), refs = new JsonArray();
     if (text.stripLeading().startsWith("<")) {
       DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
@@ -32,14 +35,12 @@ final class Schemas {
           || !"schema".equals(root.getLocalName()))
         throw new IllegalArgumentException("XSD-Schemawurzel erwartet.");
       xml(root, "$", nodes, refs, 0);
-      report.data.addProperty(
-          "dialect",
-          "XSD "
-              + (root.getAttribute("version").isBlank()
-                  ? "(Version nicht angegeben)"
-                  : root.getAttribute("version")));
+      // xs:schema/@version identifies the schema document, not the XSD language version.
+      report.data.addProperty("dialect", "XSD");
+      report.data.addProperty("schemaVersion", root.getAttribute("version"));
+      report.data.addProperty("targetNamespace", root.getAttribute("targetNamespace"));
     } else {
-      JsonElement root = JsonParser.parseString(text);
+      JsonElement root = SCHEMA_JSON.fromJson(text, JsonElement.class);
       if (!root.isJsonObject() && !root.isJsonPrimitive())
         throw new IllegalArgumentException("JSON-Schemawurzel erwartet.");
       if (root.isJsonPrimitive() && !root.getAsJsonPrimitive().isBoolean())
@@ -73,9 +74,10 @@ final class Schemas {
   }
 
   private static void json(JsonElement e, String path, JsonArray nodes, JsonArray refs, int depth) {
-    if (depth > 48 || nodes.size() > 4000)
+    if (depth > 48)
       throw new IllegalArgumentException("Strukturlimit erreicht.");
     if (e.isJsonObject()) {
+      if (nodes.size() >= 4000) throw new IllegalArgumentException("Strukturlimit erreicht.");
       JsonObject o = e.getAsJsonObject(), node = new JsonObject();
       node.addProperty("path", path);
       for (String p : List.of("title", "description", "type", "required", "enum"))
@@ -99,7 +101,11 @@ final class Schemas {
   }
 
   private static void xml(Element e, String path, JsonArray nodes, JsonArray refs, int depth) {
-    if (depth > 48 || nodes.size() > 4000)
+    // Documentation and appinfo are not structural schema nodes. Official XZuFi packages
+    // contain extensive annotations, including foreign XML, that must not exhaust this budget.
+    if (XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(e.getNamespaceURI())
+        && "annotation".equals(e.getLocalName())) return;
+    if (depth > 48 || nodes.size() >= 4000)
       throw new IllegalArgumentException("Strukturlimit erreicht.");
     String p =
         path

@@ -113,6 +113,27 @@ async function openSchema(url: string) {
   await nextTick();
   form.value?.setSchema(url);
 }
+function trapExportFocus(event: KeyboardEvent) {
+  if (event.key !== 'Tab' || event.altKey || event.ctrlKey || event.metaKey) return;
+  const dialog = exportDialog.value;
+  if (!dialog) return;
+  const targets = [
+    ...dialog.querySelectorAll<HTMLElement>('button, input, select, textarea, a[href], [tabindex]'),
+  ].filter(
+    (element) =>
+      element.tabIndex >= 0 && !element.matches(':disabled') && element.getClientRects().length > 0,
+  );
+  const first = targets[0];
+  const last = targets.at(-1);
+  if (!first || !last) return;
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
 async function save() {
   if (!exportReport.value || saving.value) return;
   saving.value = true;
@@ -297,7 +318,11 @@ async function save() {
             <ol v-if="topic.steps.length">
               <li v-for="step in topic.steps" :key="step">{{ step }}</li>
             </ol>
-            <pre v-if="topic.example" class="help-example"><code>{{ topic.example }}</code></pre>
+            <pre
+              tabindex="0"
+              v-if="topic.example"
+              class="help-example"
+            ><code>{{ topic.example }}</code></pre>
           </article>
           <p class="hint">
             Grundlagen und aktuelle API-Verträge: docs.fitko.de/fit-connect · pvog.fitko.de
@@ -333,6 +358,7 @@ async function save() {
     class="export-dialog"
     aria-labelledby="export-title"
     :aria-busy="saving ? 'true' : undefined"
+    @keydown="trapExportFocus"
     @cancel.prevent="!saving && (preview = false)"
   >
     <div class="section-heading">
@@ -360,7 +386,7 @@ async function save() {
       >
     </div>
     <p v-if="exportError" class="notice error-notice" role="alert">{{ exportError }}</p>
-    <pre class="export-preview">{{ previewText }}</pre>
+    <pre tabindex="0" class="export-preview">{{ previewText }}</pre>
     <div class="form-footer">
       <button class="button secondary" :disabled="saving" @click="preview = false">Abbrechen</button
       ><button class="button primary" :disabled="saving" @click="save">Speicherort wählen</button>

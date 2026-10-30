@@ -5,7 +5,7 @@
     "paragraphs": [
       "Umgebung und API-Version oben auswählen. V3 ist die Voreinstellung. V2 wird ausdrücklich gewählt, ein automatischer Rückfall findet nicht statt.",
       "Für eine Destination genügt ihre UUID. Ohne Zugangsdaten ruft FBForge Inspect ausschließlich veröffentlichte Konfiguration und öffentliche Schlüssel ab. Prüfungen starten erst mit Ihrem Klick.",
-      "Die App benötigt für öffentliche Abfragen Internetzugang. Lokale JWK- und Schema-Inspektion funktioniert ohne Internet. Diagnoseeingaben und Ergebnisse werden nicht automatisch gespeichert. Unter Darstellung wählen Sie Hell, Dunkel oder System. Nur diese Darstellungspräferenz wird lokal gespeichert; ohne verfügbaren Browserspeicher funktioniert die Auswahl für die laufende Sitzung."
+      "Die App benötigt für öffentliche Abfragen Internetzugang. Lokale JWK- und Schema-Inspektion funktioniert ohne Internet. Diagnoseeingaben und Ergebnisse werden nicht automatisch gespeichert. Unter Darstellung wählen Sie Hell, Dunkel oder System. Nur diese Darstellungspräferenz wird lokal gespeichert. Ohne verfügbaren Browserspeicher funktioniert die Auswahl für die laufende Sitzung."
     ],
     "steps": [],
     "example": null
@@ -22,7 +22,7 @@
     "steps": [
       "Wählen Sie Umgebung und API-Version. Geben Sie die vollständige Destination-UUID ein.",
       "Ergänzen Sie bei Bedarf die erwartete Leistung, Region und das Fachdatenschema im selben Konfigurationsvergleich.",
-      "Starten Sie die Prüfung. Lesen Sie Status, Quellen und Beweisgrenzen; ein nicht erreichbarer Dienst ist kein leerer Bestand."
+      "Starten Sie die Prüfung. Lesen Sie Status, Quellen und Beweisgrenzen. Ein nicht erreichbarer Dienst ist kein leerer Bestand."
     ],
     "example": null
   },
@@ -34,12 +34,13 @@
       "FBForge Inspect lädt Seiten innerhalb eines festen Budgets und behält alle Kontexte. Dieselbe Destination in mehreren Behördenkontexten wird nicht global dedupliziert. Fehler, Ratenlimits und abgebrochene Paginierung bedeuten einen unbekannten oder unvollständigen Bestand.",
       "STAGE besitzt keine eigene Routing-API. FBForge Inspect zeigt hierfür ausdrücklich die PROD-Routingquelle. Diese Ergebnisse beweisen keine STAGE-Zustellbarkeit. TEST nutzt die TEST-Routingquelle.",
       "PVOG-Daten sind zusätzliche öffentliche Evidenz. Abweichungen zwischen PVOG und Routing belegen keine Ursache oder Fehlentscheidung im Routing. Antwortzeitpunkte und jeweilige Quellen müssen gemeinsam betrachtet werden.",
-      "PVOG liefert Adressierungssignaturen (Destination Signatures) und gegebenenfalls EfA-Parameter. Fachdatenschemata stammen aus der jeweiligen Leistung im FIT-Connect-Zustellpunkt, nicht aus PVOG."
+      "PVOG liefert Adressierungssignaturen (Destination Signatures) und gegebenenfalls EfA-Parameter. Fachdatenschemata stammen aus der jeweiligen Leistung im FIT-Connect-Zustellpunkt, nicht aus PVOG.",
+      "Der optionale PVOG-Abruf erhält alle Zuständigkeitskontexte, Rollen, Leistungs- und Gebietskennungen. Zusätzlich werden die Leistungsbeschreibung und höchstens zehn eindeutig als Onlinedienst gekennzeichnete Objekte gelesen. EfA- und individuelle Parameter bleiben ihrem Onlinedienst zugeordnet. Unpassende Antwort-IDs werden als Fehler ausgewiesen. Die Quellansichten enthalten sämtliche erhaltenen Felder einschließlich Kommunikationssystemen, Gültigkeiten und Sprachangaben. Parameter sind Konfigurationsevidenz, keine verifizierte Adressierung und keine Fachdatenschemata."
     ],
     "steps": [
       "Geben Sie den 14-stelligen LeiKa-Schlüssel und die Gebietsart an.",
       "Tragen Sie AGS/ARS oder eine Gebiets-ID ein. Alternativ öffnen Sie die Gebietssuche, suchen einen Ortsnamen und übernehmen das passende Gebiet.",
-      "Aktivieren Sie PVOG nur bei Bedarf und ergänzen Sie die Leistungsbeschreibungs-ID. Vergleichen Sie anschließend die getrennt ausgewiesenen Quellen."
+      "Prüfen Sie die Rollen und Leistungs-/Gebietskennungen pro Kontext. Öffnen Sie bei Bedarf die vollständigen Kontextfelder sowie Onlinedienstparameter mit Sprachangaben und Quelle. Ein unvollständiger Abruf oder fehlende Signatur ist kein vollständiger Negativnachweis."
     ],
     "example": null
   },
@@ -80,7 +81,7 @@
     "id": "schemas",
     "title": "Fachdatenschemata lesen",
     "paragraphs": [
-      "Bei FIT-Connect sind Fachdatenschemata an der jeweiligen Leistung im Zustellpunkt hinterlegt. PVOG enthält Adressierungssignaturen und gegebenenfalls EfA-Parameter; es ist keine Quelle für diese Fachdatenschemata.",
+      "Bei FIT-Connect sind Fachdatenschemata an der jeweiligen Leistung im Zustellpunkt hinterlegt. PVOG enthält Adressierungssignaturen und gegebenenfalls EfA-Parameter. Es ist keine Quelle für diese Fachdatenschemata.",
       "FBForge Inspect zeigt die Struktur eines JSON Schema oder XSD sowie Referenzen. Es erzeugt keine Beispieldaten und validiert keine Fachdateninstanzen. Eine eingelesene Struktur ist kein Nachweis vollständiger Schema-Gültigkeit.",
       "DTD, externe XML-Entities und automatische Fremdreferenzauflösung sind deaktiviert. Eine weitere öffentliche HTTPS-Referenz kann einzeln über einen neuen, ausdrücklichen Abruf untersucht werden. URNs müssen nicht als URL auflösbar sein."
     ],

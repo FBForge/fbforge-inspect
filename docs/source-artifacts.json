@@ -1,0 +1,37 @@
+{
+  "checkedAt": "2026-10-30",
+  "xzufi": {
+    "2.2.0": {
+      "url": "https://www.xrepository.de/api/xrepository/urn:xoev-de:fim:standard:xzufi_2.2.0:xmlschema:datei:xsd.zip",
+      "sha256": "d3bb577e1db454c434b8838a378439c08111a75cc47241c3f7eed1a6d08511b3",
+      "bytes": 55387,
+      "namespace": "http://xoev.de/schemata/xzufi/2_2_0"
+    },
+    "2.3.1": {
+      "url": "https://www.xrepository.de/api/xrepository/urn:xoev-de:fim:standard:xzufi_2.3.1:xmlschema:datei:20250401_XZuFi_2.3.1_XML-Schema.zip",
+      "sha256": "9a7a284759efc5ca70b2417f7188af40a6604f042efdc2ae1ef1af8f214cdead",
+      "bytes": 71213,
+      "namespace": "http://xoev.de/schemata/xzufi/2_3_1"
+    }
+  },
+  "xzufi231Codelists": {
+    "name": "xzufi-231-codes",
+    "url": "https://www.xrepository.de/api/xrepository/urn:xoev-de:fim:standard:xzufi_2.3.1:dokument:Codelisten_-_Stand_01.04.2025:datei:20250401_XZuFi_2.3.1_Codelisten_Genericode.zip",
+    "utc": "2026-10-30T10:04:15.435981+00:00",
+    "status": 200,
+    "finalUrl": "https://www.xrepository.de/api/xrepository/urn:xoev-de:fim:standard:xzufi_2.3.1:dokument:Codelisten_-_Stand_01.04.2025:datei:20250401_XZuFi_2.3.1_Codelisten_Genericode.zip",
+    "contentType": "application/zip",
+    "bytes": 85326,
+    "sha256": "6a48a54d3e83ae73c062a68d6f53e06c331d60766a6290469f620c22eb6843a2"
+  },
+  "pvogOpenApi": {
+    "name": "pvog-openapi",
+    "url": "https://pvog.fitko.net/suchdienst/api/v3/api-docs",
+    "finalUrl": "https://pvog.fitko.net/suchdienst/api/v3/api-docs",
+    "status": 200,
+    "contentType": "application/json",
+    "bytes": 719916,
+    "sha256": "dbcb02f94af8eb79632b6aa29bcc7e2616b8f922cbaf52115c1144fbe8440a6c",
+    "errorBody": null
+  }
+}

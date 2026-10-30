@@ -35,6 +35,20 @@ Die UI-Tests benötigen einen zu Playwright passenden Chromium. Ein bereits inst
 
 Node-Tests laufen mit `--test-isolation=none`, damit die hier verwendete Node-24-Laufzeit die einzelnen exportbezogenen Tests zuverlässig ausführt. Maven `package` führt die Kerntests aus. Es gibt keine Git-Hooks und keinen automatischen Veröffentlichungsweg.
 
+## Offizielle XZuFi-Pakete
+
+[PVOG-MAPPING.md](docs/PVOG-MAPPING.md) beschreibt die vollständige Feldzuordnung
+und die lokale Prüfung der offiziellen XZuFi-2.2.0-/2.3.1-Pakete einschließlich
+der relevanten Codelisten. `scripts/verify-xzufi.py` prüft festgehaltene SHA-256,
+das Deklarationsinventar und alle 15 XSD-Dateien über den gebauten Java-Kern.
+Die Pakete müssen zuvor lokal bereitgestellt sein; das Skript führt weder
+Downloads noch Fremdreferenzabrufe durch.
+
+Vor einer Windows-Abnahme nach Änderungen an PVOG oder der Schemaansicht die
+Paketprüfung und die nativen Windows-Prüfungen mit diesem Quellstand wiederholen.
+Frühere Installer-/NVDA-Belege gelten weiterhin ausschließlich für ihren
+jeweiligen Buildstand.
+
 ## Windows x64
 
 Zuerst den plattformunabhängigen Java-Kern mit `mvn -f engine/pom.xml package` bauen. Anschließend in Windows PowerShell:

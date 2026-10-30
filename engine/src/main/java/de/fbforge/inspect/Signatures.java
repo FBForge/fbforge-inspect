@@ -62,8 +62,17 @@ final class Signatures {
       String kid = jwt.getHeader().getKeyID();
       List<JWK> matches =
           set.getKeys().stream().filter(k -> kid != null && kid.equals(k.getKeyID())).toList();
+      if (matches.size() != 1) {
+        r.unknown(
+            "Adressierungsschlüssel nicht eindeutig verfügbar",
+            "Die Signaturkennung kid ist im unabhängig geladenen JWKS nicht genau einmal vorhanden."
+                + " Die Signatur ist damit nicht verifiziert; ihre Ungültigkeit ist nicht nachgewiesen.",
+            path,
+            source);
+        return;
+      }
       boolean verified =
-          matches.size() == 1 && matches.getFirst() instanceof RSAKey key && verify(jwt, key, env);
+          matches.getFirst() instanceof RSAKey key && verify(jwt, key, env);
       decoded.addProperty("verified", verified);
       r.check(
           verified,

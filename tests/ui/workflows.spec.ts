@@ -2,7 +2,11 @@ import { test, expect } from '@playwright/test';
 const uuid = '00000000-0000-4000-8000-000000000001';
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    const state = { calls: [] as unknown[], saveOutcomes: [] as (boolean | string)[] };
+    const state = {
+      calls: [] as unknown[],
+      saveOutcomes: [] as (boolean | string)[],
+      diagnosisData: null as Record<string, unknown> | null,
+    };
     Object.assign(window, {
       inspectTest: state,
       isTauri: true,
@@ -37,7 +41,7 @@ test.beforeEach(async ({ page }) => {
                 },
               ],
               requests: [],
-              data: {
+              data: state.diagnosisData ?? {
                 destination: {
                   destinationId: request.input.destinationId,
                   status: 'active',
@@ -54,6 +58,100 @@ test.beforeEach(async ({ page }) => {
     });
   });
   await page.goto('/');
+});
+test('PVOG retains roles, source contexts and parameter languages without assigning a foreign response', async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    const relation = {
+      uebergeordnetesObjektID: { value: 'od', schemeAgencyID: 'L1', schemeID: 'source-scheme' },
+      uebergeordnetesObjektKlasse: { code: '003', name: 'Onlinedienst' },
+      zustaendigkeit: [
+        {
+          id: { value: 'relation' },
+          rolle: [
+            { code: '02', name: 'Zuständige Stelle' },
+            { code: '03', name: 'Ansprechpunkt' },
+          ],
+          leistungID: [{ value: 'lb', schemeAgencyID: 'L1' }],
+          gebietID: [{ value: '010000000000', schemeID: 'ars' }],
+          kommunikationssystem: [{ kanal: { code: '004' }, kennung: 'unverified-destination' }],
+          gueltigkeit: [{ beginn: '2026-01-01', ende: '2026-12-31' }],
+        },
+      ],
+    };
+    (window as any).inspectTest.diagnosisData = {
+      pvogRelations: [relation, relation],
+      pvogOnlineServices: [
+        {
+          id: 'L1.OD.od',
+          context: '$.pvogRelations[0]',
+          matchesParent: true,
+          source: 'https://example.org/source',
+          sourceIndex: 0,
+        },
+        {
+          id: 'L1.OD.foreign',
+          context: '$.pvogRelations[1]',
+          matchesParent: false,
+          sourceIndex: 1,
+        },
+      ],
+      pvogOnlineServiceSources: [
+        {
+          data: {
+            parameterEfA: [
+              {
+                parameterEfA: { code: 'efa.contact.url' },
+                parameterWert: '<img src="https://example.org/not-loaded">',
+                languageCode: ['de', 'en'],
+              },
+            ],
+            parameterIndividuell: [{ parameterName: 'missing-value' }],
+          },
+        },
+        {
+          data: {
+            parameterIndividuell: [
+              { parameterName: 'foreign-parameter', parameterWert: 'wrong-context' },
+            ],
+          },
+        },
+      ],
+    };
+  });
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Routing prüfen', exact: true })
+    .click();
+  await page.getByRole('textbox', { name: 'LeiKa-Schlüssel', exact: true }).fill('99150085001000');
+  await page.getByRole('textbox', { name: 'Gebietsschlüssel', exact: true }).fill('010000000000');
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  await expect(
+    page.getByRole('cell', { name: /02 · Zuständige Stelle, 03 · Ansprechpunkt/ }),
+  ).toHaveCount(2);
+  await expect(page.getByRole('cell', { name: /efa.contact.url/ })).toBeVisible();
+  await expect(page.getByRole('cell', { name: /de, en/ })).toBeVisible();
+  await expect(
+    page.getByRole('cell', { name: 'Kein Wert veröffentlicht', exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole('cell', { name: /foreign-parameter/ })).toHaveCount(0);
+  await expect(page.locator('img[src="https://example.org/not-loaded"]')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'unverified-destination →' })).toHaveCount(0);
+  await page.screenshot({ path: 'test-results/pvog-contexts-light.png', fullPage: true });
+  await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption('dark');
+  await page.setViewportSize({ width: 700, height: 650 });
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+  ).toBeTruthy();
+  await page.screenshot({ path: 'test-results/pvog-contexts-700-dark.png', fullPage: true });
+  await page.getByText('Alle Kontextfelder und Feldpfad', { exact: true }).first().click();
+  await expect(
+    page.getByText('$.pvogRelations[0].zustaendigkeit[0]', { exact: true }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Bericht exportieren' }).click();
+  await expect(page.getByRole('dialog').locator('pre')).toContainText('kommunikationssystem');
+  await expect(page.getByRole('dialog').locator('pre')).toContainText('languageCode');
 });
 test('destination diagnosis and export preview do not include raw responses by default', async ({
   page,

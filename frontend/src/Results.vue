@@ -39,11 +39,38 @@ function identifier(value: unknown) {
   if (typeof value === 'string') return value;
   if (value && typeof value === 'object') {
     const id = value as Item;
-    return [id.schemeAgencyID, id.value].filter((x) => typeof x === 'string' && x).join(' · ');
+    return [id.schemeAgencyID, id.schemeID, id.schemeVersionID, id.value]
+      .filter((x) => typeof x === 'string' && x)
+      .join(' · ');
   }
   return 'Keine ID veröffentlicht';
 }
 const certificates = computed(() => records(props.report.data.certificates));
+function codeLabel(value: Item) {
+  return [value.code, value.name].filter((x) => typeof x === 'string' && x).join(' · ');
+}
+const onlineServices = computed(() =>
+  records(props.report.data.pvogOnlineServices).map((entry): Item => ({
+    ...entry,
+    data: records(props.report.data.pvogOnlineServiceSources)[entry.sourceIndex]?.data || {},
+  })),
+);
+function parameters(service: Item): Item[] {
+  return [
+    ...records(service.parameterEfA).map((p, index) => ({
+      ...p,
+      kind: 'EfA',
+      name: codeLabel(p.parameterEfA || {}),
+      path: `parameterEfA[${index}]`,
+    })),
+    ...records(service.parameterIndividuell).map((p, index) => ({
+      ...p,
+      kind: 'Individuell',
+      name: p.parameterName,
+      path: `parameterIndividuell[${index}]`,
+    })),
+  ];
+}
 const pvog = computed(() =>
   records(props.report.data.pvogRelations).flatMap((parent, parentIndex) =>
     records(parent.zustaendigkeit).map((relation, index) => {
@@ -52,9 +79,17 @@ const pvog = computed(() =>
         (s) => typeof s.context === 'string' && s.context.startsWith(prefix),
       );
       return {
+        path: prefix.slice(0, -1),
         parent: identifier(parent.uebergeordnetesObjektID),
+        parentClass: codeLabel(parent.uebergeordnetesObjektKlasse || {}),
+        parentFields: parent,
         id: identifier(relation.id),
-        role: relation.rolle?.name || relation.rolle?.code || 'Keine Rolle veröffentlicht',
+        role:
+          records(Array.isArray(relation.rolle) ? relation.rolle : [relation.rolle])
+            .map(codeLabel)
+            .join(', ') || 'Keine Rolle veröffentlicht',
+        services: records(relation.leistungID).map(identifier),
+        areas: records(relation.gebietID).map(identifier),
         addresses: signatures
           .filter((s) => s.verified === true && typeof s.claims?.destinationId === 'string')
           .map((s) => ({
@@ -140,7 +175,7 @@ function canOpen(value: unknown) {
         {{ report.operation === 'areas' ? 'Gefundene Gebiete' : 'Gefundene Kontexte' }}
         <span class="muted">({{ rows.length }})</span>
       </h3>
-      <div class="table-scroll">
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Routing- und Suchergebnisse">
         <table>
           <thead>
             <tr>
@@ -186,7 +221,7 @@ function canOpen(value: unknown) {
         zugeordnet. Ein fehlender Treffer in dieser Routingantwort belegt keine interne
         Fehlerursache.
       </p>
-      <div class="table-scroll">
+      <div class="table-scroll" tabindex="0" role="region" aria-label="PVOG-Zuständigkeitskontexte">
         <table>
           <thead>
             <tr>
@@ -197,10 +232,24 @@ function canOpen(value: unknown) {
           </thead>
           <tbody>
             <tr v-for="(context, index) in pvog" :key="index">
-              <td class="mono">{{ context.parent }}</td>
+              <td>
+                <p>{{ context.parentClass || 'Keine Objektklasse veröffentlicht' }}</p>
+                <p class="mono">{{ context.parent }}</p>
+              </td>
               <td>
                 {{ context.role }}
                 <p class="mono hint">{{ context.id }}</p>
+                <p v-for="(service, i) in context.services" :key="`service-${i}`" class="mono hint">
+                  Leistung: {{ service }}
+                </p>
+                <p v-for="(area, i) in context.areas" :key="`area-${i}`" class="mono hint">
+                  Gebiet: {{ area }}
+                </p>
+                <details>
+                  <summary>Alle Kontextfelder und Feldpfad</summary>
+                  <p class="mono hint">{{ context.path }}</p>
+                  <pre tabindex="0">{{ JSON.stringify(context.parentFields, null, 2) }}</pre>
+                </details>
               </td>
               <td>
                 <div v-for="(address, i) in context.addresses" :key="i">
@@ -227,9 +276,73 @@ function canOpen(value: unknown) {
         </table>
       </div>
     </div>
+    <div v-if="onlineServices.length" class="panel">
+      <h3>PVOG-Onlinedienste und Parameter</h3>
+      <p class="hint">
+        Parameter bleiben beim übergeordneten Onlinedienst. Sie werden als veröffentlichte
+        Konfiguration angezeigt. Werte und verlinkte Ziele werden nicht ausgeführt oder abgerufen.
+        Sie sind keine Fachdatenschemata und keine verifizierte Adressierung.
+      </p>
+      <div v-for="(service, index) in onlineServices" :key="index">
+        <h4 class="mono">{{ service.id }}</h4>
+        <p class="mono hint">{{ service.context }}</p>
+        <p v-if="service.matchesParent !== true" class="hint">
+          Die Antwort-ID passt nicht zum übergeordneten Objekt. Parameter werden diesem Kontext
+          nicht zugeordnet; die Antwort bleibt als Beleg erhalten.
+        </p>
+        <div
+          v-else
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Onlinedienstparameter"
+        >
+          <table v-if="parameters(service.data).length">
+            <thead>
+              <tr>
+                <th>Art / Parameter</th>
+                <th>Veröffentlichter Wert</th>
+                <th>Sprachen / Feldpfad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(parameter, i) in parameters(service.data)" :key="i">
+                <td>
+                  {{ parameter.kind }}
+                  <p class="mono">{{ parameter.name }}</p>
+                </td>
+                <td class="mono">{{ parameter.parameterWert ?? 'Kein Wert veröffentlicht' }}</td>
+                <td>
+                  {{ list(parameter.languageCode) || 'Keine Sprachangabe' }}
+                  <p class="mono hint">
+                    $.pvogOnlineServiceSources[{{ service.sourceIndex }}].data.{{ parameter.path }}
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p v-else class="hint">Keine EfA- oder individuellen Parameter veröffentlicht.</p>
+        </div>
+        <details>
+          <summary>Alle Onlinedienstfelder und Quelle</summary>
+          <p class="mono hint">{{ service.source }}</p>
+          <pre tabindex="0">{{ JSON.stringify(service.data, null, 2) }}</pre>
+        </details>
+      </div>
+    </div>
+    <details v-if="report.data.pvogService" class="panel">
+      <summary>PVOG-Leistungsbeschreibung und LeiKa-Zuordnung</summary>
+      <p class="mono hint">{{ report.data.pvogServiceSource }}</p>
+      <p class="hint">
+        Leistungsbeschreibungs-ID und LeiKa-Schlüssel sind unterschiedliche Kennungen.
+        referenzLeistungsschluessel enthält die veröffentlichte Zuordnung. Alle weiteren
+        Leistungsfelder bleiben hier als Quelle erhalten.
+      </p>
+      <pre tabindex="0">{{ JSON.stringify(report.data.pvogService, null, 2) }}</pre>
+    </details>
     <div v-if="certificates.length" class="panel">
       <h3>Zertifikatsketten</h3>
-      <div class="table-scroll">
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Zertifikatsketten">
         <table>
           <thead>
             <tr>
@@ -277,7 +390,11 @@ function canOpen(value: unknown) {
       <h3>
         Struktur <span class="muted">{{ report.data.dialect || 'Dialekt nicht angegeben' }}</span>
       </h3>
-      <div class="table-scroll">
+      <p v-if="report.data.schemaVersion" class="hint">
+        Schemaversion: {{ report.data.schemaVersion }}
+      </p>
+      <p v-if="report.data.targetNamespace" class="mono hint">{{ report.data.targetNamespace }}</p>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Schemastruktur">
         <table>
           <thead>
             <tr>
@@ -336,12 +453,12 @@ function canOpen(value: unknown) {
     <div v-if="!findings.length" class="empty-state small">Keine Befunde in diesem Filter.</div>
     <details class="panel">
       <summary>Normalisierte Daten und Vergleich</summary>
-      <pre>{{ JSON.stringify(report.data, null, 2) }}</pre>
+      <pre tabindex="0">{{ JSON.stringify(report.data, null, 2) }}</pre>
     </details>
     <details class="panel">
       <summary>Abfrageprotokoll · {{ report.requests.length }} Abrufe</summary>
       <p class="hint">HTTP-Erfolg und fachlicher Befund werden getrennt bewertet.</p>
-      <div class="table-scroll">
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Abfrageprotokoll">
         <table>
           <thead>
             <tr>

@@ -275,4 +275,38 @@ mod tests {
         let result = run_engine_at(engine_root(), b"{}".to_vec(), receiver).await;
         assert_eq!(result.unwrap_err(), "Diagnose abgebrochen.");
     }
+
+    #[tokio::test]
+    async fn bundled_engine_accepts_bom_prefixed_xsd() {
+        let (_sender, receiver) = oneshot::channel();
+        let request = serde_json::json!({"protocolVersion":1,"operation":"schema","environment":"TEST","apiVersion":"v3","input":{"text":"\u{feff}<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' version='2.3.1'/>"}});
+        let result = run_engine_at(
+            engine_root(),
+            serde_json::to_vec(&request).unwrap(),
+            receiver,
+        )
+        .await
+        .unwrap();
+        assert_eq!(result["ok"], true);
+        assert_eq!(result["report"]["data"]["dialect"], "XSD");
+        assert_eq!(result["report"]["data"]["schemaVersion"], "2.3.1");
+    }
+
+    #[tokio::test]
+    async fn bundled_engine_rejects_excess_schema_nodes() {
+        let (_sender, receiver) = oneshot::channel();
+        let schema: serde_json::Map<String, serde_json::Value> = (0..4000)
+            .map(|i| (format!("field{i}"), serde_json::json!({})))
+            .collect();
+        let request = serde_json::json!({"protocolVersion":1,"operation":"schema","environment":"TEST","apiVersion":"v3","input":{"text":serde_json::Value::Object(schema).to_string()}});
+        let result = run_engine_at(
+            engine_root(),
+            serde_json::to_vec(&request).unwrap(),
+            receiver,
+        )
+        .await
+        .unwrap();
+        assert_eq!(result["ok"], false);
+        assert_eq!(result["error"], "Strukturlimit erreicht.");
+    }
 }
