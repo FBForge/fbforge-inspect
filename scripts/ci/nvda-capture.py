@@ -57,7 +57,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
         text = " ".join(part for part in speechSequence if isinstance(part, str))[:2048]
         if text.strip():
             name = api.getFocusObject().name
-            known = {'Umgebung', 'API', 'Darstellung', 'Destination prüfen', 'Destination-ID', 'Routing prüfen', 'Prozessnachricht prüfen', 'Schlüssel prüfen', 'Fachdatenschemata', 'Hilfe', 'Prüfung starten', 'JSON Schema / XSD', 'Start'}
+            known = {'Umgebung', 'API', 'Darstellung wählen', 'Destination prüfen', 'Destination-ID', 'Routing prüfen', 'Prozessnachricht prüfen', 'Schlüssel prüfen', 'Fachdatenschemata', 'Hilfe', 'Prüfung starten', 'JSON Schema / XSD', 'Start'}
             self.write({"text": text, "focus": name if name in known else "(other control)"})
 
     def terminate(self):

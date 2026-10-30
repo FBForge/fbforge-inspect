@@ -1,3 +1,4 @@
+import { selectAppearance } from './theme';
 import { test, expect, type Page } from '@playwright/test';
 
 const pages = [
@@ -38,7 +39,7 @@ test('small brand text and input placeholders retain readable contrast in both a
   await page.goto('/');
   await selectPage(page, 'Fachdatenschemata');
   for (const theme of ['light', 'dark']) {
-    await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption(theme);
+    await selectAppearance(page, theme);
     const ratios = await page.evaluate(() => {
       const lum = (color: string) =>
         color
@@ -52,7 +53,7 @@ test('small brand text and input placeholders retain readable contrast in both a
           .reduce((s, c, i) => s + c * [0.2126, 0.7152, 0.0722][i]!, 0);
       const ratio = (a: string, b: string) =>
         (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
-      const brand = getComputedStyle(document.querySelector('.eyebrow')!);
+      const brand = getComputedStyle(document.querySelector('.nav-label')!);
       const input = document.querySelector('input[type="url"]')!;
       const placeholder = getComputedStyle(input, '::placeholder');
       return {
@@ -74,7 +75,7 @@ test('every page reflows at the CSS width corresponding to 200 percent zoom in a
   await page.setViewportSize({ width: 350, height: 540 });
   await page.goto('/');
   for (const theme of ['light', 'dark']) {
-    await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption(theme);
+    await selectAppearance(page, theme);
     for (const name of pages) {
       await selectPage(page, name);
       await noOverflow(page);
@@ -86,7 +87,7 @@ test('200 percent text enlargement keeps every page and toolbar usable', async (
   await page.setViewportSize({ width: 700, height: 540 });
   await page.goto('/');
   for (const theme of ['light', 'dark']) {
-    await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption(theme);
+    await selectAppearance(page, theme);
     for (const name of pages) {
       await selectPage(page, name);
       await page.evaluate(() => {

@@ -263,6 +263,102 @@ class CryptoTest {
   }
 
   @Test
+  void absentTestCertificateUsageIsNotAnExplicitJwkUsageConflict() throws Exception {
+    var certificate =
+        new JcaX509v3CertificateBuilder(
+                new X500Name("CN=Public Test Certificate"),
+                BigInteger.valueOf(17),
+                Date.from(now.minusSeconds(60)),
+                Date.from(now.plusSeconds(3600)),
+                new X500Name("CN=Public Test Certificate"),
+                leafKey.getPublic())
+            .build(new JcaContentSignerBuilder("SHA256withRSA").build(leafKey.getPrivate()));
+    var key =
+        new RSAKey.Builder((java.security.interfaces.RSAPublicKey) leafKey.getPublic())
+            .algorithm(JWEAlgorithm.RSA_OAEP_256)
+            .keyOperations(Set.of(KeyOperation.WRAP_KEY))
+            .keyID("test-encryption")
+            .x509CertChain(List.of(com.nimbusds.jose.util.Base64.encode(certificate.getEncoded())))
+            .build();
+    for (String environment : List.of("TEST", "PROD")) {
+      Report report = new Report("keys", environment, "v3");
+      KeyDiagnostics.inspect(
+          key.toJSONString(), report, new PublicHttp(report), new com.google.gson.JsonObject());
+      assertTrue(
+          report.findings.stream()
+              .anyMatch(
+                  f ->
+                      f.title().equals("X.509-Key-Usage nicht angegeben")
+                          && f.status().equals(environment.equals("TEST") ? "unknown" : "error")));
+      assertTrue(
+          report.findings.stream()
+              .anyMatch(
+                  f -> f.title().equals("Schlüsseloperation") && f.status().equals("confirmed")));
+      var summary = report.data.getAsJsonArray("keys").get(0).getAsJsonObject();
+      assertEquals(
+          key.toJSONObject().get("x5c").toString(),
+          summary.getAsJsonObject("publicJwk").getAsJsonArray("x5c").asList().stream()
+              .map(e -> e.getAsString())
+              .toList()
+              .toString());
+      var cert = report.data.getAsJsonArray("certificates").get(0).getAsJsonObject();
+      assertEquals(0, cert.get("chainIndex").getAsInt());
+      assertFalse(cert.get("keyUsagePresent").getAsBoolean());
+      assertTrue(cert.get("pem").getAsString().contains("BEGIN CERTIFICATE"));
+    }
+  }
+
+  @Test
+  void explicitlyIncompatibleCertificateUsageRemainsAnError() throws Exception {
+    var raw =
+        com.google.gson.JsonParser.parseString(leafJwk(leafKey.getPublic()).toJSONString())
+            .getAsJsonObject();
+    raw.addProperty("alg", "RSA-OAEP-256");
+    var ops = new com.google.gson.JsonArray();
+    ops.add("wrapKey");
+    raw.add("key_ops", ops);
+    Report report = new Report("keys", "TEST", "v3");
+    KeyDiagnostics.inspect(
+        raw.toString(), report, new PublicHttp(report), new com.google.gson.JsonObject());
+    assertTrue(
+        report.findings.stream()
+            .anyMatch(
+                f ->
+                    f.title().equals("X.509-Zertifikatsverwendung") && f.status().equals("error")));
+    assertTrue(
+        report.findings.stream()
+            .anyMatch(
+                f -> f.title().equals("Schlüsseloperation") && f.status().equals("confirmed")));
+  }
+
+  @Test
+  void issuerCertificateUsageIsNotAppliedToTheParticipantKey() throws Exception {
+    Report report = new Report("keys", "TEST", "v3");
+    Certificates.inspect(
+        leafJwk(leafKey.getPublic()),
+        report,
+        new PublicHttp(report),
+        new com.google.gson.JsonObject(),
+        "$.keys[0]");
+    var usages =
+        report.findings.stream()
+            .filter(f -> f.title().equals("X.509-Zertifikatsverwendung"))
+            .toList();
+    assertEquals(1, usages.size());
+    assertEquals("confirmed", usages.getFirst().status());
+    assertEquals("$.keys[0].x5c[0]", usages.getFirst().path());
+    assertEquals(
+        "Ausstellerzertifikat",
+        report
+            .data
+            .getAsJsonArray("certificates")
+            .get(1)
+            .getAsJsonObject()
+            .get("role")
+            .getAsString());
+  }
+
+  @Test
   void receivedRootDoesNotBecomeImplicitTrust() throws Exception {
     Report report = new Report("keys", "TEST", "v3");
     Certificates.inspect(

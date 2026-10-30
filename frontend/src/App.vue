@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, reactive, ref, watch } from 'vue';
 import { invoke, isTauri } from '@tauri-apps/api/core';
 import { pages, type Page, type Report, type EngineResponse } from './contracts';
 import { reportForExport, reportHtml } from './reports';
@@ -9,14 +9,38 @@ import Results from './Results.vue';
 import Icon from './Icon.vue';
 import help from '../../docs/help.json';
 import { useTheme } from './useTheme';
-const { appearance } = useTheme();
+import AppearancePicker from './AppearancePicker.vue';
+import { createSession } from './session';
+import { buildCommit } from './build';
+const { appearance, systemDark } = useTheme();
 const page = ref<Page>('start'),
   environment = ref('TEST'),
   apiVersion = ref('v3');
+const sessions = reactive<Record<string, ReturnType<typeof createSession>>>({});
+const sessionKey = computed(() => `${environment.value}/${apiVersion.value}/${page.value}`);
+const session = computed(() => {
+  if (!sessions[sessionKey.value]) sessions[sessionKey.value] = createSession();
+  return sessions[sessionKey.value]!;
+});
+const report = computed({
+  get: () => session.value.report,
+  set: (value) => {
+    session.value.report = value;
+  },
+});
+const error = computed({
+  get: () => session.value.error,
+  set: (value) => {
+    session.value.error = value;
+  },
+});
+const status = computed({
+  get: () => session.value.status,
+  set: (value) => {
+    session.value.status = value;
+  },
+});
 const busy = ref(false),
-  report = ref<Report | null>(null),
-  error = ref(''),
-  status = ref('Bereit'),
   preview = ref(false),
   raw = ref(false),
   format = ref('html');
@@ -50,7 +74,9 @@ function clear() {
   preview.value = false;
   status.value = 'Bereit';
 }
-watch([page, environment, apiVersion], clear);
+watch([page, environment, apiVersion], () => {
+  preview.value = false;
+});
 watch(page, async () => {
   await nextTick();
   document.querySelector<HTMLElement>('#page-title')?.focus();
@@ -155,11 +181,42 @@ async function save() {
 <template>
   <a class="skip-link" href="#main-content">Zum Inhalt</a>
   <div class="app-shell">
-    <aside class="sidebar">
+    <header class="topbar">
       <div class="brand">
         <img src="/inspect.png" alt="" />
-        <div>FBForge <strong>Inspect</strong><span>Zustellpunkte und Routing</span></div>
+        <div><strong>FBForge</strong><span>Inspect</span></div>
       </div>
+      <div class="topbar-context">
+        <span
+          class="environment-tag"
+          :data-environment="environment"
+          :title="`Umgebung ${environment}. Keine Sicherheitsbewertung.`"
+          aria-hidden="true"
+          >{{ environment }}</span
+        >
+        <span class="build-tag">0.1.0</span>
+      </div>
+      <div class="toolbar">
+        <label
+          >Umgebung<select v-model="environment" :disabled="busy">
+            <option>TEST</option>
+            <option>STAGE</option>
+            <option>PROD</option>
+          </select></label
+        ><label
+          >API<select v-model="apiVersion" :disabled="busy">
+            <option value="v3">v3</option>
+            <option value="v2">v2</option>
+          </select></label
+        >
+        <AppearancePicker
+          :preference="appearance"
+          :dark="appearance === 'dark' || (appearance === 'system' && systemDark)"
+          @change="appearance = $event"
+        />
+      </div>
+    </header>
+    <aside class="sidebar">
       <div class="nav-label">ARBEITSBEREICH</div>
       <nav aria-label="Hauptnavigation">
         <button
@@ -181,92 +238,41 @@ async function save() {
       </div>
     </aside>
     <div class="workspace">
-      <header class="topbar">
-        <div class="breadcrumb">
-          FBForge Inspect <span>/</span> <strong>{{ active.label }}</strong>
+      <div class="page-heading">
+        <div>
+          <h1 id="page-title" tabindex="-1">
+            {{ active.label }}
+          </h1>
+          <p>{{ active.description }}</p>
         </div>
-        <div class="toolbar">
-          <span
-            class="environment-tag"
-            :data-environment="environment"
-            :title="`Umgebung ${environment}. Keine Sicherheitsbewertung.`"
-            aria-hidden="true"
-            >{{ environment }}</span
-          >
-          <label
-            >Umgebung<select v-model="environment" :disabled="busy">
-              <option>TEST</option>
-              <option>STAGE</option>
-              <option>PROD</option>
-            </select></label
-          ><label
-            >API<select v-model="apiVersion" :disabled="busy">
-              <option value="v3">v3</option>
-              <option value="v2">v2</option>
-            </select></label
-          ><label
-            >Darstellung<select v-model="appearance">
-              <option value="system">System</option>
-              <option value="light">Hell</option>
-              <option value="dark">Dunkel</option>
-            </select></label
-          >
-        </div>
-      </header>
+        <button v-if="report" ref="exportTrigger" class="button secondary" @click="preview = true">
+          Bericht exportieren
+        </button>
+      </div>
       <main id="main-content" tabindex="-1">
-        <div class="page-heading">
-          <div>
-            <span class="eyebrow">FBFORGE INSPECT</span>
-            <h1 id="page-title" tabindex="-1">
-              {{ page === 'start' ? 'Klarheit für Ihre Integration.' : active.label }}
-            </h1>
-            <p>{{ active.description }}</p>
-          </div>
-          <button
-            v-if="report"
-            ref="exportTrigger"
-            class="button secondary"
-            @click="preview = true"
-          >
-            Bericht exportieren
-          </button>
-        </div>
-        <template v-if="page === 'start'"
-          ><section class="welcome panel">
-            <div class="welcome-copy">
-              <span class="badge neutral">FIT-Connect v2 &amp; v3</span>
-              <h2>Von einer ID<br />zum nachvollziehbaren Befund.</h2>
-              <p>
-                Destinationen, Routing und Schlüssel prüfen. Quellen sehen, Konfiguration verstehen
-                und Ergebnisse lokal weitergeben.
-              </p>
-              <button class="button primary" @click="page = 'destination'">
-                Destination prüfen <Icon name="arrow" />
-              </button>
-            </div>
-            <div class="welcome-art">
-              <img src="/inspect.png" alt="FBForge Inspect App-Symbol" />
+        <template v-if="page === 'start'">
+          <section class="start-task-section">
+            <p class="eyebrow">IHRE AUFGABE</p>
+            <h2>Was möchten Sie prüfen?</h2>
+            <p class="muted">
+              Wählen Sie eine Diagnose. Eingaben und Ergebnisse bleiben beim Wechsel erhalten.
+            </p>
+            <div class="start-grid">
+              <div v-for="item in pages.slice(1, 6)" :key="item.id" class="start-card panel">
+                <Icon :name="item.icon" />
+                <button class="start-task-button" @click="page = item.id">
+                  <strong>{{ item.label }}</strong>
+                </button>
+                <p>{{ item.description }}</p>
+                <span class="start-task-action" aria-hidden="true">Aufgabe öffnen</span>
+              </div>
             </div>
           </section>
-          <div class="start-grid">
-            <button
-              v-for="item in pages.slice(2, 6)"
-              :key="item.id"
-              class="start-card panel"
-              @click="page = item.id"
-            >
-              <Icon :name="item.icon" />
-              <h2>{{ item.label }}</h2>
-              <p>{{ item.description }}</p>
-              <span class="text-button">Öffnen →</span>
-            </button>
-          </div>
-          <div class="principles">
-            <span><i class="local-dot"></i> Ohne Zugangsdaten</span
-            ><span><i class="local-dot"></i> Öffentliche Quellen</span
-            ><span><i class="local-dot"></i> Keine automatische Diagnosespeicherung</span>
-          </div></template
-        >
+          <p class="hint">
+            Ohne Zugangsdaten. Öffentliche Quellen. Prüfstände bleiben nur in dieser Sitzung
+            erhalten.
+          </p>
+        </template>
         <template v-else-if="!['help', 'about'].includes(page)"
           ><div v-if="environment === 'STAGE' && page === 'routing'" class="notice">
             STAGE hat keine eigene Routing-API. Für diese Ansicht wird ausdrücklich PROD-Routing
@@ -274,7 +280,8 @@ async function save() {
           </div>
           <DiagnosisForm
             ref="form"
-            :key="page"
+            :key="sessionKey"
+            :draft="session.form"
             :page="page"
             :busy="busy"
             :api-version="apiVersion"
@@ -290,19 +297,8 @@ async function save() {
             <button class="button secondary" @click="cancel">Abbrechen</button>
           </div>
           <p v-if="error" class="notice error-notice" role="alert">{{ error }}</p>
-          <Results
-            v-if="report"
-            :report="report"
-            @destination="openDestination"
-            @schema="openSchema"
-            @area="
-              (id) => {
-                form?.setArea(id);
-                clear();
-              }
-            "
-          />
-          <div v-else-if="!busy && !error" class="empty-state">
+
+          <div v-if="!report && !busy && !error" class="empty-state">
             <Icon :name="active.icon" />
             <h2>Bereit für Ihre Prüfung</h2>
             <p>Ergebnis, Befunde und Quellen erscheinen hier nach dem Start.</p>
@@ -331,6 +327,9 @@ async function save() {
         <section v-else class="panel about">
           <img src="/inspect.png" alt="" width="88" height="88" />
           <h2>FBForge Inspect <span class="muted">0.1.0</span></h2>
+          <p class="mono">
+            Build: {{ buildCommit === 'local' ? 'Lokaler Arbeitsstand' : buildCommit }}
+          </p>
           <p>
             Eine eigenständige Open-Source-Desktop-App für die Diagnose öffentlicher FIT-Connect-
             und PVOG-Schnittstellen.
@@ -342,15 +341,30 @@ async function save() {
             Zertifizierung.
           </p>
         </section>
+        <KeepAlive>
+          <Results
+            v-if="report && !['start', 'help', 'about'].includes(page)"
+            :key="sessionKey"
+            :report="report"
+            @destination="openDestination"
+            @schema="openSchema"
+            @area="
+              (id) => {
+                form?.setArea(id);
+                clear();
+              }
+            "
+          />
+        </KeepAlive>
       </main>
-      <footer class="statusbar">
-        <span role="status" aria-live="polite"><i class="local-dot"></i>{{ status }}</span
-        ><span
-          >{{ environment }} · {{ apiVersion }}<span class="status-divider">|</span>FBForge Inspect
-          0.1.0</span
-        >
-      </footer>
     </div>
+    <footer class="statusbar">
+      <span role="status" aria-live="polite"><i class="local-dot"></i>{{ status }}</span
+      ><span
+        >{{ environment }} · {{ apiVersion }}<span class="status-divider">|</span>FBForge Inspect
+        0.1.0</span
+      >
+    </footer>
   </div>
   <dialog
     ref="exportDialog"

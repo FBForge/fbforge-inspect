@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { labels, type Report, type Status } from './contracts';
 const props = defineProps<{ report: Report }>();
 const emit = defineEmits<{
@@ -45,6 +45,28 @@ function identifier(value: unknown) {
   }
   return 'Keine ID veröffentlicht';
 }
+const keys = computed(() => records(props.report.data.keys));
+const schemaSearch = ref('');
+const serviceLimit = ref(10);
+watch(
+  () => props.report,
+  () => {
+    filter.value = 'all';
+    schemaSearch.value = '';
+    serviceLimit.value = 10;
+  },
+);
+const visibleServices = computed(() =>
+  services.value
+    .filter(
+      (s) =>
+        !schemaSearch.value ||
+        `${s.identifier} ${s.schemas.map((x: Item) => x.schemaUri).join(' ')}`
+          .toLowerCase()
+          .includes(schemaSearch.value.toLowerCase()),
+    )
+    .slice(0, serviceLimit.value),
+);
 const certificates = computed(() => records(props.report.data.certificates));
 function codeLabel(value: Item) {
   return [value.code, value.name].filter((x) => typeof x === 'string' && x).join(' · ');
@@ -203,9 +225,9 @@ function canOpen(value: unknown) {
                   class="text-button"
                   @click="emit('destination', row.destinationId)"
                 >
-                  Destination prüfen →</button
+                  Destination prüfen</button
                 ><button v-else-if="row.id" class="text-button" @click="emit('area', row.id)">
-                  Gebiet übernehmen →
+                  Gebiet übernehmen
                 </button>
               </td>
             </tr>
@@ -254,7 +276,7 @@ function canOpen(value: unknown) {
               <td>
                 <div v-for="(address, i) in context.addresses" :key="i">
                   <button class="text-button mono" @click="emit('destination', address.id)">
-                    {{ address.id }} →
+                    {{ address.id }}
                   </button>
                   <p class="hint">
                     {{
@@ -340,6 +362,17 @@ function canOpen(value: unknown) {
       </p>
       <pre tabindex="0">{{ JSON.stringify(report.data.pvogService, null, 2) }}</pre>
     </details>
+    <section v-if="keys.length" class="panel">
+      <h3>Öffentliche Schlüssel · JWK / JWKS</h3>
+      <article v-for="(key, index) in keys" :key="index" class="key-card">
+        <h4 class="mono">{{ key.kid || 'Ohne kid' }}</h4>
+        <p>{{ key.algorithm }} · {{ key.bits }} Bit · x5c: {{ key.x5cCount || 0 }} Zertifikate</p>
+        <details>
+          <summary>JWK-Felder einschließlich x5c anzeigen</summary>
+          <pre tabindex="0">{{ JSON.stringify(key.publicJwk, null, 2) }}</pre>
+        </details>
+      </article>
+    </section>
     <div v-if="certificates.length" class="panel">
       <h3>Zertifikatsketten</h3>
       <div class="table-scroll" tabindex="0" role="region" aria-label="Zertifikatsketten">
@@ -355,37 +388,78 @@ function canOpen(value: unknown) {
             <tr v-for="(certificate, index) in certificates" :key="index">
               <td>
                 {{ certificate.subject }}
+                <p class="hint">{{ certificate.role }} · x5c[{{ certificate.chainIndex }}]</p>
                 <p class="mono hint">{{ certificate.kid }} · {{ certificate.keyPath }}</p>
               </td>
               <td>
                 {{ certificate.issuer }}
                 <p class="hint">{{ certificate.notAfter }}</p>
               </td>
-              <td class="mono">{{ certificate.sha256 }}</td>
+              <td>
+                <span class="mono">{{ certificate.sha256 }}</span>
+                <details>
+                  <summary>Zertifikat und x5c anzeigen</summary>
+                  <p>
+                    Key Usage:
+                    {{
+                      certificate.keyUsagePresent ? list(certificate.keyUsage) : 'Nicht angegeben'
+                    }}
+                  </p>
+                  <p>Gültig ab {{ certificate.notBefore }}</p>
+                  <pre tabindex="0">{{ certificate.pem }}</pre>
+                  <p class="hint">x5c[{{ certificate.chainIndex }}] · Base64-DER</p>
+                  <pre tabindex="0">{{ certificate.x5c }}</pre>
+                </details>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <div v-if="services.length" class="panel">
-      <h3>Leistungen und Prozessnachrichten</h3>
-      <article v-for="(s, i) in services" :key="i" class="service">
-        <span class="eyebrow">{{ s.kind }}</span>
-        <h4 class="mono">{{ s.identifier }}</h4>
+    <section v-if="services.length" class="panel">
+      <h3>
+        Leistungen und Prozessnachrichten <span class="muted">({{ services.length }})</span>
+      </h3>
+      <label class="schema-filter"
+        >Leistung oder Schema suchen<input v-model="schemaSearch" type="search"
+      /></label>
+      <details v-for="(s, i) in visibleServices" :key="i" class="service">
+        <summary>
+          <span>{{ s.kind }}</span
+          ><span class="mono">{{ s.identifier }}</span
+          ><span class="badge neutral">{{ s.schemas.length }} Schemas</span>
+        </summary>
         <p class="muted">Regionen: {{ list(s.regions) || 'keine Angabe' }}</p>
-        <div v-for="(schema, j) in s.schemas" :key="j" class="schema-line">
-          <span class="mono">{{ schema.schemaUri }}</span
-          ><span class="badge neutral">{{ schema.mimeType }}</span
-          ><button
-            v-if="canOpen(schema.schemaUri)"
-            class="text-button"
-            @click="emit('schema', schema.schemaUri)"
-          >
-            Schema ansehen →
-          </button>
+        <div
+          class="service-schemas"
+          tabindex="0"
+          role="region"
+          :aria-label="`Schemas für ${s.identifier}`"
+        >
+          <div v-for="(schema, j) in s.schemas" :key="j" class="schema-line">
+            <span class="mono">{{ schema.schemaUri }}</span
+            ><span class="badge neutral">{{ schema.mimeType }}</span>
+            <button
+              v-if="canOpen(schema.schemaUri)"
+              class="text-button"
+              @click="emit('schema', schema.schemaUri)"
+            >
+              Schema ansehen
+            </button>
+          </div>
         </div>
-      </article>
-    </div>
+      </details>
+      <button
+        v-if="visibleServices.length === serviceLimit && services.length > serviceLimit"
+        class="button secondary"
+        @click="serviceLimit += 10"
+      >
+        Weitere Leistungen anzeigen
+      </button>
+      <p v-if="!visibleServices.length" class="hint">
+        Keine passende Leistung oder Schemareferenz.
+      </p>
+    </section>
     <div v-if="structure.length" class="panel">
       <h3>
         Struktur <span class="muted">{{ report.data.dialect || 'Dialekt nicht angegeben' }}</span>
@@ -422,7 +496,7 @@ function canOpen(value: unknown) {
       <div v-for="(reference, index) in references" :key="index" class="schema-line">
         <span class="mono">{{ reference.target }}</span
         ><button v-if="reference.url" class="text-button" @click="emit('schema', reference.url)">
-          Referenz vorbereiten →</button
+          Referenz vorbereiten</button
         ><span v-else class="hint">Lokale oder nicht direkt abrufbare Referenz</span>
       </div>
     </div>

@@ -33,5 +33,5 @@ export function useTheme() {
       /* Optional preference. */
     }
   });
-  return { appearance };
+  return { appearance, systemDark };
 }

@@ -1,21 +1,34 @@
+import { selectAppearance } from './theme';
 import { test, expect } from '@playwright/test';
 test('system changes apply live, manual choice survives system changes and reload', async ({
   page,
 }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto('/');
-  const picker = page.getByRole('combobox', { name: 'Darstellung', exact: true });
-  await expect(picker).toHaveValue('system');
+
+  await page.getByRole('button', { name: 'Darstellung wählen', exact: true }).click();
+  await expect(
+    page
+      .getByRole('group', { name: 'Darstellung', exact: true })
+      .getByRole('button', { name: 'System', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Escape');
   await page.emulateMedia({ colorScheme: 'dark' });
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await picker.selectOption('light');
+  await selectAppearance(page, 'light');
   await page.emulateMedia({ colorScheme: 'light' });
   await page.emulateMedia({ colorScheme: 'dark' });
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await page.reload();
-  await expect(picker).toHaveValue('light');
+  await page.getByRole('button', { name: 'Darstellung wählen', exact: true }).click();
+  await expect(
+    page
+      .getByRole('group', { name: 'Darstellung', exact: true })
+      .getByRole('button', { name: 'Hell', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Escape');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await picker.selectOption('system');
+  await selectAppearance(page, 'system');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 });
 test('unavailable preference storage does not block theme selection or navigation', async ({
@@ -30,7 +43,7 @@ test('unavailable preference storage does not block theme selection or navigatio
     };
   });
   await page.goto('/');
-  await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption('dark');
+  await selectAppearance(page, 'dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page
     .getByRole('navigation', { name: 'Hauptnavigation' })
@@ -47,7 +60,7 @@ test('toolbar labels remain inside the header at minimum and standard window siz
     await page.setViewportSize({ width, height: 800 });
     await page.goto('/');
     const header = await page.locator('.topbar').boundingBox();
-    for (const name of ['Umgebung', 'API', 'Darstellung']) {
+    for (const name of ['Umgebung', 'API']) {
       const box = await page
         .getByRole('combobox', { name, exact: true })
         .locator('..')
@@ -68,7 +81,7 @@ test('enabled form fields have a visible boundary in both themes', async ({ page
     .getByRole('button', { name: 'Destination prüfen', exact: true })
     .click();
   for (const theme of ['light', 'dark']) {
-    await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption(theme);
+    await selectAppearance(page, theme);
     const ratio = await page
       .getByRole('textbox', { name: 'Destination-ID', exact: true })
       .evaluate((element) => {

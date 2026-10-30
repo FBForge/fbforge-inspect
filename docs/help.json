@@ -61,7 +61,8 @@
       "JWK/JWKS können eingefügt, aus einer lokalen Datei geladen oder per öffentlicher HTTPS-URL abgerufen werden. Private und symmetrische Schlüssel werden abgewiesen. Bitte ausschließlich öffentliche Daten verwenden.",
       "FBForge Inspect prüft JWK-Felder, kid, RSA-Größe, Algorithmus und key_ops. Der öffentliche Schlüssel muss zum ersten x5c-Zertifikat passen. Zertifikatslaufzeit, Kettensignaturen und PKIX-Vertrauen sind eigenständige Befunde.",
       "Die Wurzel aus x5c gilt nicht automatisch als vertrauenswürdig. Für PKIX sind unabhängig bezogene öffentliche CA-Zertifikate als PEM auszuwählen. Die Zugehörigkeit dieser CA zur Verwaltungs-PKI muss unabhängig feststehen. Ohne gewählten Anker bleibt Vertrauen unbekannt.",
-      "TEST erlaubt selbst erzeugte Testzertifikate. Ein erfolgreicher TEST-Einzelbefund beweist keine Produktionstauglichkeit. STAGE und PROD benötigen das Profil der Verwaltungs-PKI."
+      "TEST erlaubt selbst erzeugte Testzertifikate. Ein erfolgreicher TEST-Einzelbefund beweist keine Produktionstauglichkeit. STAGE und PROD benötigen das Profil der Verwaltungs-PKI.",
+      "Öffentliche JWK-Felder einschließlich x5c sowie jedes Zertifikat als PEM und Base64-DER sind direkt im Ergebnis einsehbar. JWK key_ops und die Key-Usage-Erweiterung des Teilnehmerzertifikats x5c[0] werden getrennt geprüft. Fehlt diese Erweiterung bei einem TEST-Zertifikat, bleibt das Zertifikatsprofil nicht nachgewiesen. Ein ausdrücklich widersprüchlicher Verwendungszweck wird weiterhin als Fehler angezeigt. In PROD ist die fehlende Profilangabe ein Fehler."
     ],
     "steps": [],
     "example": null

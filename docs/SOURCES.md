@@ -26,3 +26,5 @@ Die Serversammlung des Routing-OpenAPI-Artefakts enthält noch /v1-Beispieladres
 Die 3072-Bit-Vorgabe gilt für Destination-Schlüssel. Die öffentliche Anleitung fordert für Adressierungssignaturen einen 4096-Bit-Schlüssel, diese Regel wird separat angewendet. Die App verwendet feste umgebungsbezogene JWKS-URLs und eine enge Liste bekannter Aussteller. Tokenfelder wie jku steuern keinen Netzwerkabruf.
 
 Am 30.10.2026 wurden die offiziellen XZuFi-Pakete 2.2.0/2.3.1 und die PVOG-OpenAPI erneut tatsächlich abgerufen. [Feldzuordnung und Beweisgrenzen](PVOG-MAPPING.md) dokumentieren die vollständige Quellenerhaltung, Codelistenbindung und Parameterzuordnung. [Artefaktprüfsummen](source-artifacts.json) binden die lokale Paketprüfung an diese Quellen. Das Vertragsinventar ersetzt keine vollständige XSD- oder Instanzvalidierung.
+
+Die gemeinsamen öffentlichen Theme-Tokens, Desktopmaße und das Darstellungsmenü folgen [FBForge Connect 0.3.0](https://github.com/FBForge/fbforge-connect/tree/fa80c1cfdccb07709de0525fb59b2f19a9c4298d/frontend/src) unter EUPL-1.2. Inspect verwendet die Original-Theme-Tokens einschließlich der Hoverfarben.

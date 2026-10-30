@@ -62,6 +62,32 @@ final class Certificates {
       JsonObject info = new JsonObject();
       info.addProperty("keyPath", path);
       info.addProperty("kid", key.getKeyID());
+      info.addProperty("chainIndex", i);
+      info.addProperty("role", i == 0 ? "Teilnehmerzertifikat" : "Ausstellerzertifikat");
+      info.addProperty("x5c", x5c.get(i).toString());
+      info.addProperty(
+          "pem",
+          "-----BEGIN CERTIFICATE-----\n"
+              + Base64.getMimeEncoder(64, new byte[] {'\n'}).encodeToString(c.getEncoded())
+              + "\n-----END CERTIFICATE-----");
+      info.addProperty("keyUsagePresent", c.getKeyUsage() != null);
+      JsonArray keyUsage = new JsonArray();
+      String[] usageNames = {
+        "digitalSignature",
+        "nonRepudiation",
+        "keyEncipherment",
+        "dataEncipherment",
+        "keyAgreement",
+        "keyCertSign",
+        "cRLSign",
+        "encipherOnly",
+        "decipherOnly"
+      };
+      boolean[] certificateUsage = c.getKeyUsage();
+      if (certificateUsage != null)
+        for (int bit = 0; bit < Math.min(certificateUsage.length, usageNames.length); bit++)
+          if (certificateUsage[bit]) keyUsage.add(usageNames[bit]);
+      info.add("keyUsage", keyUsage);
       info.addProperty("subject", c.getSubjectX500Principal().getName());
       info.addProperty("issuer", c.getIssuerX500Principal().getName());
       info.addProperty("notBefore", c.getNotBefore().toInstant().toString());
@@ -107,13 +133,25 @@ final class Certificates {
     r.data.getAsJsonArray("certificates").addAll(certificates);
     boolean[] usage = leaf.getKeyUsage();
     boolean signing = key.getAlgorithm() != null && key.getAlgorithm().getName().equals("PS512");
-    r.check(
-        usage != null
-            && (signing ? usage.length > 1 && usage[0] && usage[1] : usage.length > 2 && usage[2]),
-        "Zertifikatsverwendung",
-        signing ? "digitalSignature und nonRepudiation erwartet." : "keyEncipherment erwartet.",
-        path + ".x5c[0]",
-        KeyDiagnostics.SOURCE);
+    if (usage == null) {
+      r.add(
+          r.environment.equals("TEST") ? "unknown" : "error",
+          "X.509-Key-Usage nicht angegeben",
+          "x5c[0] enthält keine Key-Usage-Erweiterung. Das ist kein Widerspruch zu JWK key_ops."
+              + " Das FITKO-Zertifikatsprofil ist damit nicht vollständig nachgewiesen.",
+          path + ".x5c[0]",
+          KeyDiagnostics.SOURCE + "#vorgaben-für-eingesetzte-x509-zertifikate",
+          "Zertifikatsprofil unabhängig von den JWK-Feldern prüfen.",
+          "Ein TEST-Zertifikat belegt keine Produktionstauglichkeit.");
+    } else {
+      r.check(
+          signing ? usage.length > 1 && usage[0] && usage[1] : usage.length > 2 && usage[2],
+          "X.509-Zertifikatsverwendung",
+          (signing ? "digitalSignature und nonRepudiation" : "keyEncipherment")
+              + " am Teilnehmerzertifikat x5c[0] erwartet. JWK key_ops wird separat geprüft.",
+          path + ".x5c[0]",
+          KeyDiagnostics.SOURCE + "#vorgaben-für-eingesetzte-x509-zertifikate");
+    }
     boolean pss = leaf.getSigAlgOID().equals("1.2.840.113549.1.1.10"), sha512 = false;
     if (pss && leaf.getSigAlgParams() != null) {
       var parameters =

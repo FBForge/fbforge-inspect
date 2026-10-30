@@ -116,11 +116,24 @@ try {
     );
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await expect(page.getByRole('heading', { name: 'Klarheit für Ihre Integration.' })).toBeVisible({
+  await expect(page.getByRole('heading', { name: 'Start', exact: true })).toBeVisible({
     timeout: 20000,
   });
   results.push('Native WebView2 frontend loaded');
   await page.screenshot({ path: join(output, 'windows-start.png') });
+  if (process.env.GITHUB_SHA) {
+    await page
+      .getByRole('navigation', { name: 'Hauptnavigation' })
+      .getByRole('button', { name: 'Info', exact: true })
+      .click();
+    await expect(
+      page.getByText(`Build: ${process.env.CANDIDATE_SOURCE_COMMIT || process.env.GITHUB_SHA}`, {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await page.screenshot({ path: join(output, 'windows-build-info.png') });
+    results.push('Native Info build identity matches the requested source commit');
+  }
   await page
     .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('button', { name: 'Fachdatenschemata', exact: true })
@@ -133,6 +146,31 @@ try {
     timeout: 15000,
   });
   results.push('Native UI → Rust → bundled Java → result round trip passed');
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Routing prüfen', exact: true })
+    .click();
+  await page.getByRole('textbox', { name: 'LeiKa-Schlüssel', exact: true }).fill('99150085001000');
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Fachdatenschemata', exact: true })
+    .click();
+  await expect(page.getByRole('textbox', { name: 'JSON Schema / XSD', exact: true })).toHaveValue(
+    '{"type":"object","properties":{"d":{"type":"string"}}}',
+  );
+  await expect(page.getByRole('heading', { name: 'Schema eingelesen', exact: true })).toBeVisible();
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Routing prüfen', exact: true })
+    .click();
+  await expect(page.getByRole('textbox', { name: 'LeiKa-Schlüssel', exact: true })).toHaveValue(
+    '99150085001000',
+  );
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Fachdatenschemata', exact: true })
+    .click();
+  results.push('Native workspace navigation preserves separate inputs and completed reports');
   await page.getByRole('button', { name: 'Bericht exportieren' }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(page.getByRole('dialog').locator('pre')).not.toContainText('rawResponses');
@@ -201,7 +239,11 @@ try {
       );
     }
   }
-  await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption('dark');
+  await page.getByRole('button', { name: 'Darstellung wählen', exact: true }).click();
+  await page
+    .getByRole('group', { name: 'Darstellung', exact: true })
+    .getByRole('button', { name: 'Dunkel', exact: true })
+    .click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.screenshot({ path: join(output, 'windows-schema-dark.png') });
   await page
@@ -244,6 +286,40 @@ try {
     await page.screenshot({ path: join(output, 'windows-live-test-areas.png') });
     results.push(
       'Native UI → bundled Java → public TEST area search returned real results over read-only GET',
+    );
+    await page
+      .getByRole('navigation', { name: 'Hauptnavigation' })
+      .getByRole('button', { name: 'Destination prüfen', exact: true })
+      .click();
+    await page
+      .getByRole('textbox', { name: 'Destination-ID', exact: true })
+      .fill('b21c51d0-324b-4df4-ae6c-c0568a2bb067');
+    await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+    await expect(
+      page.getByRole('heading', { name: 'Öffentliche Schlüssel · JWK / JWKS', exact: true }),
+    ).toBeVisible({ timeout: 30000 });
+    await page.getByRole('button', { name: 'Bericht exportieren', exact: true }).click();
+    const jwkReport = JSON.parse(await page.getByRole('dialog').locator('pre').innerText());
+    expect(jwkReport.operation).toBe('destination');
+    expect(jwkReport.data.keys.length).toBeGreaterThan(0);
+    expect(jwkReport.data.keys[0].publicJwk.x5c.length).toBeGreaterThan(0);
+    expect(jwkReport.data.certificates[0].pem).toContain('BEGIN CERTIFICATE');
+    expect(jwkReport.rawResponses).toBeUndefined();
+    expect(jwkReport.requests.every((request) => request.method === 'GET')).toBe(true);
+    if (jwkReport.data.certificates[0].keyUsagePresent === false) {
+      expect(
+        jwkReport.findings.some(
+          (f) => f.title === 'X.509-Key-Usage nicht angegeben' && f.status === 'unknown',
+        ),
+      ).toBe(true);
+    }
+    await writeFile(join(output, 'live-test-jwk.json'), JSON.stringify(jwkReport, null, 2));
+    await page.keyboard.press('Escape');
+    await page.getByText('JWK-Felder einschließlich x5c anzeigen', { exact: true }).first().click();
+    await page.locator('.key-card').first().scrollIntoViewIfNeeded();
+    await page.screenshot({ path: join(output, 'windows-public-jwk.png') });
+    results.push(
+      'Native TEST destination publishes JWK and x5c; absent certificate usage stays distinct from JWK operations',
     );
   }
   if (errors.length)

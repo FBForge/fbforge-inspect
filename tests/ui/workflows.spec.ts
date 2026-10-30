@@ -1,5 +1,12 @@
+import { selectAppearance } from './theme';
 import { test, expect } from '@playwright/test';
 const uuid = '00000000-0000-4000-8000-000000000001';
+async function navigate(page: import('@playwright/test').Page, name: string) {
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name, exact: true })
+    .click();
+}
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     const state = {
@@ -58,6 +65,152 @@ test.beforeEach(async ({ page }) => {
     });
   });
   await page.goto('/');
+});
+test('navigation retains independent drafts and reports across pages, environments and versions', async ({
+  page,
+}) => {
+  await navigate(page, 'Destination prüfen');
+  await page.getByRole('textbox', { name: 'Destination-ID', exact: true }).fill(uuid);
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Bereit für Ihre Prüfung', exact: true }),
+  ).toHaveCount(0);
+  await navigate(page, 'Routing prüfen');
+  await page.getByRole('textbox', { name: 'LeiKa-Schlüssel', exact: true }).fill('99150085001000');
+  await page.getByRole('textbox', { name: 'Gebietsschlüssel', exact: true }).fill('010010000000');
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  await navigate(page, 'Hilfe');
+  await navigate(page, 'Destination prüfen');
+  await expect(page.getByRole('textbox', { name: 'Destination-ID', exact: true })).toHaveValue(
+    uuid,
+  );
+  await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
+  await page.getByRole('combobox', { name: 'Umgebung', exact: true }).selectOption('PROD');
+  await expect(page.getByRole('textbox', { name: 'Destination-ID', exact: true })).toHaveValue('');
+  await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toHaveCount(0);
+  await page.getByRole('combobox', { name: 'Umgebung', exact: true }).selectOption('TEST');
+  await expect(page.getByRole('textbox', { name: 'Destination-ID', exact: true })).toHaveValue(
+    uuid,
+  );
+  await page.getByRole('combobox', { name: 'API', exact: true }).selectOption('v2');
+  await expect(page.getByRole('textbox', { name: 'Destination-ID', exact: true })).toHaveValue('');
+  await page.getByRole('combobox', { name: 'API', exact: true }).selectOption('v3');
+  await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
+  await navigate(page, 'Routing prüfen');
+  await expect(page.getByRole('textbox', { name: 'LeiKa-Schlüssel', exact: true })).toHaveValue(
+    '99150085001000',
+  );
+  await expect(page.getByRole('textbox', { name: 'Gebietsschlüssel', exact: true })).toHaveValue(
+    '010010000000',
+  );
+  await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => (window as any).inspectTest.calls.filter((c: any) => c.command === 'diagnose').length,
+    ),
+  ).toBe(2);
+  await page.reload();
+  await navigate(page, 'Destination prüfen');
+  await expect(page.getByRole('textbox', { name: 'Destination-ID', exact: true })).toHaveValue('');
+});
+test('many schemas stay collapsed and searchable, and preparing one preserves the destination', async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    (window as any).inspectTest.diagnosisData = {
+      destination: {
+        destinationId: 'fixture',
+        publicServices: [
+          {
+            identifier: 'service-context',
+            regions: ['DE01'],
+            submissionSchemas: Array.from({ length: 23 }, (_, i) => ({
+              schemaUri: `https://example.org/schema-${i}.json`,
+              mimeType: 'application/json',
+            })),
+          },
+        ],
+      },
+    };
+  });
+  await navigate(page, 'Destination prüfen');
+  await page.getByRole('textbox', { name: 'Destination-ID', exact: true }).fill(uuid);
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  await expect(page.getByText('23 Schemas', { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Schema ansehen', exact: true }).first(),
+  ).not.toBeVisible();
+  await page
+    .getByRole('searchbox', { name: 'Leistung oder Schema suchen', exact: true })
+    .fill('schema-22');
+  await page.locator('.service > summary').click();
+  await page.getByRole('button', { name: 'Schema ansehen', exact: true }).last().click();
+  await expect(
+    page.getByRole('textbox', { name: 'Öffentliche HTTPS-URL', exact: true }),
+  ).toHaveValue('https://example.org/schema-22.json');
+  await navigate(page, 'Destination prüfen');
+  await expect(page.getByRole('textbox', { name: 'Destination-ID', exact: true })).toHaveValue(
+    uuid,
+  );
+  await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('searchbox', { name: 'Leistung oder Schema suchen', exact: true }),
+  ).toHaveValue('schema-22');
+  await expect(page.locator('.service')).toHaveAttribute('open', '');
+  expect(
+    await page.evaluate(
+      () => (window as any).inspectTest.calls.filter((c: any) => c.command === 'diagnose').length,
+    ),
+  ).toBe(1);
+});
+test('public JWK and x5c certificate representations are available without raw responses', async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    (window as any).inspectTest.diagnosisData = {
+      keys: [
+        {
+          kid: 'public-key',
+          algorithm: 'RSA-OAEP-256',
+          bits: 3072,
+          x5cCount: 1,
+          publicJwk: {
+            kty: 'RSA',
+            key_ops: ['wrapKey'],
+            alg: 'RSA-OAEP-256',
+            x5c: ['public-base64-certificate'],
+          },
+        },
+      ],
+      certificates: [
+        {
+          kid: 'public-key',
+          chainIndex: 0,
+          role: 'Teilnehmerzertifikat',
+          subject: 'CN=Public Fixture',
+          issuer: 'CN=Public Fixture',
+          sha256: 'public-digest',
+          keyUsagePresent: false,
+          pem: '-----BEGIN CERTIFICATE-----\npublic-base64-certificate\n-----END CERTIFICATE-----',
+          x5c: 'public-base64-certificate',
+        },
+      ],
+    };
+  });
+  await navigate(page, 'Schlüssel prüfen');
+  await page
+    .getByRole('textbox', { name: 'Öffentliches JWK / JWKS', exact: true })
+    .fill('{"kty":"RSA"}');
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  await page.getByText('JWK-Felder einschließlich x5c anzeigen', { exact: true }).click();
+  await expect(page.locator('.key-card pre')).toContainText('"key_ops"');
+  await expect(page.locator('.key-card pre')).toContainText('"x5c"');
+  await page.getByText('Zertifikat und x5c anzeigen', { exact: true }).click();
+  await expect(page.getByText('Key Usage: Nicht angegeben', { exact: true })).toBeVisible();
+  await expect(
+    page.locator('table pre').filter({ hasText: '-----BEGIN CERTIFICATE-----' }),
+  ).toBeVisible();
 });
 test('PVOG retains roles, source contexts and parameter languages without assigning a foreign response', async ({
   page,
@@ -137,9 +290,9 @@ test('PVOG retains roles, source contexts and parameter languages without assign
   ).toBeVisible();
   await expect(page.getByRole('cell', { name: /foreign-parameter/ })).toHaveCount(0);
   await expect(page.locator('img[src="https://example.org/not-loaded"]')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'unverified-destination →' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'unverified-destination' })).toHaveCount(0);
   await page.screenshot({ path: 'test-results/pvog-contexts-light.png', fullPage: true });
-  await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption('dark');
+  await selectAppearance(page, 'dark');
   await page.setViewportSize({ width: 700, height: 650 });
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
@@ -214,7 +367,7 @@ test('private JWK is rejected before invocation', async ({ page }) => {
 test('both themes have no horizontal overflow and navigation is keyboard reachable', async ({
   page,
 }) => {
-  await page.getByRole('combobox', { name: 'Darstellung', exact: true }).selectOption('dark');
+  await selectAppearance(page, 'dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.screenshot({ path: 'test-results/start-dark.png' });
   await page.setViewportSize({ width: 700, height: 650 });

@@ -1,33 +1,19 @@
 <script setup lang="ts">
 import { reactive, watch, ref } from 'vue';
 import type { Page } from './contracts';
+import type { DiagnosisDraft } from './session';
 import { containsPrivateMaterial } from './inputs';
-const props = defineProps<{ page: Page; busy: boolean; apiVersion: string }>();
+const props = defineProps<{
+  page: Page;
+  busy: boolean;
+  apiVersion: string;
+  draft: DiagnosisDraft;
+}>();
 const emit = defineEmits<{
   run: [operation: string, input: Record<string, unknown>];
   changed: [];
 }>();
-const form = reactive({
-  destinationId: '',
-  service: '',
-  region: '',
-  regionKind: 'ars',
-  schema: '',
-  mime: '',
-  metadata: '',
-  compare: false,
-  revocation: false,
-  trustPem: '',
-  processModelId: '',
-  messageId: '',
-  fromDestinationId: '',
-  toDestinationId: '',
-  text: '',
-  url: '',
-  areaSearch: '',
-  pvog: false,
-  lbId: '',
-});
+const form = reactive(props.draft);
 const fileError = ref('');
 const reading = ref(false);
 watch(form, () => emit('changed'));
@@ -293,7 +279,7 @@ defineExpose({
         "
         type="submit"
       >
-        {{ busy ? 'Prüfung läuft …' : 'Prüfung starten' }}<span aria-hidden="true">→</span>
+        {{ busy ? 'Prüfung läuft …' : 'Prüfung starten' }}
       </button>
     </div>
   </form>

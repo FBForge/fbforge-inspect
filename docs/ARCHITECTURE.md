@@ -39,3 +39,9 @@ Tauri und Vue halten die Anwendung in der bestehenden FBForge-Produktfamilie. Ja
 Keine empfangene CA-Wurzel wird automatisch zum Vertrauensanker. Ein ausdrücklich geladener Anker beweist PKIX-Vertrauen gegen diese CA, deren V-PKI-Zugehörigkeit ist separat zu prüfen. OCSP/CRL werden unabhängig davon bewertet. Referenzen von JSON Schema und XSD werden nie automatisch aufgelöst. Eine Strukturansicht wird nicht als vollständige Validierung ausgegeben.
 
 `docs/help.json` ist die gemeinsame Hilfequelle. Vue bündelt sie offline, `scripts/build-help.mjs` exportiert daraus die statische Websitehilfe. Lokale Arbeitsplanung und Abnahmebelege liegen in `.local/` und werden nicht versioniert.
+
+## Arbeitsstände der Oberfläche
+
+Eingaben und Ergebnisberichte bleiben im Arbeitsspeicher nach Bereich, Umgebung und API-Version getrennt erhalten. Ein Bereichswechsel löst keinen neuen Abruf aus. Änderungen an der Eingabe verwerfen nur das zugehörige Ergebnis, neue Prüfungen ersetzen nur diesen Arbeitsstand. Beim Schließen der App endet die Sitzung. Diagnosen werden nicht automatisch auf Datenträger geschrieben. Die Darstellungspräferenz bleibt die einzige automatisch gespeicherte Einstellung.
+
+Die öffentliche JWK-Zusammenfassung enthält den öffentlichen JWK einschließlich x5c. Jedes Zertifikat erhält Kettenindex, Rolle, PEM und Key-Usage-Angaben. JWK-Operation und X.509-Verwendung werden getrennt geprüft. Eine fehlende Key-Usage-Erweiterung im TEST-Beispiel ist kein ausdrücklicher Widerspruch zu wrapKey. In PROD bleibt das vollständige FITKO-Zertifikatsprofil verpflichtend.

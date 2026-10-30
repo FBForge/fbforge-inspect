@@ -114,6 +114,9 @@ public final class KeyDiagnostics {
         item.addProperty("kid", key.getKeyID());
         item.addProperty("algorithm", alg);
         item.addProperty("bits", key.size());
+        item.add("publicJwk", JsonParser.parseString(key.toPublicJWK().toJSONString()));
+        item.addProperty(
+            "x5cCount", key.getX509CertChain() == null ? 0 : key.getX509CertChain().size());
         summary.add(item);
         Certificates.inspect(key, report, http, options, path);
       } catch (Exception e) {
