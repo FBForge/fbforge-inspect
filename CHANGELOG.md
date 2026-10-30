@@ -4,8 +4,8 @@
 
 - Connect-0.3-Darstellung mit identischen Schrift-, Farb- und Hover-Tokens, gemeinsamer Kopfzeile und Darstellungsmenü. Zusätzliche Aktionspfeile entfernt.
 - Eingaben, Fehler und abgeschlossene Diagnosen bleiben je Bereich, Umgebung und API-Version während der Sitzung erhalten.
-- Leistungs-/Schemalisten sind kompakt, suchbar und aufklappbar. Öffentliche JWK-Felder, x5c, PEM und Zertifikatsverwendungen sind direkt einsehbar.
-- Fehlende X.509-Key-Usage bei TEST-Zertifikaten wird getrennt von einer ausdrücklich unpassenden Zertifikatsverwendung bewertet. JWK key_ops bleibt eine eigene Prüfung.
+- Leistungs-/Schemalisten sind kompakt, suchbar und aufklappbar. Öffentliche JWK-Felder, x5c und PEM sind direkt einsehbar.
+- Die Verwendungsdiagnose bewertet die JWK-Felder key_ops und use zusammen mit alg. X.509-Key-Usage wird nicht mehr als JWK-Anforderung bewertet.
 - Info nennt bei CI-Builds den genauen Quellcommit.
 
 Erste Desktop-Version von FBForge Inspect zum Prüfen öffentlicher FIT-Connect-Zustellpunkte, Routing-Ergebnisse und PVOG-Adressierungsdaten.

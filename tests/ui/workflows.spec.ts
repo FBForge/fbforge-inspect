@@ -191,7 +191,6 @@ test('public JWK and x5c certificate representations are available without raw r
           subject: 'CN=Public Fixture',
           issuer: 'CN=Public Fixture',
           sha256: 'public-digest',
-          keyUsagePresent: false,
           pem: '-----BEGIN CERTIFICATE-----\npublic-base64-certificate\n-----END CERTIFICATE-----',
           x5c: 'public-base64-certificate',
         },
@@ -207,7 +206,7 @@ test('public JWK and x5c certificate representations are available without raw r
   await expect(page.locator('.key-card pre')).toContainText('"key_ops"');
   await expect(page.locator('.key-card pre')).toContainText('"x5c"');
   await page.getByText('Zertifikat und x5c anzeigen', { exact: true }).click();
-  await expect(page.getByText('Key Usage: Nicht angegeben', { exact: true })).toBeVisible();
+  await expect(page.getByText('Key Usage:', { exact: false })).toHaveCount(0);
   await expect(
     page.locator('table pre').filter({ hasText: '-----BEGIN CERTIFICATE-----' }),
   ).toBeVisible();

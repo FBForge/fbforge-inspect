@@ -263,7 +263,7 @@ class CryptoTest {
   }
 
   @Test
-  void absentTestCertificateUsageIsNotAnExplicitJwkUsageConflict() throws Exception {
+  void absentCertificateUsageDoesNotScoreTheJwkInEitherEnvironment() throws Exception {
     var certificate =
         new JcaX509v3CertificateBuilder(
                 new X500Name("CN=Public Test Certificate"),
@@ -284,12 +284,7 @@ class CryptoTest {
       Report report = new Report("keys", environment, "v3");
       KeyDiagnostics.inspect(
           key.toJSONString(), report, new PublicHttp(report), new com.google.gson.JsonObject());
-      assertTrue(
-          report.findings.stream()
-              .anyMatch(
-                  f ->
-                      f.title().equals("X.509-Key-Usage nicht angegeben")
-                          && f.status().equals(environment.equals("TEST") ? "unknown" : "error")));
+      assertNoCertificateUsageFindings(report);
       assertTrue(
           report.findings.stream()
               .anyMatch(
@@ -303,13 +298,13 @@ class CryptoTest {
               .toString());
       var cert = report.data.getAsJsonArray("certificates").get(0).getAsJsonObject();
       assertEquals(0, cert.get("chainIndex").getAsInt());
-      assertFalse(cert.get("keyUsagePresent").getAsBoolean());
+      assertFalse(cert.has("keyUsagePresent"));
       assertTrue(cert.get("pem").getAsString().contains("BEGIN CERTIFICATE"));
     }
   }
 
   @Test
-  void explicitlyIncompatibleCertificateUsageRemainsAnError() throws Exception {
+  void certificateUsageDoesNotOverrideValidJwkOperations() throws Exception {
     var raw =
         com.google.gson.JsonParser.parseString(leafJwk(leafKey.getPublic()).toJSONString())
             .getAsJsonObject();
@@ -320,11 +315,7 @@ class CryptoTest {
     Report report = new Report("keys", "TEST", "v3");
     KeyDiagnostics.inspect(
         raw.toString(), report, new PublicHttp(report), new com.google.gson.JsonObject());
-    assertTrue(
-        report.findings.stream()
-            .anyMatch(
-                f ->
-                    f.title().equals("X.509-Zertifikatsverwendung") && f.status().equals("error")));
+    assertNoCertificateUsageFindings(report);
     assertTrue(
         report.findings.stream()
             .anyMatch(
@@ -332,7 +323,7 @@ class CryptoTest {
   }
 
   @Test
-  void issuerCertificateUsageIsNotAppliedToTheParticipantKey() throws Exception {
+  void certificateChainRemainsInspectableWithoutUsageScoring() throws Exception {
     Report report = new Report("keys", "TEST", "v3");
     Certificates.inspect(
         leafJwk(leafKey.getPublic()),
@@ -340,13 +331,7 @@ class CryptoTest {
         new PublicHttp(report),
         new com.google.gson.JsonObject(),
         "$.keys[0]");
-    var usages =
-        report.findings.stream()
-            .filter(f -> f.title().equals("X.509-Zertifikatsverwendung"))
-            .toList();
-    assertEquals(1, usages.size());
-    assertEquals("confirmed", usages.getFirst().status());
-    assertEquals("$.keys[0].x5c[0]", usages.getFirst().path());
+    assertNoCertificateUsageFindings(report);
     assertEquals(
         "Ausstellerzertifikat",
         report
@@ -356,6 +341,35 @@ class CryptoTest {
             .getAsJsonObject()
             .get("role")
             .getAsString());
+  }
+
+  static void assertNoCertificateUsageFindings(Report report) {
+    assertFalse(
+        report.findings.stream()
+            .anyMatch(
+                f ->
+                    f.title().contains("Key-Usage")
+                        || f.title().contains("Zertifikatsverwendung")));
+  }
+
+  @Test
+  void incompatibleJwkOperationsStillFailIndependentlyOfCertificateUsage() throws Exception {
+    for (String alg : List.of("RSA-OAEP-256", "PS512")) {
+      var raw =
+          com.google.gson.JsonParser.parseString(leafJwk(leafKey.getPublic()).toJSONString())
+              .getAsJsonObject();
+      raw.addProperty("alg", alg);
+      var ops = new com.google.gson.JsonArray();
+      ops.add(alg.equals("PS512") ? "wrapKey" : "verify");
+      raw.add("key_ops", ops);
+      Report report = new Report("keys", "TEST", "v3");
+      KeyDiagnostics.inspect(
+          raw.toString(), report, new PublicHttp(report), new com.google.gson.JsonObject());
+      assertTrue(
+          report.findings.stream()
+              .anyMatch(f -> f.title().equals("Schlüsseloperation") && f.status().equals("error")));
+      assertNoCertificateUsageFindings(report);
+    }
   }
 
   @Test

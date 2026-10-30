@@ -306,20 +306,16 @@ try {
     expect(jwkReport.data.certificates[0].pem).toContain('BEGIN CERTIFICATE');
     expect(jwkReport.rawResponses).toBeUndefined();
     expect(jwkReport.requests.every((request) => request.method === 'GET')).toBe(true);
-    if (jwkReport.data.certificates[0].keyUsagePresent === false) {
-      expect(
-        jwkReport.findings.some(
-          (f) => f.title === 'X.509-Key-Usage nicht angegeben' && f.status === 'unknown',
-        ),
-      ).toBe(true);
-    }
+    expect(
+      jwkReport.findings.some((f) => /X\.509.*(Key-Usage|Zertifikatsverwendung)/.test(f.title)),
+    ).toBe(false);
     await writeFile(join(output, 'live-test-jwk.json'), JSON.stringify(jwkReport, null, 2));
     await page.keyboard.press('Escape');
     await page.getByText('JWK-Felder einschließlich x5c anzeigen', { exact: true }).first().click();
     await page.locator('.key-card').first().scrollIntoViewIfNeeded();
     await page.screenshot({ path: join(output, 'windows-public-jwk.png') });
     results.push(
-      'Native TEST destination publishes JWK and x5c; absent certificate usage stays distinct from JWK operations',
+      'Native TEST destination publishes JWK and x5c without certificate key-usage scoring',
     );
   }
   if (errors.length)

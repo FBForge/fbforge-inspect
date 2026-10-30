@@ -399,12 +399,6 @@ function canOpen(value: unknown) {
                 <span class="mono">{{ certificate.sha256 }}</span>
                 <details>
                   <summary>Zertifikat und x5c anzeigen</summary>
-                  <p>
-                    Key Usage:
-                    {{
-                      certificate.keyUsagePresent ? list(certificate.keyUsage) : 'Nicht angegeben'
-                    }}
-                  </p>
                   <p>Gültig ab {{ certificate.notBefore }}</p>
                   <pre tabindex="0">{{ certificate.pem }}</pre>
                   <p class="hint">x5c[{{ certificate.chainIndex }}] · Base64-DER</p>
