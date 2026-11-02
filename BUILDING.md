@@ -44,6 +44,16 @@ UI-Tests verwenden isolierte Browserkontexte, synthetische IPC-Antworten und bei
 
 Die [offizielle XZuFi-Paketprüfung](docs/PVOG-MAPPING.md#reproduzierbare-paketprüfung) benötigt zuvor lokal bereitgestellte ZIPs. `scripts/verify-xzufi.py` prüft festgehaltene SHA-256, Deklarationsinventar und alle 15 XSD-Dateien über den gebauten Java-Kern. Es lädt keine Quellen oder Fremdreferenzen nach. Nach Änderungen an PVOG oder der Schemaansicht diese Prüfung und die nativen Windows-Prüfungen wiederholen.
 
+## Qualitätsmessung
+
+`npm run quality:java` führt einen sauberen Maven-Build mit JaCoCo aus und prüft mindestens 85 % Zeilen- und 65 % Zweigabdeckung im vollständigen Kern. Routingsteuerung, HTTP-Antwortparser und Signaturprüfung benötigen jeweils mindestens 95 % Zeilen- und 80 % Zweigabdeckung. Der Bericht liegt unter `engine/target/site/jacoco/`.
+
+`npm run quality:ui` führt dieselben Browserprüfungen mit V8-Instrumentierung aus. Source Maps ordnen die Ergebnisse Vue und TypeScript zu. Alle ausführbaren Module müssen im Bericht vorkommen; reine Typmodule werden nicht als ungetesteter Laufzeitcode gezählt. Mindestwerte sind 90 % ausführbare Zeilen und 80 % Zweige. Die V8-eigene Quellenzeilenzählung unterscheidet sich von der ausführbaren Zeilenzählung des Grenzwertprüfers. Berichte liegen unter `.local/quality/browser-coverage/`.
+
+`npm run quality:duplicates` prüft Produktquellen auf gleiche Blöcke ab fünf Zeilen und 70 Tokens, ohne Kommentare. Der Höchstwert beträgt 0,5 % der vom Werkzeug gezählten Zeilen. Eingebettete Vue-Sprachen werden getrennt tokenisiert. Die Messung ersetzt weder fachliche Tests noch eine Prüfung semantisch ähnlicher Implementierungen.
+
+Alle drei Prüfungen laufen im bestehenden Linux-CI-Job; ihre Berichte werden als Prüfartefakt bereitgestellt. Windows prüft weiterhin den tatsächlichen Installer, WebView2 und NVDA. Die öffentliche Zielprüfung und TLS-Verifikation bleiben im produktiven `PublicHttp`/`PinnedHttp`-Pfad. Tests ersetzen DNS und Abrufantworten nur über interne Schnittstellen; der reine Antwortparser benötigt keine Netzwerkfreigabe.
+
 ## Windows-Paket und native Prüfung
 
 Zuerst den Java-Kern mit `mvn -f engine/pom.xml package` bauen. Anschließend in Windows PowerShell:
