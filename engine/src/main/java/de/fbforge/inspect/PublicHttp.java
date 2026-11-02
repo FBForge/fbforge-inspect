@@ -26,6 +26,7 @@ public final class PublicHttp implements PkiFetch {
   private final Resolver resolver;
   private final Exchange exchange;
   private final NetworkBudget budget;
+  private final boolean viaProxy;
 
   public record Response(int status, Map<String, String> headers, byte[] body, URI uri) {
     public String text() {
@@ -38,14 +39,33 @@ public final class PublicHttp implements PkiFetch {
   }
 
   public PublicHttp(Report report) {
-    this(report, InetAddress::getAllByName, PinnedHttp::exchange, System::nanoTime);
+    this(report, NetworkOptions.direct());
+  }
+
+  PublicHttp(Report report, NetworkOptions network) {
+    this(report, InetAddress::getAllByName, network, System::nanoTime);
+  }
+
+  PublicHttp(Report report, Resolver resolver, NetworkOptions network, LongSupplier clock) {
+    this(
+        report,
+        resolver,
+        (uri, ip, post, budget) -> PinnedHttp.exchange(uri, ip, post, budget, network),
+        clock,
+        network.manual());
   }
 
   PublicHttp(Report report, Resolver resolver, Exchange exchange, LongSupplier clock) {
+    this(report, resolver, exchange, clock, false);
+  }
+
+  private PublicHttp(
+      Report report, Resolver resolver, Exchange exchange, LongSupplier clock, boolean viaProxy) {
     this.report = report;
     this.resolver = resolver;
     this.exchange = exchange;
     this.budget = new NetworkBudget(clock);
+    this.viaProxy = viaProxy;
   }
 
   public static boolean isPublic(InetAddress address) {
@@ -123,10 +143,11 @@ public final class PublicHttp implements PkiFetch {
       validateUri(uri, pki);
       budget.startRequest();
       String at = Instant.now().toString();
+      long started = System.nanoTime();
       try {
         InetAddress[] addresses = resolver.resolve(uri.getHost());
         if (addresses.length == 0 || Arrays.stream(addresses).anyMatch(a -> !isPublic(a)))
-          throw new IOException("Nicht öffentliches Netzwerkziel blockiert.");
+          throw new NetworkFailure("TARGET_BLOCKED");
         budget.checkTime();
         Response response = exchange.exchange(uri, addresses[0], post, budget);
         report.requests.add(
@@ -136,9 +157,11 @@ public final class PublicHttp implements PkiFetch {
                 at,
                 response.status,
                 response.body.length,
-                "HTTP"));
+                "HTTP",
+                (System.nanoTime() - started) / 1_000_000,
+                viaProxy));
         // Preserve only public, successful bodies. Key content is checked before retention.
-        if (response.ok() && !KeyDiagnostics.hasPrivateMaterial(response.text()))
+        if (!pki && response.ok() && !KeyDiagnostics.hasPrivateMaterial(response.text()))
           report.rawResponses.put(uri.toString(), response.text());
         if (Set.of(301, 302, 303, 307, 308).contains(response.status)) {
           if (redirects == 4 || post != null)
@@ -151,6 +174,14 @@ public final class PublicHttp implements PkiFetch {
         }
         return response;
       } catch (IOException e) {
+        NetworkFailure failure =
+            e instanceof NetworkFailure known
+                ? known
+                : new NetworkFailure(
+                    e instanceof UnknownHostException
+                        ? "DNS_FAILED"
+                        : e instanceof SocketTimeoutException ? "READ_TIMEOUT" : "NETWORK_FAILED",
+                    e);
         report.requests.add(
             new Report.Request(
                 uri.toString(),
@@ -158,9 +189,10 @@ public final class PublicHttp implements PkiFetch {
                 at,
                 0,
                 0,
-                "Netzwerkzugriff fehlgeschlagen oder blockiert"));
-        throw new IOException(
-            "Öffentlicher Abruf fehlgeschlagen oder durch die Netzwerkrichtlinie blockiert.", e);
+                failure.code(),
+                (System.nanoTime() - started) / 1_000_000,
+                viaProxy));
+        throw failure;
       }
     }
     throw new IOException("Umleitungslimit erreicht.");

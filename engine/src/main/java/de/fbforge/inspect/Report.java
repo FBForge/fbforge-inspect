@@ -26,7 +26,18 @@ public final class Report {
       String limitation) {}
 
   public record Request(
-      String url, String method, String at, int status, int bytes, String outcome) {}
+      String url,
+      String method,
+      String at,
+      int status,
+      int bytes,
+      String outcome,
+      Long durationMs,
+      boolean viaProxy) {
+    public Request(String url, String method, String at, int status, int bytes, String outcome) {
+      this(url, method, at, status, bytes, outcome, null, false);
+    }
+  }
 
   public Report(String operation, String environment, String apiVersion) {
     this.operation = operation;
