@@ -84,7 +84,7 @@ final class NetworkDiagnostics {
                 ? "DNS, Verbindung und HTTP-Abruf erfolgreich."
                 : "HTTP "
                     + response.status()
-                    + ": Der Dienst antwortet; der konkrete Abruf war nicht erfolgreich.");
+                    + ": Der Dienst antwortet. Der konkrete Abruf war nicht erfolgreich.");
         report.add(
             response.ok() ? "confirmed" : "warning",
             target.name(),
@@ -94,7 +94,7 @@ final class NetworkDiagnostics {
             "",
             target.pki()
                 ? "Netzwerkerreichbarkeit. Signatur und Sperrstatus werden in der"
-                      + " Zertifikatsprüfung separat ausgewertet."
+                    + " Zertifikatsprüfung separat ausgewertet."
                 : "Dieser öffentliche Abruf bestätigt nicht sämtliche Funktionen des Dienstes.");
       } catch (IOException failure) {
         String code = failure instanceof NetworkFailure known ? known.code() : "NETWORK_FAILED";

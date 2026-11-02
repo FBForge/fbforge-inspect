@@ -66,7 +66,7 @@ final class Signatures {
         r.unknown(
             "Adressierungsschlüssel nicht eindeutig verfügbar",
             "Die Signaturkennung kid ist im unabhängig geladenen JWKS nicht genau einmal vorhanden."
-                + " Die Signatur ist damit nicht verifiziert; ihre Ungültigkeit ist nicht"
+                + " Die Signatur ist damit nicht verifiziert. Ihre Ungültigkeit ist nicht"
                 + " nachgewiesen.",
             path,
             source);

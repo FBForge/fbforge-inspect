@@ -139,7 +139,7 @@ test('public RSA key is diagnosed by the real engine without inventing certifica
   await expect(conclusion).toContainText(
     'Der öffentliche Schlüssel erfüllt die geprüften JWK-Vorgaben.',
   );
-  await expect(conclusion).toContainText('Kein x5c veröffentlicht; in TEST zulässig.');
+  await expect(conclusion).toContainText('Kein x5c veröffentlicht. In TEST zulässig.');
   await expect(conclusion).toContainText(
     'TEST-Ausnahme: keine vollständige öffentliche Sperrauskunft verfügbar.',
   );

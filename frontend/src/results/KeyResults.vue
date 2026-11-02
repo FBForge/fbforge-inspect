@@ -24,7 +24,7 @@ const certificates = computed(() => records<CertificateData>(props.report.data.c
     <h3>Zertifikatsketten</h3>
     <p class="hint">
       Geprüft werden Schlüsselbindung, Laufzeit, Kette, Vertrauen und Sperrstatus. Die
-      JWK-Verwendung wird getrennt geprüft; dies ist keine vollständige V-PKI-Profilprüfung.
+      JWK-Verwendung wird getrennt geprüft. Dies ist keine vollständige V-PKI-Profilprüfung.
     </p>
     <div
       class="table-scroll wide-details-table"

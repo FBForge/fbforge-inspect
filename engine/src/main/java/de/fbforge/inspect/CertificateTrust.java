@@ -136,7 +136,7 @@ final class CertificateTrust {
         "warning",
         "TEST-Zertifikat ohne V-PKI-Verankerung",
         "TEST erlaubt selbst erzeugte Zertifikate ohne V-PKI-Verankerung. Das ist kein Fehler des"
-            + " TEST-Zustellpunkts; V-PKI-Vertrauen wird damit nicht bestätigt.",
+            + " TEST-Zustellpunkts. V-PKI-Vertrauen wird damit nicht bestätigt.",
         path,
         "https://www.bsi.bund.de/VPKI",
         "",
