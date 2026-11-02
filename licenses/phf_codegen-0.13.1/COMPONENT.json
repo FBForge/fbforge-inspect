@@ -1,0 +1,8 @@
+{
+  "name": "phf_codegen",
+  "version": "0.13.1",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

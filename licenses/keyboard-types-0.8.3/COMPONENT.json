@@ -1,0 +1,9 @@
+{
+  "name": "keyboard-types",
+  "version": "0.8.3",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

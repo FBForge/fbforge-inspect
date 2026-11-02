@@ -1,0 +1,10 @@
+{
+  "name": "tinyvec",
+  "version": "1.13.3",
+  "license": "Zlib OR Apache-2.0 OR MIT",
+  "licenseFiles": [
+    "LICENSE-APACHE.md",
+    "LICENSE-MIT.md",
+    "LICENSE-ZLIB.md"
+  ]
+}

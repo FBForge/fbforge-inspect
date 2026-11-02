@@ -1,0 +1,9 @@
+{
+  "name": "time-macros",
+  "version": "0.2.32",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-Apache",
+    "LICENSE-MIT"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "adler2",
+  "version": "2.0.1",
+  "license": "0BSD OR MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-0BSD",
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

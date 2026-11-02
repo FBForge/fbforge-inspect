@@ -1,0 +1,10 @@
+{
+  "name": "crossbeam-channel",
+  "version": "0.5.17",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+    "LICENSE-THIRD-PARTY"
+  ]
+}

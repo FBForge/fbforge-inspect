@@ -1,0 +1,8 @@
+{
+  "name": "chrono",
+  "version": "0.4.45",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE.txt"
+  ]
+}

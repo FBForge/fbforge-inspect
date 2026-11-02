@@ -1,0 +1,10 @@
+{
+  "name": "@tauri-apps/api",
+  "version": "2.12.4",
+  "license": "Apache-2.0 OR MIT",
+  "licenseFiles": [
+    "LICENSE-APACHE-2.0",
+    "LICENSE-MIT",
+    "LICENSE.spdx"
+  ]
+}

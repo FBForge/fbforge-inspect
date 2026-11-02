@@ -1,0 +1,8 @@
+{
+  "name": "icu_normalizer",
+  "version": "2.4.0",
+  "license": "Unicode-3.0",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

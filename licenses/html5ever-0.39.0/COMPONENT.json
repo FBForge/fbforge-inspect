@@ -1,0 +1,9 @@
+{
+  "name": "html5ever",
+  "version": "0.39.0",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

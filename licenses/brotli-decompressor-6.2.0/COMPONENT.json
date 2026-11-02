@@ -1,0 +1,8 @@
+{
+  "name": "brotli-decompressor",
+  "version": "6.2.0",
+  "license": "BSD-3-Clause/MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

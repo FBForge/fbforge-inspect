@@ -1,0 +1,11 @@
+{
+  "name": "miniz_oxide",
+  "version": "0.8.9",
+  "license": "MIT OR Zlib OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE",
+    "LICENSE-APACHE.md",
+    "LICENSE-MIT.md",
+    "LICENSE-ZLIB.md"
+  ]
+}

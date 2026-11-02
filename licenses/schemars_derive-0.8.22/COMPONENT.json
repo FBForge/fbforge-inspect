@@ -1,0 +1,8 @@
+{
+  "name": "schemars_derive",
+  "version": "0.8.22",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

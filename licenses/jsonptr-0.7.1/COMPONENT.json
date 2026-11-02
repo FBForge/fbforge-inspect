@@ -1,0 +1,9 @@
+{
+  "name": "jsonptr",
+  "version": "0.7.1",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

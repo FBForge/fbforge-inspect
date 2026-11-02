@@ -1,0 +1,8 @@
+{
+  "name": "estree-walker",
+  "version": "2.0.2",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

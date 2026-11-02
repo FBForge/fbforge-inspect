@@ -1,0 +1,9 @@
+{
+  "name": "parking_lot",
+  "version": "0.12.5",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

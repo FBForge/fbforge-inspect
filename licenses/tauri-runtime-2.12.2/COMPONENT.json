@@ -1,0 +1,9 @@
+{
+  "name": "tauri-runtime",
+  "version": "2.12.2",
+  "license": "Apache-2.0 OR MIT",
+  "licenseFiles": [
+    "LICENSE-APACHE-2.0",
+    "LICENSE-MIT"
+  ]
+}

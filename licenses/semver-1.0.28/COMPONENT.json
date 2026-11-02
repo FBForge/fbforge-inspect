@@ -1,0 +1,9 @@
+{
+  "name": "semver",
+  "version": "1.0.28",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

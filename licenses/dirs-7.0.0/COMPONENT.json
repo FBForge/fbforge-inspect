@@ -1,0 +1,9 @@
+{
+  "name": "dirs",
+  "version": "7.0.0",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}
