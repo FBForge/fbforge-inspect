@@ -103,6 +103,8 @@ Der Builder erwartet einen sauberen Checkout und baut in einem frischen temporä
 
 Die privaten Komfortskripte zum frischen Windows-Checkout und zur Einrichtung der GitHub-Variablen bleiben außerhalb des Repos. Für einen wiederholten Build ist weder ein Reset des WSL-Checkouts noch dessen Verwendung erforderlich.
 
+In der CI liegen das frische Buildverzeichnis und die Paketausgabe unter `RUNNER_TEMP` des ausgewählten Runners. Der CI-Aufruf gibt beide Pfade ausdrücklich an. Er verwendet damit das Arbeitsverzeichnis des Runners statt des allgemeinen Windows-Benutzer-Temp-Verzeichnisses. Lokale Builds können über `-InspectWorkDirectory` und `-InspectOutputDirectory` ebenfalls neue Verzeichnisse in einem für Entwicklung vorgesehenen Pfad wählen. Die Ausführung erzeugter Rust-Buildhilfen muss dort durch die Windows-Rechte und Anwendungssteuerung erlaubt sein.
+
 ## Signierung in GitHub Actions
 
 `Sign Windows candidate` wird ausschließlich manuell auf `main` gestartet. Vor dem Signierrechner prüft ein gehosteter Job, dass die eingegebene Verify-Run-ID zu genau diesem Commit im eigenen Repository gehört und beide Jobs `verify` und `windows` erfolgreich abgeschlossen sind. Ein fehlgeschlagener, noch laufender oder fremder Lauf wird abgelehnt. Der Workflow veröffentlicht keinen Release und führt kein Deployment aus.
