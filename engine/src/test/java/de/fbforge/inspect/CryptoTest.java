@@ -196,6 +196,24 @@ class CryptoTest {
   }
 
   @Test
+  void acceptsTheSignedCrlPublicationIntervalBeyondSevenDays() throws Exception {
+    assertEquals(
+        "confirmed",
+        CertificateRevocation.validateCrl(
+            crl(false, issuerKey, now.minusSeconds(9 * 86400), now.plusSeconds(2 * 86400)),
+            leaf,
+            issuer,
+            now));
+    assertEquals(
+        "unknown",
+        CertificateRevocation.validateCrl(
+            crl(false, issuerKey, now.plusSeconds(600), now.plusSeconds(86400)),
+            leaf,
+            issuer,
+            now));
+  }
+
+  @Test
   void rejectsForgedOrStaleCrl() throws Exception {
     assertThrows(
         GeneralSecurityException.class,
@@ -384,9 +402,7 @@ class CryptoTest {
     assertTrue(
         report.findings.stream()
             .anyMatch(
-                f ->
-                    f.title().equals("Vertrauensanker nicht gewählt")
-                        && f.status().equals("unknown")));
+                f -> f.title().equals("V-PKI-Vertrauenskette") && f.status().equals("error")));
   }
 
   @Test

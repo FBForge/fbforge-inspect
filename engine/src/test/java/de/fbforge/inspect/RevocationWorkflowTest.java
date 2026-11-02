@@ -22,7 +22,7 @@ class RevocationWorkflowTest {
     CryptoTest.fixtures();
   }
 
-  private static X509Certificate leaf(boolean ocsp, String... crls) throws Exception {
+  static X509Certificate leaf(boolean ocsp, String... crls) throws Exception {
     var builder =
         new JcaX509v3CertificateBuilder(
             new X500Name("CN=Synthetic Test CA"),
@@ -100,6 +100,51 @@ class RevocationWorkflowTest {
         leaf(true, "https://example.org/crl"), CryptoTest.issuer, report, fetch, "$.keys[0]");
     assertEquals(2, calls.get());
     assertEquals(2, report.findings.stream().filter(f -> f.status().equals("confirmed")).count());
+  }
+
+  @Test
+  void ldapLocationsDoNotConsumeTheHttpCrlBudget() throws Exception {
+    var points =
+        new CRLDistPoint(
+            new DistributionPoint[] {
+              new DistributionPoint(
+                  new DistributionPointName(
+                      new GeneralNames(
+                          new GeneralName[] {
+                            new GeneralName(
+                                GeneralName.uniformResourceIdentifier,
+                                "ldap://directory.example.org/one"),
+                            new GeneralName(
+                                GeneralName.uniformResourceIdentifier,
+                                "ldap://directory.example.org/two"),
+                            new GeneralName(
+                                GeneralName.uniformResourceIdentifier,
+                                "http://example.org/current.crl")
+                          })),
+                  null,
+                  null)
+            });
+    assertEquals(List.of("http://example.org/current.crl"), CrlEndpoints.locations(points));
+    Report report = new Report("keys", "PROD", "v3");
+    List<String> requested = new ArrayList<>();
+    byte[] body = crl(false);
+    CertificateRevocation.revocation(
+        leaf(
+            false,
+            "ldap://directory.example.org/one",
+            "ldap://directory.example.org/two",
+            "http://example.org/current.crl"),
+        CryptoTest.issuer,
+        report,
+        (url, post) -> {
+          requested.add(url);
+          return response(url, body);
+        },
+        "$.keys[0]");
+    assertEquals(List.of("http://example.org/current.crl"), requested);
+    assertTrue(
+        report.findings.stream()
+            .anyMatch(f -> f.title().equals("CRL-Sperrstatus") && f.status().equals("confirmed")));
   }
 
   @Test
