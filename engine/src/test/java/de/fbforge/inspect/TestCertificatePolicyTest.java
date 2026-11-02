@@ -67,6 +67,7 @@ class TestCertificatePolicyTest {
       Report report = inspect(environment, null, CryptoTest.leafKey.getPublic());
       assertEquals(
           environment.equals("TEST") ? "warning" : "error", report.findings.getFirst().status());
+      assertEquals(FindingCode.CERTIFICATE_CHAIN, report.findings.getFirst().code());
     }
   }
 
@@ -81,12 +82,14 @@ class TestCertificatePolicyTest {
             .anyMatch(
                 f ->
                     f.title().equals("TEST-Zertifikat ohne V-PKI-Verankerung")
+                        && f.code() == FindingCode.CERTIFICATE_TRUST
                         && f.status().equals("warning")));
     assertTrue(
         report.findings.stream()
             .anyMatch(
                 f ->
                     f.title().equals("Sperrstatus des TEST-Zertifikats")
+                        && f.code() == FindingCode.REVOCATION_UNAVAILABLE
                         && f.status().equals("warning")));
     assertFalse(
         report

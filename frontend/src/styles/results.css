@@ -196,3 +196,32 @@ pre {
 .export-preview {
   max-height: 45vh;
 }
+
+.diagnosis-areas {
+  margin: 16px 0;
+}
+.diagnosis-areas > div {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 6px 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+.diagnosis-areas dt {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-weight: 600;
+}
+.diagnosis-areas dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.diagnosis-areas dd .badge {
+  margin-right: 8px;
+}
+@media (max-width: 800px) {
+  .diagnosis-areas > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

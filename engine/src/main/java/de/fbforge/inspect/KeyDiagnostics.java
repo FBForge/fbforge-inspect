@@ -60,10 +60,17 @@ public final class KeyDiagnostics {
       try {
         JWK key = JWK.parse(keys.get(i).toString());
         boolean rsa = key instanceof RSAKey;
-        report.check(rsa, "Schlüsseltyp", key.getKeyType().toString(), path + ".kty", SOURCE);
+        report.check(
+            FindingCode.JWK_REQUIREMENTS,
+            rsa,
+            "Schlüsseltyp",
+            key.getKeyType().toString(),
+            path + ".kty",
+            SOURCE);
         boolean unique =
             key.getKeyID() != null && !key.getKeyID().isBlank() && kids.add(key.getKeyID());
         report.check(
+            FindingCode.JWK_REQUIREMENTS,
             unique,
             "Schlüsselkennung",
             unique ? "kid ist vorhanden und eindeutig." : "kid fehlt oder ist doppelt.",
@@ -71,12 +78,14 @@ public final class KeyDiagnostics {
             SOURCE);
         if (rsa) {
           report.check(
+              FindingCode.JWK_REQUIREMENTS,
               key.size() >= 3072,
               "RSA-Schlüssellänge",
               key.size() + " Bit (Mindestvorgabe 3072)",
               path,
               SOURCE);
           report.check(
+              FindingCode.JWK_REQUIREMENTS,
               ((RSAKey) key)
                   .getPublicExponent()
                   .decodeToBigInteger()
@@ -90,6 +99,7 @@ public final class KeyDiagnostics {
         }
         String alg = key.getAlgorithm() == null ? "" : key.getAlgorithm().getName();
         report.check(
+            FindingCode.JWK_REQUIREMENTS,
             Set.of("RSA-OAEP-256", "PS512").contains(alg),
             "Algorithmus",
             alg.isEmpty() ? "alg fehlt." : alg,
@@ -100,6 +110,7 @@ public final class KeyDiagnostics {
         boolean allowed =
             ops != null && ops.size() == 1 && ops.iterator().next().identifier().equals(operation);
         report.check(
+            FindingCode.JWK_REQUIREMENTS,
             allowed,
             "Schlüsseloperation",
             "key_ops: "
@@ -110,6 +121,7 @@ public final class KeyDiagnostics {
             path + ".key_ops",
             SOURCE);
         report.check(
+            FindingCode.JWK_REQUIREMENTS,
             key.getKeyUse() == null
                 || key.getKeyUse().identifier().equals(alg.equals("PS512") ? "sig" : "enc"),
             "Verwendungszweck",
@@ -133,6 +145,7 @@ public final class KeyDiagnostics {
         Certificates.inspect(key, report, http, options, path);
       } catch (Exception e) {
         report.add(
+            FindingCode.KEY_DATA_INVALID,
             "error",
             "Schlüssel nicht auswertbar",
             "Öffentliches JWK-Format oder Zertifikatsdaten ungültig.",

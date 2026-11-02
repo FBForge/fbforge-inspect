@@ -14,6 +14,7 @@ export interface ProcessMessage {
   schemas?: SubmissionSchema[];
 }
 export interface DestinationData {
+  encryptionKid?: string;
   destinationId?: string;
   status?: string;
   type?: string;
