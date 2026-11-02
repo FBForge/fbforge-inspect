@@ -30,7 +30,52 @@
       "Starten Sie die Prüfung. Lesen Sie Status, Quellen und Beweisgrenzen. Ein nicht erreichbarer Dienst ist kein leerer Bestand."
     ],
     "example": null,
-    "summary": "Eine Destination-ID genügt für die öffentliche Konfigurationsprüfung. Das Ergebnis ist eine Momentaufnahme und keine Freigabe der gesamten Integration."
+    "summary": "Eine Destination-ID genügt für die öffentliche Konfigurationsprüfung. Das Ergebnis ist eine Momentaufnahme und keine Freigabe der gesamten Integration.",
+    "workflow": {
+      "title": "Was bei der Zustellpunktprüfung passiert",
+      "intro": "Inspect verbindet die veröffentlichte Konfiguration mit dem dazugehörigen Schlüssel. Vertrauen und Sperrstatus werden anschließend unabhängig geprüft. Die folgenden Aufrufe erfolgen erst nach dem Start der Prüfung.",
+      "steps": [
+        {
+          "source": "Ihre Eingabe",
+          "title": "Umgebung, Version und Destination festlegen",
+          "text": "Sie geben die UUID an und wählen TEST, STAGE oder PROD sowie v2 oder v3. Optionale Erwartungen an Leistung, Region, Schema, MIME und Metadatenversion gehören zu diesem Prüfauftrag. Inspect wechselt bei einem Fehler nicht automatisch die Umgebung oder API-Version."
+        },
+        {
+          "source": "FIT-Connect · Submission API",
+          "title": "Öffentliche Konfiguration abrufen",
+          "text": "Inspect prüft die Antwort-ID, den aktiven Status und die veröffentlichten Metadatenversionen. In v3 wird zusätzlich der Zustellpunkttyp bewertet. Optionale Erwartungen müssen in derselben veröffentlichten Leistung zusammenpassen. Ein HTTP 404 liefert keine prüfbare Konfiguration.",
+          "requests": ["GET /submission-api/{v2|v3}/destinations/{destinationId}"]
+        },
+        {
+          "source": "FIT-Connect · Submission API",
+          "title": "Genau den veröffentlichten Schlüssel nachladen",
+          "text": "Enthält die Antwort einen encryptionKid, lädt Inspect den Schlüssel über den zugehörigen Destination-Endpunkt. Sonderzeichen in der Kennung werden als URL-Pfadsegment kodiert. Bei Typ C kann ein fehlender Verschlüsselungsschlüssel nicht anwendbar sein. Ein fehlgeschlagener Abruf bestätigt keinen gültigen Schlüssel.",
+          "requests": [
+            "GET /submission-api/{v2|v3}/destinations/{destinationId}/keys/{encryptionKid}"
+          ]
+        },
+        {
+          "source": "Inspect · lokale Prüfung",
+          "title": "JWK und Zertifikate getrennt bewerten",
+          "text": "Inspect prüft öffentliche JWK-Felder, Schlüsselkennung, RSA-Eigenschaften und Verwendungsangaben. Bei vorhandenem x5c muss der öffentliche Schlüssel zum ersten Zertifikat passen. Danach folgen Zertifikatslaufzeiten, Kettensignaturen und der Pfad zu einem unabhängig vertrauten CA-Anker. Eine mitgelieferte x5c-Wurzel erzeugt allein kein Vertrauen. Erlaubte TEST-Ausnahmen bleiben Hinweise und bestätigen kein Produktionsvertrauen."
+        },
+        {
+          "source": "Zertifikatsaussteller · OCSP und CRL",
+          "title": "Aktuelle Sperrauskünfte prüfen",
+          "text": "Die Online-Prüfung ist voreingestellt. Inspect entnimmt unterstützte OCSP- und CRL-Adressen den Zertifikaten und prüft erreichbare Antworten auf Zuordnung, Signatur und Aktualität. Die Wurzel wird nicht auf Sperrung geprüft. Ein Netzfehler, HTTP 500 oder eine unverifizierbare Antwort bestätigt weder eine Sperrung noch einen ungesperrten Status.",
+          "requests": [
+            "POST an den OCSP-Endpunkt aus dem Zertifikat",
+            "GET an einen unterstützten HTTP(S)-CRL-Endpunkt aus dem Zertifikat"
+          ]
+        },
+        {
+          "source": "Inspect · Ergebnis",
+          "title": "Befund und nächsten Schritt lesen",
+          "text": "Die Zusammenfassung trennt Zustellpunkt, Schlüssel, Zertifikate und Sperrstatus. Jeder Einzelbefund behält Quelle und Feldpfad. Ein optionaler Versionsvergleich lädt zusätzlich die andere API-Version. Er ist kein automatischer Rückfall. Schemaverweise können Sie anschließend gezielt als eigene Strukturprüfung öffnen. Eine erfolgreiche öffentliche Prüfung ist keine authentifizierte Einreichung."
+        }
+      ],
+      "note": "Die HTTPS-Serverprüfung verwendet den CA-Speicher der gebündelten Java-Laufzeit. Der mitgelieferte V-PKI-Truststore prüft dagegen die x5c-Kette des veröffentlichten Schlüssels. Das sind zwei getrennte Vertrauensprüfungen."
+    }
   },
   {
     "id": "routing",
@@ -51,7 +96,67 @@
       "Prüfen Sie die Rollen und Leistungs-/Gebietskennungen pro Kontext. Öffnen Sie bei Bedarf die vollständigen Kontextfelder sowie Onlinedienstparameter mit Sprachangaben und Quelle. Ein unvollständiger Abruf oder fehlende Signatur ist kein vollständiger Negativnachweis."
     ],
     "example": null,
-    "summary": "Routing benötigt LeiKa und ein Gebiet. Für PVOG geben Sie einen 12-stelligen ARS an. Inspect kann passende Leistungsbeschreibungs-IDs vorschlagen. Ein eindeutiger Treffer wird automatisch geprüft. Bei mehreren Treffern wählen Sie eine Leistungsbeschreibung."
+    "summary": "Routing benötigt LeiKa und ein Gebiet. Für PVOG geben Sie einen 12-stelligen ARS an. Inspect kann passende Leistungsbeschreibungs-IDs vorschlagen. Ein eindeutiger Treffer wird automatisch geprüft. Bei mehreren Treffern wählen Sie eine Leistungsbeschreibung.",
+    "workflow": {
+      "title": "Von LeiKa und ARS zum belegten Routing-Abgleich",
+      "intro": "Die Routing API liefert die beobachteten Ziele. PVOG liefert zusätzliche Leistungs- und Zuständigkeitskontexte. Inspect vergleicht verifizierte Destination-IDs im passenden Leistungskontext. Ein PVOG-Suchtreffer allein bestätigt noch keine Übereinstimmung.",
+      "steps": [
+        {
+          "source": "Ihre Eingabe",
+          "title": "Leistung und Gebiet festlegen",
+          "text": "Für Routing sind ein 14-stelliger LeiKa-Schlüssel und AGS, ARS oder eine ausgewählte Gebiets-ID erforderlich. Für den standardmäßig aktiven PVOG-Abgleich benötigen Sie einen 12-stelligen ARS. Inspect leitet keinen ARS aus AGS oder Gebiets-ID ab. TEST verwendet TEST-Routing und PVOG STAGE. PROD verwendet PROD-Quellen. STAGE nutzt ausdrücklich PROD-Routing und PVOG PROD und bestätigt damit keine STAGE-Zustellbarkeit."
+        },
+        {
+          "source": "FIT-Connect · Routing API v2",
+          "title": "Veröffentlichte Routing-Ziele laden",
+          "text": "Inspect ruft die Routen für LeiKa und Gebiet ab und lädt Folgeseiten innerhalb des gemeinsamen Abrufbudgets. Destination-ID, Behörde und zugehöriger Routenkontext bleiben zusammen. Gleiche Destination-IDs in unterschiedlichen Kontexten werden nicht einfach zu einem Treffer zusammengefasst.",
+          "requests": [
+            "GET /v2/routes?leikaKey={LeiKa}&ars={ARS}",
+            "Alternativ für die reine Routingabfrage: ags={AGS} oder areaId={Gebiets-ID}"
+          ]
+        },
+        {
+          "source": "FIT-Connect · unabhängige Signaturschlüssel",
+          "title": "Adressierungssignatur der Route verifizieren",
+          "text": "Inspect lädt das JWKS des zur Routingumgebung gehörenden FIT-Connect-Hosts unabhängig von der Signatur. Geprüft werden PS512-Signatur, eindeutiger kid, Aussteller, Destination-ID, submissionHost und Zeitangaben. Bei ARS müssen Leistung und ein passender Gebietskontext in derselben signierten services-Angabe vorkommen. Nur dekodierte Claims sind kein Nachweis.",
+          "requests": ["GET https://{FIT-Connect-Host}/.well-known/jwks.json"]
+        },
+        {
+          "source": "PVOG · Suchdienst",
+          "title": "Passende Leistungsbeschreibung bestimmen",
+          "text": "Ohne vorgegebene Leistungsbeschreibungs-ID sucht Inspect mit LeiKa und ARS einschließlich Gebietshierarchie. Ein einzelner Treffer wird nur bei vollständig geladener und konsistenter Suche automatisch verwendet. Bei mehreren Treffern wählen Sie die passende Leistungsbeschreibung und starten den Abgleich mit dieser Auswahl. Kein Treffer oder ein Teilbestand ist keine bestätigte Nichtzuständigkeit. Eine bekannte ID kann die Suche ersetzen.",
+          "requests": [
+            "GET /suchdienst/api/v3/servicedescriptions/leikaid?leikaIds={LeiKa}&ars={ARS}&withOrgIds=true&useArsHierarchy=true&size=10&page={Seite}"
+          ]
+        },
+        {
+          "source": "PVOG · Leistungsbeschreibung und Zuständigkeiten",
+          "title": "Die gewählten Kontexte und ihre Herkunft prüfen",
+          "text": "Inspect lädt die Leistungsbeschreibung und die Zuständigkeiten für dieselbe Leistungsbeschreibungs-ID und denselben ARS. Antwort-ID und LeiKa-Zuordnung werden geprüft. Rollen, Organisationen, Leistungen und Gebietsangaben bleiben pro Kontext erhalten. Zusätzlich werden höchstens zehn eindeutig als Onlinedienst gekennzeichnete Objekte geladen. Ihre EfA- und individuellen Parameter bleiben dem jeweiligen Onlinedienst zugeordnet.",
+          "requests": [
+            "GET /suchdienst/api/v1/relations/jzufi-2-3?ars={ARS}&lbids={LB-ID}&usearshierarchy=true&size=100&page={Seite}",
+            "GET /suchdienst/api/v1/servicedescriptions/{LB-ID}/jzufi-2-3",
+            "Bei referenzierten Onlinediensten: GET /suchdienst/api/v1/onlineservices/{OD-ID}/jzufi-2-3"
+          ]
+        },
+        {
+          "source": "PVOG · veröffentlichte Adressierung",
+          "title": "Die FIT-Connect-Adressierung im Kontext verifizieren",
+          "text": "Inspect liest Destination Signatures aus dem Kommunikationssystem mit Kanal 004 und der zugehörigen Kommunikationssystem-Codeliste sowie aus passend gekennzeichneten Sekundärkennungen. Kanal oder Kennung allein erzeugen kein Vertrauen. Für jede Signatur gelten dieselben unabhängigen Schlüssel-, Signatur- und Kontextprüfungen wie bei der Route. EfA-Parameter sind Konfigurationsevidenz und ersetzen diese Signaturprüfung nicht."
+        },
+        {
+          "source": "Inspect · Quellenvergleich",
+          "title": "Verifizierte Destination-IDs gegenüberstellen",
+          "text": "Eine Übereinstimmung liegt vor, wenn Routing und PVOG dieselbe verifizierte Destination-ID im passenden LeiKa-/ARS-Kontext enthalten. Eine nur in PVOG enthaltene verifizierte ID wird als Abweichung gezeigt. Eine Route ohne passenden signierten PVOG-Treffer ist bei vollständig geladenen Zuständigkeiten eine Abweichung. Bei fehlender Auswahl, unvollständigen Quellen oder unverifizierter Routensignatur bleibt der Abgleich offen. Eine Übereinstimmung einzelner IDs beweist keinen vollständigen PVOG-Bestand."
+        },
+        {
+          "source": "Ihre nächste Prüfung",
+          "title": "Den gefundenen Zustellpunkt gesondert prüfen",
+          "text": "Die Routingprüfung ruft nicht automatisch jede gefundene Destination samt JWK, x5c und Sperrstatus ab. Öffnen Sie die gewünschte Destination für diese eigene Prüfung. Fachdatenschemata stammen aus der Leistung im Zustellpunkt und nicht aus PVOG. Der Routing-Abgleich rekonstruiert keine internen Auswahlregeln und bestätigt keine erfolgreiche Zustellung."
+        }
+      ],
+      "note": "Der Vergleich bewertet signierte Destination-IDs im passenden Leistungskontext. Er gleicht nicht sämtliche Behördennamen, Anschriften oder Onlinedienstparameter feldweise ab. Quellen, Abrufzeitpunkte und Vollständigkeit gehören deshalb immer zum Ergebnis."
+    }
   },
   {
     "id": "process",
