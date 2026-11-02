@@ -128,7 +128,8 @@ final class Pvog {
   }
 
   private void inspectService(String base, String lb, JsonObject input) {
-    String serviceSource = base + "/v1/servicedescriptions/" + pathSegment(lb) + "/jzufi-2-3";
+    String serviceSource =
+        base + "/v1/servicedescriptions/" + JsonFields.pathSegment(lb) + "/jzufi-2-3";
     JsonObject service = read(serviceSource);
     if (service != null) {
       report.data.add("pvogService", service);
@@ -234,7 +235,7 @@ final class Pvog {
               DOC);
           continue;
         }
-        String source = base + "/v1/onlineservices/" + pathSegment(id) + "/jzufi-2-3";
+        String source = base + "/v1/onlineservices/" + JsonFields.pathSegment(id) + "/jzufi-2-3";
         JsonObject detail = read(source);
         if (detail == null) {
           cache.put(id, -1);
@@ -251,7 +252,7 @@ final class Pvog {
       if (sourceIndex < 0) continue;
       JsonObject detail = sources.get(sourceIndex).getAsJsonObject().getAsJsonObject("data");
       JsonObject entry = new JsonObject();
-      String source = base + "/v1/onlineservices/" + pathSegment(id) + "/jzufi-2-3";
+      String source = base + "/v1/onlineservices/" + JsonFields.pathSegment(id) + "/jzufi-2-3";
       entry.addProperty("context", contextPath);
       entry.addProperty("id", id);
       entry.addProperty("source", source);
@@ -332,9 +333,5 @@ final class Pvog {
           || !JsonFields.text(first.getAsJsonObject(), key)
               .equals(JsonFields.text(second.getAsJsonObject(), key))) return false;
     return true;
-  }
-
-  private static String pathSegment(String value) {
-    return JsonFields.encode(value).replace("+", "%20");
   }
 }

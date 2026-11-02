@@ -193,6 +193,75 @@ class RevocationWorkflowTest {
   }
 
   @Test
+  void reportsHttpFailuresWithoutMisclassifyingThemAsInvalidCrls() throws Exception {
+    Report report = new Report("keys", "PROD", "v3");
+    byte[] ocsp =
+        CryptoTest.ocsp(
+            null,
+            CryptoTest.issuerKey,
+            CryptoTest.id,
+            CryptoTest.now.minusSeconds(60),
+            CryptoTest.now.plusSeconds(600));
+    CertificateRevocation.revocation(
+        leaf(true, "https://example.org/crl"),
+        CryptoTest.issuer,
+        report,
+        (url, post) ->
+            post != null
+                ? response(url, ocsp)
+                : new PublicHttp.Response(
+                    500, Map.of(), "do-not-print-server-body".getBytes(), URI.create(url)),
+        "$.keys[0].x5c[0]");
+    assertTrue(
+        report.findings.stream()
+            .anyMatch(f -> f.title().equals("OCSP-Sperrstatus") && f.status().equals("confirmed")));
+    assertTrue(
+        report.findings.stream()
+            .anyMatch(
+                f ->
+                    f.title().equals("CRL-Abruf nicht erfolgreich")
+                        && f.status().equals("unknown")
+                        && f.detail().contains("HTTP 500")
+                        && f.path().equals("$.keys[0].x5c[0]")));
+    assertFalse(
+        report.findings.stream().anyMatch(f -> f.title().equals("CRL nicht verifizierbar")));
+    assertFalse(Main.JSON.toJson(report).contains("do-not-print"));
+  }
+
+  @Test
+  void safeNetworkFailureExplainsTheFailedFetchWithoutProviderMessages() throws Exception {
+    Report report = new Report("keys", "PROD", "v3");
+    CertificateRevocation.revocation(
+        leaf(false, "https://example.org/crl"),
+        CryptoTest.issuer,
+        report,
+        (url, post) -> {
+          throw new NetworkFailure(
+              "PROXY_AUTH_FAILED", new IOException("do-not-print-provider-message"));
+        },
+        "$");
+    assertEquals("CRL-Abruf fehlgeschlagen", report.findings.getFirst().title());
+    assertTrue(report.findings.getFirst().detail().contains("Proxy-Anmeldung"));
+    assertFalse(Main.JSON.toJson(report).contains("do-not-print"));
+    assertTrue(report.findings.stream().allMatch(f -> f.status().equals("unknown")));
+  }
+
+  @Test
+  void malformedSuccessfulCrlResponseIsDistinguishedFromAnHttpFailure() throws Exception {
+    Report report = new Report("keys", "PROD", "v3");
+    CertificateRevocation.revocation(
+        leaf(false, "https://example.org/crl"),
+        CryptoTest.issuer,
+        report,
+        (url, post) -> response(url, new byte[] {1, 2, 3}),
+        "$");
+    assertEquals("CRL nicht verifizierbar", report.findings.getFirst().title());
+    assertTrue(report.findings.getFirst().detail().contains("erhalten"));
+    assertTrue(report.findings.getFirst().detail().contains("HTTP 200"));
+    assertEquals("unknown", report.findings.getFirst().status());
+  }
+
+  @Test
   void absentEndpointsStayUnknownAndCrlLocationsAreBounded() throws Exception {
     Report report = new Report("keys", "TEST", "v3");
     CertificateRevocation.revocation(

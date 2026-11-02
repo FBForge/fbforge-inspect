@@ -26,7 +26,7 @@ final class DestinationDiagnostics {
     inspectDestination(d, input, report, url);
     String kid = value(d, "encryptionKid");
     if (!kid.isBlank()) {
-      String keyUrl = url + "/keys/" + encode(kid);
+      String keyUrl = url + "/keys/" + pathSegment(kid);
       JsonObject key = api.json(keyUrl);
       if (key != null) KeyDiagnostics.inspect(key.toString(), report, http, input);
     } else

@@ -16,6 +16,11 @@ final class JsonFields {
     return URLEncoder.encode(value, StandardCharsets.UTF_8);
   }
 
+  /** Encode one path segment; form/query encoding represents spaces differently. */
+  public static String pathSegment(String value) {
+    return encode(value).replace("+", "%20");
+  }
+
   public static String uuid(String value) {
     if (!value.matches(
         "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"))
