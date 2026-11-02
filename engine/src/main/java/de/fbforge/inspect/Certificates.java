@@ -32,7 +32,7 @@ final class Certificates {
           "TEST erlaubt Testschlüssel. Ohne x5c kein Produktionsnachweis.",
           path + ".x5c",
           KeyDiagnostics.SOURCE,
-          "Zertifikatskette ergänzen.",
+          r.environment.equals("TEST") ? "" : "Zertifikatskette ergänzen.",
           "");
       return;
     }
@@ -92,11 +92,15 @@ final class Certificates {
               + c.getNotAfter().toInstant(),
           p,
           KeyDiagnostics.SOURCE);
-      if (i + 1 < chain.size()) {
+      X509Certificate signer =
+          i + 1 < chain.size()
+              ? chain.get(i + 1)
+              : c.getIssuerX500Principal().equals(c.getSubjectX500Principal()) ? c : null;
+      if (signer != null) {
         boolean signature = true;
         try {
-          c.verify(chain.get(i + 1).getPublicKey());
-          if (!c.getIssuerX500Principal().equals(chain.get(i + 1).getSubjectX500Principal()))
+          c.verify(signer.getPublicKey());
+          if (!c.getIssuerX500Principal().equals(signer.getSubjectX500Principal()))
             signature = false;
         } catch (Exception e) {
           signature = false;
@@ -104,7 +108,9 @@ final class Certificates {
         r.check(
             signature,
             "Kettensignatur",
-            "Signatur mit dem folgenden Ausstellerzertifikat.",
+            signer == c
+                ? "Selbstsignatur des Zertifikats."
+                : "Signatur mit dem folgenden Ausstellerzertifikat.",
             p,
             KeyDiagnostics.SOURCE);
       }
@@ -125,6 +131,20 @@ final class Certificates {
       return;
     }
     if (resolved.size() < 2) {
+      if (r.environment.equals("TEST")
+          && leaf.getSubjectX500Principal().equals(leaf.getIssuerX500Principal())) {
+        r.add(
+            "warning",
+            "Sperrstatus des TEST-Zertifikats",
+            "Für dieses selbstsignierte TEST-Zertifikat ist kein unabhängiger Aussteller verfügbar."
+                + " Im TEST-Betrieb ist das zulässig; ein öffentlicher Sperrstatus wird nicht"
+                + " bestätigt.",
+            path + ".x5c[0]",
+            RFC,
+            "",
+            "Keine Produktionseignung und kein Good-Nachweis aus der Selbstsignatur.");
+        return;
+      }
       r.unknown(
           "Sperrstatus ohne Aussteller", "Kein Ausstellerzertifikat in x5c vorhanden.", path, RFC);
       return;

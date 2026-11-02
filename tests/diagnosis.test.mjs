@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { findingDetail, findingNext } from '../frontend/src/diagnosis.ts';
+import { findingDetail, findingNext, overview } from '../frontend/src/diagnosis.ts';
 import { reportHtml } from '../frontend/src/reports.ts';
 
 const finding = {
@@ -49,4 +49,13 @@ test('export uses the same code-based interpretation as the application', () => 
   });
   assert.ok(html.includes('Der Zustellpunkt ist inaktiv.'));
   assert.ok(html.includes('Status beim Betreiber des Zustellpunkts klären.'));
+});
+
+test('allowed test certificate hints do not imply errors or unresolved checks', () => {
+  const report = { operation: 'keys', findings: [{ ...finding, status: 'warning' }] };
+  assert.equal(overview(report), 'Prüfung mit Hinweisen abgeschlossen');
+  report.findings.push({ ...finding, status: 'unknown' });
+  assert.equal(overview(report), 'Prüfung mit offenen Punkten abgeschlossen');
+  report.findings.push({ ...finding, status: 'error' });
+  assert.equal(overview(report), 'Abweichungen gefunden');
 });

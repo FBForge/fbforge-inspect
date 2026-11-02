@@ -117,12 +117,24 @@ final class CertificateRevocation {
       report.unknown(
           "Sperrstatusdaten ungültig", "Zertifikatserweiterungen nicht auswertbar.", path, RFC);
     }
-    if (!found)
-      report.unknown(
-          "Kein unterstützter Sperrendpunkt",
-          "Kein vollständiger direkter HTTP(S)-CRL- oder OCSP-Endpunkt im Zertifikat.",
-          path,
-          RFC);
+    if (!found) {
+      if (report.environment.equals("TEST"))
+        report.add(
+            "warning",
+            "Kein unterstützter Sperrendpunkt",
+            "Dieses TEST-Zertifikat veröffentlicht keinen unterstützten OCSP-/CRL-Endpunkt. Das ist"
+                + " im TEST-Betrieb zulässig; ein Sperrstatus wird nicht bestätigt.",
+            path,
+            RFC,
+            "",
+            "Kein öffentlicher Good-Nachweis.");
+      else
+        report.unknown(
+            "Kein unterstützter Sperrendpunkt",
+            "Kein vollständiger direkter HTTP(S)-CRL- oder OCSP-Endpunkt im Zertifikat.",
+            path,
+            RFC);
+    }
   }
 
   private static PublicHttp.Response fetch(
@@ -144,7 +156,7 @@ final class CertificateRevocation {
           failure instanceof NetworkFailure known
               ? known.description()
               : "Die öffentliche Sperrauskunft konnte nicht vollständig abgerufen werden. Netzwerk"
-                    + " und Abfrageprotokoll prüfen.",
+                  + " und Abfrageprotokoll prüfen.",
           path,
           url);
     } catch (IllegalArgumentException unsupported) {
