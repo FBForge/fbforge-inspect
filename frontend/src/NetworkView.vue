@@ -62,8 +62,8 @@ function check() {
       <h2 id="network-check-title">Öffentliche Verbindungen prüfen</h2>
       <fieldset :disabled="busy" aria-labelledby="network-check-title">
         <p>
-          Prüft FIT-Connect, Routing, PVOG und XRepository. Ergebnisse zeigen Erreichbarkeit und
-          Fehler beim Verbindungsaufbau.
+          Prüft die von Inspect verwendeten FIT-Connect- und Routing-Verbindungen der gewählten
+          Umgebung.
         </p>
         <label class="check">
           <input v-model="includeCertificates" type="checkbox" :disabled="!certificates.length" />

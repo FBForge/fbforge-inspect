@@ -12,6 +12,8 @@ flowchart LR
 
 Die Vue-Oberfläche besitzt keinen direkten Netzwerkzugriff auf externe APIs. Der Rust-Host stellt `diagnose`, `cancel`, `save_report` und `open_reference` bereit. `open_reference` öffnet ausschließlich vier fest hinterlegte öffentliche Ziele im Systembrowser und akzeptiert keine beliebigen URLs. Für Diagnosen startet der Host pro Prüflauf einen gebündelten Java-Prozess, begrenzt Ein- und Ausgabe und beendet ihn bei Abbruch oder Zeitüberschreitung. Es gibt keinen lokalen HTTP-Server und kein Shell-Plugin. Der Entwicklungsmodus kann den lokal installierten Java-Befehl verwenden, eine Release-App benötigt ihre gebündelte Laufzeit.
 
+Die Netzwerk-Basisprüfung verwendet ausschließlich die für die öffentlichen Inspect-Funktionen benötigten FIT-Connect- und Routing-Ziele der [offiziellen Umgebungsübersicht](https://docs.fitko.de/fit-connect/docs/getting-started/environments/). PVOG und XRepository sind keine Basisproben. Konkrete OCSP-/CRL-Proben entstehen zusätzlich aus ausdrücklich ausgewählten Zertifikaten. Sie bestätigen Erreichbarkeit, keine erfolgreiche Sperrstatusvalidierung.
+
 Der Java-Kern implementiert die öffentlichen API-Verträge eigenständig. Er enthält keinen FIT-Connect-SDK-Adapter. `Api` übernimmt Destination, Routing und Prozesssuche, `Pvog` erhält die Zuständigkeitsseiten und ergänzt Leistungs- und Onlinedienstquellen mit expliziten Kontextpfaden. `KeyDiagnostics` übernimmt die JWK-Regeln, `Certificates` PKIX und Sperrstatus, `Signatures` Adressierungssignaturen, `Schemas` sichere Strukturinspektion und `PublicHttp` die gemeinsame Transportgrenze. Die vollständige Feldzuordnung steht in [PVOG-MAPPING.md](PVOG-MAPPING.md).
 
 ## IPC v1

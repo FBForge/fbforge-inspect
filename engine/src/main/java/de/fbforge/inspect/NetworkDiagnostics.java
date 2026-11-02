@@ -5,7 +5,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-/** Read-only probes of known public services and explicitly selected certificate endpoints. */
+/** Read-only probes of required FIT-Connect services and selected certificate endpoints. */
 final class NetworkDiagnostics {
   private NetworkDiagnostics() {}
 
@@ -24,24 +24,11 @@ final class NetworkDiagnostics {
             false));
     targets.add(
         new Target(
-            "Routing API v2",
+            report.environment.equals("STAGE")
+                ? "Routing API v2 · PROD (für STAGE)"
+                : "Routing API v2",
             Api.routing(report.environment)
                 + "/v2/areas?areaSearchexpression=Berlin&limit=1&offset=0",
-            null,
-            false));
-    targets.add(
-        new Target(
-            "PVOG · Schnittstellenbeschreibung",
-            (report.environment.equals("TEST")
-                    ? "https://stage.pvog.fitko.net"
-                    : "https://pvog.fitko.net")
-                + "/suchdienst/api/v3/api-docs",
-            null,
-            false));
-    targets.add(
-        new Target(
-            "XRepository · EfA-Codeliste",
-            "https://www.xrepository.de/api/xrepository/urn:xoev-de:fim:codeliste:xzufi.efaparameter_2:technischerBestandteilGenericode",
             null,
             false));
     targets.addAll(CertificateEndpoints.probes(input));

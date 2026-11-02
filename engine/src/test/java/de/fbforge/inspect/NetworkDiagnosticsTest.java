@@ -42,8 +42,8 @@ class NetworkDiagnosticsTest {
     for (String environment : List.of("TEST", "STAGE", "PROD")) {
       Report report = new Report("network", environment, "v3");
       NetworkDiagnostics.inspect(new JsonObject(), report, transport(report, new ArrayList<>()));
-      assertEquals(4, report.data.getAsJsonArray("networkChecks").size());
-      assertEquals(4, report.requests.size());
+      assertEquals(2, report.data.getAsJsonArray("networkChecks").size());
+      assertEquals(2, report.requests.size());
       assertTrue(report.findings.stream().allMatch(f -> f.status().equals("confirmed")));
       assertTrue(report.rawResponses.isEmpty());
       assertTrue(
@@ -55,15 +55,28 @@ class NetworkDiagnosticsTest {
                               "https://"
                                   + URI.create(Api.submission(environment)).getHost()
                                   + "/")));
-      assertTrue(
-          report.requests.stream()
-              .anyMatch(
-                  r ->
-                      r.url()
-                          .contains(
-                              environment.equals("TEST")
-                                  ? "stage.pvog.fitko.net"
-                                  : "pvog.fitko.net")));
+      String routingHost =
+          environment.equals("TEST")
+              ? "routing-api-testing.fit-connect.fitko.dev"
+              : "routing-api-prod.fit-connect.fitko.net";
+      assertEquals(
+          List.of(
+              "https://"
+                  + URI.create(Api.submission(environment)).getHost()
+                  + "/.well-known/jwks.json",
+              "https://" + routingHost + "/v2/areas?areaSearchexpression=Berlin&limit=1&offset=0"),
+          report.requests.stream().map(Report.Request::url).toList());
+      assertTrue(report.requests.stream().allMatch(r -> r.method().equals("GET")));
+      if (environment.equals("STAGE"))
+        assertTrue(
+            report
+                .data
+                .getAsJsonArray("networkChecks")
+                .get(1)
+                .getAsJsonObject()
+                .get("name")
+                .getAsString()
+                .contains("PROD"));
     }
   }
 
@@ -79,7 +92,7 @@ class NetworkDiagnosticsTest {
     Report report = new Report("network", "PROD", "v3");
     NetworkDiagnostics.inspect(input, report, transport(report, postUrls));
     assertEquals(List.of("https://example.org/ocsp"), postUrls);
-    assertEquals(6, report.data.getAsJsonArray("networkChecks").size());
+    assertEquals(4, report.data.getAsJsonArray("networkChecks").size());
     assertEquals(1, report.requests.stream().filter(r -> r.method().equals("POST")).count());
     assertTrue(report.rawResponses.isEmpty());
     assertTrue(
@@ -100,7 +113,7 @@ class NetworkDiagnosticsTest {
             },
             System::nanoTime);
     NetworkDiagnostics.inspect(new JsonObject(), report, http);
-    assertEquals(4, report.findings.size());
+    assertEquals(2, report.findings.size());
     assertTrue(
         report.findings.stream()
             .allMatch(f -> f.status().equals("unknown") && f.detail().contains("Proxy-Anmeldung")));
