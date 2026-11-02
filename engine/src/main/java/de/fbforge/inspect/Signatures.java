@@ -83,27 +83,33 @@ final class Signatures {
           path,
           source);
       if (!verified) return;
+      boolean destinationMatches =
+          !Objects.toString(claims.getStringClaim("destinationId"), "").isBlank()
+              && (expectedDestination.isBlank()
+                  || expectedDestination.equals(claims.getStringClaim("destinationId")));
+      boolean hostMatches = host.equals(claims.getStringClaim("submissionHost"));
       r.check(
-          expectedDestination.isBlank()
-              || expectedDestination.equals(claims.getStringClaim("destinationId")),
+          destinationMatches,
           "Signierter Zustellpunkt",
           "destinationId muss dem Kontext entsprechen.",
           path + ".destinationId",
           source);
       r.check(
-          host.equals(claims.getStringClaim("submissionHost")),
+          hostMatches,
           "Signierter Zustelldienst",
           "submissionHost muss zur gewählten Routingumgebung passen.",
           path + ".submissionHost",
           source);
       Date iat = claims.getIssueTime(), exp = claims.getExpirationTime();
       Instant now = Instant.now();
-      r.check(
+      boolean timeMatches =
           iat != null
               && !iat.toInstant().isAfter(now.plusSeconds(300))
               && (exp == null || !exp.toInstant().isBefore(now.minusSeconds(300)))
               && claims.getJWTID() != null
-              && !claims.getJWTID().isBlank(),
+              && !claims.getJWTID().isBlank();
+      r.check(
+          timeMatches,
           "Zeitangaben der Adressierung",
           "iat darf nicht in der Zukunft liegen. exp wird berücksichtigt, falls vorhanden. jti muss"
               + " vorliegen.",
@@ -130,6 +136,8 @@ final class Signatures {
           }
           if (serviceMatch && areaMatch) matched = true;
         }
+        decoded.addProperty(
+            "contextMatches", destinationMatches && hostMatches && timeMatches && matched);
         r.check(
             matched,
             "Signierter Leistungskontext",

@@ -71,8 +71,10 @@ final class RoutingDiagnostics {
             "$.routes[" + (i++) + "]",
             url);
     }
-    if (input.has("pvog") && input.get("pvog").getAsBoolean())
+    if (!input.has("pvog") || input.get("pvog").getAsBoolean()) {
       new Pvog(api).inspect(input, signatures);
+      RoutingComparison.inspect(report);
+    }
     if (report.environment.equals("STAGE"))
       report.add(
           "warning",
@@ -83,12 +85,6 @@ final class RoutingDiagnostics {
           Api.DOC,
           "STAGE-Destination direkt prüfen.",
           "");
-    report.unknown(
-        "Öffentliche Routingbeobachtung",
-        "Kontexte bleiben erhalten. Abweichungen zu PVOG belegen keinen Fehler einer internen"
-            + " Routingentscheidung.",
-        "$.routes",
-        Api.DOC);
   }
 
   public void areas(JsonObject input) throws IOException {

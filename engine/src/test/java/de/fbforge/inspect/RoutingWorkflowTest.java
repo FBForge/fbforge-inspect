@@ -12,6 +12,7 @@ class RoutingWorkflowTest {
   private static JsonObject input(String kind, String region) {
     JsonObject input = new JsonObject();
     input.addProperty("service", SignatureFixtures.SERVICE);
+    input.addProperty("pvog", false);
     input.addProperty("regionKind", kind);
     input.addProperty("region", region);
     return input;
@@ -123,6 +124,70 @@ class RoutingWorkflowTest {
                 f ->
                     f.title().equals("Adressierungssignatur fehlt")
                         && f.status().equals("unknown")));
+  }
+
+  @Test
+  void automaticallyFindsAndVerifiesFitConnectCommunicationSignatures() throws Exception {
+    for (String list :
+        List.of("urn:xoev-de:fim:codeliste:xzufi.kommunikationssystemtyp", "urn:foreign-list")) {
+      Report report = new Report("routing", "TEST", "v3");
+      String token = SignatureFixtures.token(SignatureFixtures.claims("TEST").build());
+      JsonObject relation =
+          JsonParser.parseString(
+                  "{\"leistungID\":[{\"schemeAgencyID\":\"L1\",\"value\":\"service\"}],\"kommunikationssystem\":[{\"kanal\":{\"code\":\"004\"},\"kennung\":\"\"}]}")
+              .getAsJsonObject();
+      JsonObject communication =
+          relation.getAsJsonArray("kommunikationssystem").get(0).getAsJsonObject();
+      communication.getAsJsonObject("kanal").addProperty("listURI", list);
+      communication.addProperty("kennung", token);
+      JsonObject parent = new JsonObject();
+      JsonArray relations = new JsonArray();
+      relations.add(relation);
+      parent.add("zustaendigkeit", relations);
+      Api api =
+          new Api(
+              report,
+              url -> {
+                if (url.contains("jwks"))
+                  return SignatureFixtures.response(url, SignatureFixtures.jwks());
+                if (url.contains("/v2/routes")) {
+                  JsonObject row = new JsonObject();
+                  row.addProperty("destinationId", SignatureFixtures.DESTINATION);
+                  row.addProperty("destinationSignature", token);
+                  return SignatureFixtures.response(
+                      url, "{\"routes\":[" + row + "],\"totalCount\":1,\"count\":1,\"offset\":0}");
+                }
+                if (url.contains("/leikaid?"))
+                  return SignatureFixtures.response(
+                      url,
+                      "{\"content\":[{\"id\":\"L1.LB.service\",\"leikakeys\":[\""
+                          + SignatureFixtures.SERVICE
+                          + "\"]}],\"pageable\":{\"pageNumber\":0,\"pageSize\":10},\"totalElements\":1,\"totalPages\":1}");
+                if (url.contains("/relations/"))
+                  return SignatureFixtures.response(
+                      url,
+                      "{\"content\":["
+                          + parent
+                          + "],\"page\":{\"number\":0,\"size\":100,\"totalElements\":1,\"totalPages\":1}}");
+                return SignatureFixtures.response(
+                    url,
+                    "{\"id\":{\"schemeAgencyID\":\"L1\",\"value\":\"service\"},\"referenzLeistungsschluessel\":[{\"value\":\""
+                        + SignatureFixtures.SERVICE
+                        + "\"}]}");
+              });
+      JsonObject input = input("ars", SignatureFixtures.ARS);
+      input.remove("pvog");
+      api.routes(input);
+      boolean accepted = !list.equals("urn:foreign-list");
+      assertEquals(accepted ? 2 : 1, report.data.getAsJsonArray("addressingSignatures").size());
+      JsonObject comparison =
+          report.data.getAsJsonArray("routingComparison").get(0).getAsJsonObject();
+      assertEquals(accepted ? "confirmed" : "warning", comparison.get("status").getAsString());
+      if (accepted)
+        assertEquals(
+            "$.pvogRelations[0].zustaendigkeit[0].kommunikationssystem[0].kennung",
+            comparison.getAsJsonArray("pvogContexts").get(0).getAsString());
+    }
   }
 
   @Test
