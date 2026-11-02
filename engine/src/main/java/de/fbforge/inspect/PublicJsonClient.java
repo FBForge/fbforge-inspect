@@ -45,7 +45,7 @@ final class PublicJsonClient {
                     + " Konfiguration.";
             case 429 -> "Später erneut versuchen. Kein automatischer Wiederholungsabruf.";
             default ->
-                "Die betroffene Quelle später erneut prüfen; bereits geladene Daten sind nur ein"
+                "Die betroffene Quelle später erneut prüfen. Bereits geladene Daten sind nur ein"
                     + " Teilbestand.";
           };
       report.add(

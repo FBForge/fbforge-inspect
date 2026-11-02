@@ -53,7 +53,7 @@ function destination(report: Report): SummaryItem {
     status = 'unknown';
   const text =
     status === 'confirmed'
-      ? 'Aktiv; Kennung und veröffentlichte Konfiguration bestätigt.'
+      ? 'Aktiv. Kennung und veröffentlichte Konfiguration bestätigt.'
       : status === 'error'
         ? report.data.destination?.status === 'inactive'
           ? 'Der Zustellpunkt ist inaktiv.'
@@ -106,7 +106,7 @@ function certificates(report: Report): SummaryItem {
   if (!count && missing.length)
     text =
       report.environment === 'TEST' && status === 'warning'
-        ? 'Kein x5c veröffentlicht; in TEST zulässig.'
+        ? 'Kein x5c veröffentlicht. In TEST zulässig.'
         : 'Keine auswertbare Zertifikatskette vorhanden.';
   else if (status === 'error') {
     const failed = selected.filter((finding) => finding.status === 'error');
@@ -125,14 +125,14 @@ function certificates(report: Report): SummaryItem {
       evidence.length >= withChain &&
       evidence.every((entry) => entry.trusted === true && entry.source === 'bundled-vpki');
     text = vpki
-      ? 'Zertifikate zeitlich gültig; Schlüsselbindung und V-PKI-Vertrauenskette bestätigt.'
-      : 'Zertifikate zeitlich gültig; Schlüsselbindung und geprüfte Vertrauenskette bestätigt.';
+      ? 'Zertifikate zeitlich gültig. Schlüsselbindung und V-PKI-Vertrauenskette bestätigt.'
+      : 'Zertifikate zeitlich gültig. Schlüsselbindung und geprüfte Vertrauenskette bestätigt.';
   } else if (status === 'warning')
     text = missing.length
-      ? 'Teilweise ohne x5c; in TEST zulässig.'
-      : 'Laufzeiten und Schlüsselbindung bestätigt; in TEST ist keine V-PKI-Verankerung erforderlich.';
+      ? 'Teilweise ohne x5c. In TEST zulässig.'
+      : 'Laufzeiten und Schlüsselbindung bestätigt. In TEST ist keine V-PKI-Verankerung erforderlich.';
   else if (binding && dates)
-    text = 'Laufzeiten und Schlüsselbindung bestätigt; Zertifikatsvertrauen noch offen.';
+    text = 'Laufzeiten und Schlüsselbindung bestätigt. Zertifikatsvertrauen noch offen.';
   return { id: 'certificates', label: 'Zertifikate', status, text };
 }
 function revocation(report: Report): SummaryItem {
@@ -184,11 +184,11 @@ function revocation(report: Report): SummaryItem {
   else if (status === 'warning')
     text = 'TEST-Ausnahme: keine vollständige öffentliche Sperrauskunft verfügbar.';
   else if (unavailable.some((finding) => finding.code === 'REVOCATION_NOT_REQUESTED'))
-    text = 'Online-Sperrprüfung ausgeschaltet; kein aktueller Sperrstatus geprüft.';
+    text = 'Online-Sperrprüfung ausgeschaltet. Kein aktueller Sperrstatus geprüft.';
   else if (ocspGood && crl.length)
-    text = 'OCSP bestätigt ungesperrt; die CRL-Prüfung bleibt offen.';
+    text = 'OCSP bestätigt ungesperrt. Die CRL-Prüfung bleibt offen.';
   else if (crlGood && ocsp.length)
-    text = 'CRL bestätigt ungesperrt; die OCSP-Prüfung bleibt offen.';
+    text = 'CRL bestätigt ungesperrt. Die OCSP-Prüfung bleibt offen.';
   return { id: 'revocation', label: 'Sperrstatus', status, text };
 }
 

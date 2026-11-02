@@ -123,19 +123,19 @@ export function summaryScenarios() {
       name: 'CRL ausgefallen',
       report: crlOffline,
       title: 'Prüfung mit offenen Punkten abgeschlossen',
-      text: 'OCSP bestätigt ungesperrt; die CRL-Prüfung bleibt offen.',
+      text: 'OCSP bestätigt ungesperrt. Die CRL-Prüfung bleibt offen.',
     },
     {
       name: 'selbstsigniertes TEST-Zertifikat',
       report: testKey,
       title: 'Prüfung mit Hinweisen abgeschlossen',
-      text: 'in TEST ist keine V-PKI-Verankerung erforderlich.',
+      text: 'In TEST ist keine V-PKI-Verankerung erforderlich.',
     },
     {
       name: 'TEST ohne x5c',
       report: noChain,
       title: 'Prüfung mit Hinweisen abgeschlossen',
-      text: 'Kein x5c veröffentlicht; in TEST zulässig.',
+      text: 'Kein x5c veröffentlicht. In TEST zulässig.',
     },
     {
       name: 'gesperrt',

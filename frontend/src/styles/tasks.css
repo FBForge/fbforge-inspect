@@ -122,3 +122,8 @@ summary {
   padding-top: 18px;
   margin-top: 18px;
 }
+
+.certificate-options > summary .badge {
+  margin-inline-start: 0.75rem;
+  margin-block: 0.25rem;
+}
