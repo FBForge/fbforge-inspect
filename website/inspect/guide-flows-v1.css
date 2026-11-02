@@ -1,0 +1,81 @@
+.guide-layout .guide-workflow {
+  margin: 36px 0;
+  padding: clamp(16px, 3vw, 28px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.guide-layout .guide-workflow figcaption {
+  margin: 0 0 24px;
+  color: var(--text);
+  font-size: 1rem;
+}
+.guide-layout .guide-workflow h3 {
+  margin-top: 0;
+}
+.guide-layout .guide-workflow h4 {
+  margin: 4px 0 10px;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+.guide-layout .guide-flow {
+  margin: 0 0 24px;
+  padding-left: 28px;
+}
+.guide-layout .guide-flow > li {
+  margin-left: 4px;
+  padding: 0 0 26px 12px;
+}
+.guide-layout .guide-flow > li + li {
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+.guide-layout .guide-flow > li::marker {
+  color: var(--accent);
+  font-weight: 650;
+}
+.guide-layout .guide-flow-source {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.guide-layout .guide-flow p {
+  margin-bottom: 12px;
+}
+.guide-layout .guide-flow details {
+  margin-top: 12px;
+}
+.guide-layout .guide-flow summary {
+  padding: 10px 0;
+  color: var(--accent);
+  cursor: pointer;
+}
+.guide-layout .guide-flow pre {
+  margin: 10px 0;
+  padding: 14px;
+  font-size: 0.8125rem;
+}
+.guide-layout .guide-flow-note {
+  margin: 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+}
+@media (max-width: 440px) {
+  .guide-layout .guide-flow {
+    padding-left: 20px;
+  }
+  .guide-layout .guide-flow > li {
+    margin-left: 0;
+    padding-left: 4px;
+  }
+}
+@media print {
+  .guide-layout .guide-workflow {
+    padding: 16px;
+    box-shadow: none;
+  }
+  .guide-layout .guide-flow > li {
+    break-inside: avoid;
+  }
+}
