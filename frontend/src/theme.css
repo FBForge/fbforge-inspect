@@ -1,0 +1,103 @@
+/* Shared with FBForge Connect 0.3.0, source fa80c1c, EUPL-1.2. */
+/* Application tokens for both themes. */
+
+:root {
+  --font-ui: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --button-bg: var(--accent);
+  --button-hover: var(--brand-strong);
+  --button-ink: #ffffff;
+  --bg: #f2f5f8;
+  --surface: #ffffff;
+  --surface-soft: #f7f9fb;
+  --surface-hover: #f3f8fb;
+  --ink: #1e3044;
+  --muted: #596b7f;
+  --line: #dbe3eb;
+  --control-line: #7c8d9f;
+  --brand: #005c8f;
+  --brand-strong: #004a73;
+  --accent: #007ba8;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+
+  --header-bg: #ffffff;
+  --footer-bg: #ffffff;
+  --hero-bg: rgba(255, 255, 255, 0.82);
+  --card-bg: rgba(255, 255, 255, 0.94);
+  --field-bg: #fbfdfe;
+  --input-bg: #ffffff;
+  --result-bg: #f8fbfc;
+  --code-bg: #e8eef3;
+
+  --pill-bg: #e8f6fc;
+  --pill-border: rgba(0, 92, 143, 0.22);
+
+  --status-ok-bg: #e8f6ea;
+  --status-ok-ink: #276b35;
+  --status-ok-line: #5b9f67;
+  --status-info-bg: #e5f5fa;
+  --status-info-ink: #005f83;
+  --status-info-line: #1680a8;
+  --status-warn-bg: #fff4d9;
+  --status-warn-ink: #7a4b00;
+  --status-warn-line: #c47a00;
+  --status-error-bg: #fdeaea;
+  --status-error-ink: #a32626;
+  --status-error-line: #cc3d3d;
+  --shadow: 0 12px 40px #16304c1f;
+  --soft-shadow: 0 1px 3px #16304c08;
+  --hover-shadow: 0 6px 18px rgba(18, 48, 74, 0.14);
+  --page-background: var(--bg);
+
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  --button-bg: #0d6f92;
+  --button-hover: #137a9e;
+  --bg: #111b29;
+  --surface: #192638;
+  --surface-soft: #1d2d40;
+  --surface-hover: #17455d;
+  --ink: #e7eef7;
+  --muted: #acbdd0;
+  --line: #35475d;
+  --control-line: #7f94ae;
+  --brand: #39bfe9;
+  --brand-strong: #91e0f5;
+  --accent: #39bfe9;
+  --warning: #fbbf24;
+  --danger: #f87171;
+
+  --header-bg: rgba(6, 29, 46, 0.92);
+  --footer-bg: #082438;
+  --hero-bg: rgba(11, 42, 61, 0.9);
+  --card-bg: rgba(11, 42, 61, 0.96);
+  --field-bg: #152232;
+  --input-bg: #111e2d;
+  --result-bg: #152232;
+  --code-bg: #143b52;
+
+  --pill-bg: rgba(57, 191, 233, 0.16);
+  --pill-border: rgba(145, 224, 245, 0.32);
+
+  --status-ok-bg: rgba(62, 156, 82, 0.22);
+  --status-ok-ink: #c9efcf;
+  --status-ok-line: rgba(105, 193, 120, 0.55);
+  --status-info-bg: rgba(108, 143, 161, 0.17);
+  --status-info-ink: #c8d9e3;
+  --status-info-line: rgba(130, 165, 182, 0.44);
+  --status-warn-bg: rgba(251, 191, 36, 0.16);
+  --status-warn-ink: #ffe4a0;
+  --status-warn-line: rgba(251, 191, 36, 0.48);
+  --status-error-bg: rgba(248, 113, 113, 0.15);
+  --status-error-ink: #fecaca;
+  --status-error-line: rgba(248, 113, 113, 0.48);
+
+  --shadow: 0 18px 45px rgba(1, 14, 24, 0.42);
+  --soft-shadow: 0 10px 24px rgba(1, 14, 24, 0.3);
+  --hover-shadow: 0 18px 36px rgba(1, 14, 24, 0.4);
+  --page-background: var(--bg);
+
+  color-scheme: dark;
+}
