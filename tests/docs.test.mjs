@@ -37,11 +37,16 @@ test('exported guide uses the product website shell and preserves every help top
   }
   for (const file of ['start.png', 'destination.png', 'schema.png'])
     assert.ok(guide.includes(file));
-  assert.ok(guide.includes('IN ENTWICKLUNG'));
+  assert.ok(guide.includes('VERSION 0.1.0'));
+  assert.ok(!guide.includes('Noch kein freigegebener Installer'));
+  assert.ok(product.includes('/releases/tag/0.1.0'));
+  assert.ok(!readFileSync('README.md', 'utf8').includes('/blob/release/0.1.0/'));
   assert.ok(guide.includes('<ol>'));
   assert.ok(guide.includes('<pre><code>'));
   assert.ok(!product.includes('releases/download/'));
-  const introduction = product.match(/<p class="inspect-lead">([\s\S]*?)<\/p>/)[1];
+  const introduction = product
+    .match(/<p class="inspect-lead">([\s\S]*?)<\/p>/)[1]
+    .replace(/\s+/g, ' ');
   assert.ok(introduction.includes('Zustellpunkte in FIT-Connect prüfen.'));
   assert.ok(introduction.includes('FIT-Connect und PVOG'));
   assert.ok(!introduction.includes(';'));
