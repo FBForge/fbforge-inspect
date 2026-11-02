@@ -7,7 +7,6 @@ import java.security.*;
 import java.security.cert.*;
 import java.time.*;
 import java.util.*;
-import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.*;
 import org.bouncycastle.cert.jcajce.*;
@@ -69,6 +68,8 @@ final class Certificates {
               + "\n-----END CERTIFICATE-----");
       info.addProperty("subject", c.getSubjectX500Principal().getName());
       info.addProperty("issuer", c.getIssuerX500Principal().getName());
+      info.addProperty("signatureAlgorithm", c.getSigAlgName());
+      info.addProperty("signatureAlgorithmOid", c.getSigAlgOID());
       info.addProperty("notBefore", c.getNotBefore().toInstant().toString());
       info.addProperty("notAfter", c.getNotAfter().toInstant().toString());
       info.addProperty(
@@ -110,89 +111,36 @@ final class Certificates {
     }
     if (!r.data.has("certificates")) r.data.add("certificates", new JsonArray());
     r.data.getAsJsonArray("certificates").addAll(certificates);
-    // Participant-key usage is assessed only from the public JWK fields.
-    // X.509 Key Usage is not scored as a FIT-Connect JWK acceptance criterion.
-    boolean pss = leaf.getSigAlgOID().equals("1.2.840.113549.1.1.10"), sha512 = false;
-    if (pss && leaf.getSigAlgParams() != null) {
-      var parameters =
-          org.bouncycastle.asn1.pkcs.RSASSAPSSparams.getInstance(
-              ASN1Primitive.fromByteArray(leaf.getSigAlgParams()));
-      var mgf = parameters.getMaskGenAlgorithm();
-      sha512 =
-          parameters.getHashAlgorithm().getAlgorithm().getId().equals("2.16.840.1.101.3.4.2.3")
-              && mgf.getAlgorithm().getId().equals("1.2.840.113549.1.1.8")
-              && AlgorithmIdentifier.getInstance(mgf.getParameters())
-                  .getAlgorithm()
-                  .getId()
-                  .equals("2.16.840.1.101.3.4.2.3")
-              && parameters.getSaltLength().intValueExact() == 64
-              && parameters.getTrailerField().intValueExact() == 1;
-    }
-    r.add(
-        pss && sha512 ? "confirmed" : r.environment.equals("TEST") ? "warning" : "error",
-        "Zertifikatsalgorithmus",
-        "FITKO-Profil: RSASSA-PSS mit SHA-512.",
-        path + ".x5c[0]",
-        KeyDiagnostics.SOURCE,
-        "",
-        r.environment.equals("TEST") ? "TEST-Profil beweist keine Produktionstauglichkeit." : "");
-    String pem = JsonFields.value(options, "trustPem");
-    if (pem.isBlank())
-      r.unknown(
-          FindingCode.TRUST_ANCHOR_MISSING,
-          "Vertrauensanker nicht gewählt",
-          "Die x5c-Wurzel wird nicht automatisch vertraut. Öffentliche CA-Zertifikate aus einer"
-              + " unabhängigen Quelle laden.",
-          path,
-          KeyDiagnostics.SOURCE);
-    else {
-      Set<TrustAnchor> anchors = new HashSet<>();
-      for (var c :
-          factory.generateCertificates(
-              new ByteArrayInputStream(pem.getBytes(java.nio.charset.StandardCharsets.US_ASCII)))) {
-        X509Certificate root = (X509Certificate) c;
-        root.checkValidity();
-        root.verify(root.getPublicKey());
-        if (root.getBasicConstraints() < 0) throw new CertificateException("Kein CA-Anker.");
-        anchors.add(new TrustAnchor(root, null));
-      }
-      if (anchors.isEmpty() || anchors.size() > 16)
-        throw new CertificateException("Keine oder zu viele Vertrauensanker.");
-      List<X509Certificate> pathCerts = new ArrayList<>(chain);
-      if (anchors.stream().anyMatch(a -> a.getTrustedCert().equals(pathCerts.getLast())))
-        pathCerts.removeLast();
-      PKIXParameters params = new PKIXParameters(anchors);
-      params.setRevocationEnabled(false);
-      boolean trusted = true;
-      try {
-        CertPathValidator.getInstance("PKIX").validate(factory.generateCertPath(pathCerts), params);
-      } catch (GeneralSecurityException e) {
-        trusted = false;
-      }
-      r.check(
-          trusted,
-          "PKIX-Vertrauen gegen gewählte CA",
-          "Nur explizit geladene CA-Anker. Deren V-PKI-Zugehörigkeit muss unabhängig feststehen.",
-          path,
-          KeyDiagnostics.SOURCE);
-    }
-    boolean online = options.has("revocation") && options.get("revocation").getAsBoolean();
+    // JWK operations are checked in KeyDiagnostics. Certificate signature algorithms are
+    // displayed as certificate evidence, not scored as a JWK algorithm requirement.
+    List<X509Certificate> resolved = CertificateTrust.inspect(chain, options, r, path);
+    boolean online = !options.has("revocation") || options.get("revocation").getAsBoolean();
     if (!online) {
       r.unknown(
           FindingCode.REVOCATION_NOT_REQUESTED,
           "Sperrstatus nicht abgefragt",
-          "Onlineprüfung benötigt die ausdrückliche Auswahl von OCSP/CRL.",
+          "Die öffentliche OCSP-/CRL-Prüfung wurde für diesen Lauf ausgeschaltet.",
           path,
           RFC);
       return;
     }
-    if (chain.size() < 2) {
+    if (resolved.size() < 2) {
       r.unknown(
           "Sperrstatus ohne Aussteller", "Kein Ausstellerzertifikat in x5c vorhanden.", path, RFC);
       return;
     }
-    for (int i = 0; i < chain.size() - 1; i++)
+    for (int i = 0; i < resolved.size() - 1; i++) {
+      int originalIndex = chain.indexOf(resolved.get(i));
+      String certificatePath =
+          originalIndex >= 0
+              ? path + ".x5c[" + originalIndex + "]"
+              : "$.certificateTrust["
+                  + (r.data.getAsJsonArray("certificateTrust").size() - 1)
+                  + "].chain["
+                  + i
+                  + "]";
       CertificateRevocation.revocation(
-          chain.get(i), chain.get(i + 1), r, http, path + ".x5c[" + i + "]");
+          resolved.get(i), resolved.get(i + 1), r, http, certificatePath);
+    }
   }
 }
