@@ -214,6 +214,36 @@ class CryptoTest {
             now));
   }
 
+  @Test
+  void signatureRequiresTrustedIssuerAndPinnedAlgorithm() throws Exception {
+    var gen = KeyPairGenerator.getInstance("RSA");
+    gen.initialize(4096);
+    KeyPair pair = gen.generateKeyPair();
+    RSAKey publicKey =
+        new RSAKey.Builder((java.security.interfaces.RSAPublicKey) pair.getPublic())
+            .keyID("test")
+            .build();
+    for (String issuer :
+        List.of(
+            "https://portal.auth-testing.fit-connect.fitko.dev", "https://attacker.example.org")) {
+      SignedJWT jwt =
+          new SignedJWT(
+              new JWSHeader.Builder(JWSAlgorithm.PS512).keyID("test").build(),
+              new JWTClaimsSet.Builder().issuer(issuer).build());
+      jwt.sign(new RSASSASigner(pair.getPrivate()));
+      assertEquals(
+          issuer.contains("fit-connect.fitko.dev"), Signatures.verify(jwt, publicKey, "TEST"));
+    }
+    SignedJWT wrongAlg =
+        new SignedJWT(
+            new JWSHeader(JWSAlgorithm.RS256),
+            new JWTClaimsSet.Builder()
+                .issuer("https://portal.auth-testing.fit-connect.fitko.dev")
+                .build());
+    wrongAlg.sign(new RSASSASigner(pair.getPrivate()));
+    assertFalse(Signatures.verify(wrongAlg, publicKey, "TEST"));
+  }
+
   RSAKey leafJwk(java.security.PublicKey key) throws Exception {
     return new RSAKey.Builder((java.security.interfaces.RSAPublicKey) key)
         .algorithm(JWSAlgorithm.PS512)
