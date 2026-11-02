@@ -132,7 +132,7 @@ final class CertificateRevocation {
             "warning",
             "Kein unterstützter Sperrendpunkt",
             "Dieses TEST-Zertifikat veröffentlicht keinen unterstützten OCSP-/CRL-Endpunkt. Das ist"
-                + " im TEST-Betrieb zulässig; ein Sperrstatus wird nicht bestätigt.",
+                + " im TEST-Betrieb zulässig. Ein Sperrstatus wird nicht bestätigt.",
             path,
             RFC,
             "",

@@ -147,7 +147,7 @@ const pvog = computed(() =>
       <p v-if="onlineName(service.data)" class="mono hint">{{ service.id }}</p>
       <p v-if="service.matchesParent !== true" class="hint">
         Die Antwort-ID passt nicht zum übergeordneten Objekt. Parameter werden diesem Kontext nicht
-        zugeordnet; die Antwort bleibt als Beleg erhalten.
+        zugeordnet. Die Antwort bleibt als Beleg erhalten.
       </p>
       <div
         v-else

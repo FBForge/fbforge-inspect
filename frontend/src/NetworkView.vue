@@ -75,7 +75,7 @@ function check() {
         </p>
         <p v-else class="hint">
           {{ certificates.length }} öffentliche Zertifikate verfügbar. OCSP wird mit einer passenden
-          POST-Anfrage geprüft; CRL per GET.
+          POST-Anfrage geprüft. CRL per GET.
         </p>
         <button class="button primary" type="submit">Verbindungen prüfen</button>
       </fieldset>

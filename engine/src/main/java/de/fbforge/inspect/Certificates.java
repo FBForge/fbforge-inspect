@@ -142,7 +142,7 @@ final class Certificates {
             "warning",
             "Sperrstatus des TEST-Zertifikats",
             "Für dieses selbstsignierte TEST-Zertifikat ist kein unabhängiger Aussteller verfügbar."
-                + " Im TEST-Betrieb ist das zulässig; ein öffentlicher Sperrstatus wird nicht"
+                + " Im TEST-Betrieb ist das zulässig. Ein öffentlicher Sperrstatus wird nicht"
                 + " bestätigt.",
             path + ".x5c[0]",
             RFC,
