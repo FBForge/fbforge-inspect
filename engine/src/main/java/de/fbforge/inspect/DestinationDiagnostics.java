@@ -31,6 +31,7 @@ final class DestinationDiagnostics {
       if (key != null) KeyDiagnostics.inspect(key.toString(), report, http, input);
     } else
       report.add(
+          FindingCode.JWK_REQUIREMENTS,
           value(d, "type").equals("C") ? "notApplicable" : "unknown",
           "Verschlüsselungsschlüssel",
           "Kein encryptionKid veröffentlicht.",
@@ -82,6 +83,7 @@ final class DestinationDiagnostics {
           || !version.getAsString().matches("(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"))
         validVersions = false;
     r.check(
+        FindingCode.DESTINATION_CONFIGURATION,
         validVersions,
         "Metadaten veröffentlicht",
         "Veröffentlicht: "
@@ -91,6 +93,7 @@ final class DestinationDiagnostics {
         url);
     if (r.apiVersion.equals("v3"))
       r.check(
+          FindingCode.DESTINATION_CONFIGURATION,
           Set.of("A", "B", "C").contains(value(d, "type")),
           "Zustellpunkttyp",
           value(d, "type"),
@@ -98,6 +101,7 @@ final class DestinationDiagnostics {
           url);
     if (r.apiVersion.equals("v2"))
       r.add(
+          FindingCode.DESTINATION_CONFIGURATION,
           "notApplicable",
           "Zustellpunkttyp und Prozessnachrichten",
           "Diese Felder werden über v3 ausgewertet.",
@@ -121,6 +125,7 @@ final class DestinationDiagnostics {
         if (id && area && schemaMatch(array(s, "submissionSchemas"), schema, mime)) match = true;
       }
       r.check(
+          FindingCode.DESTINATION_CONFIGURATION,
           match,
           "Erwartete Verwaltungskonfiguration",
           match
@@ -132,6 +137,7 @@ final class DestinationDiagnostics {
     String metadata = value(input, "metadata");
     if (!metadata.isBlank())
       r.check(
+          FindingCode.DESTINATION_CONFIGURATION,
           contains(array(d, "metadataVersions"), metadata),
           "Metadatenversion",
           metadata,
@@ -139,6 +145,7 @@ final class DestinationDiagnostics {
           url);
     if (d.has("senderAccessRestricted"))
       r.add(
+          FindingCode.DESTINATION_CONFIGURATION,
           "warning",
           "Zugangsregeln prüfen",
           "Veröffentlichte Senderbeschränkungen werden angezeigt. Ohne Identität des Senders ist"

@@ -81,6 +81,7 @@ public final class Main {
             var response = http.get(JsonFields.value(input, "url"));
             if (!response.ok())
               report.unknown(
+                  FindingCode.JWK_REQUIREMENTS,
                   "Schlüsselabruf nicht erfolgreich",
                   "HTTP " + response.status(),
                   "$",
@@ -111,7 +112,7 @@ public final class Main {
           e instanceof NetworkFailure failure
               ? failure.description()
               : "Netzwerkziel, DNS, TLS oder Abfragebudget prüfen. Bereits geladene Daten bleiben"
-                    + " Teilbestand.",
+                  + " Teilbestand.",
           "$",
           "");
     }

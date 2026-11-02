@@ -1,7 +1,10 @@
+import { diagnosisSummary } from './diagnosisSummary.ts';
 import { labels, type Finding, type Report, type Status } from './contracts.ts';
 
 export const statusOrder: Status[] = ['error', 'warning', 'unknown', 'confirmed', 'notApplicable'];
 export function overview(report: Report) {
+  const summary = diagnosisSummary(report);
+  if (summary) return summary.title;
   const count = (status: Status) => report.findings.filter((f) => f.status === status).length;
   if (count('error')) return 'Abweichungen gefunden';
   if (count('unknown')) return 'Prüfung mit offenen Punkten abgeschlossen';

@@ -303,6 +303,20 @@ class CryptoTest {
       KeyDiagnostics.inspect(
           key.toJSONString(), report, new PublicHttp(report), new com.google.gson.JsonObject());
       assertNoCertificateUsageFindings(report);
+      assertEquals(
+          7,
+          report.findings.stream().filter(f -> f.code() == FindingCode.JWK_REQUIREMENTS).count());
+      assertTrue(
+          report.findings.stream()
+              .map(Report.Finding::code)
+              .toList()
+              .containsAll(
+                  List.of(
+                      FindingCode.CERTIFICATE_BINDING,
+                      FindingCode.CERTIFICATE_VALIDITY,
+                      FindingCode.CERTIFICATE_SIGNATURE,
+                      FindingCode.CERTIFICATE_TRUST,
+                      FindingCode.REVOCATION_UNAVAILABLE)));
       assertTrue(
           report.findings.stream()
               .anyMatch(
@@ -452,7 +466,6 @@ class CryptoTest {
         raw.toString(), report, new PublicHttp(report), new com.google.gson.JsonObject());
     assertTrue(
         report.findings.stream()
-            .anyMatch(
-                f -> f.title().equals("Schlüssel nicht auswertbar") && f.status().equals("error")));
+            .anyMatch(f -> f.code() == FindingCode.KEY_DATA_INVALID && f.status().equals("error")));
   }
 }
