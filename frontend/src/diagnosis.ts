@@ -4,7 +4,8 @@ export const statusOrder: Status[] = ['error', 'warning', 'unknown', 'confirmed'
 export function overview(report: Report) {
   const count = (status: Status) => report.findings.filter((f) => f.status === status).length;
   if (count('error')) return 'Abweichungen gefunden';
-  if (count('warning') || count('unknown')) return 'Prüfung mit offenen Punkten abgeschlossen';
+  if (count('unknown')) return 'Prüfung mit offenen Punkten abgeschlossen';
+  if (count('warning')) return 'Prüfung mit Hinweisen abgeschlossen';
   if (report.operation === 'schema') return 'Schema eingelesen';
   if (report.operation === 'limits') return 'Limits abgerufen';
   if (report.operation === 'network') return 'Verbindungen geprüft';

@@ -51,6 +51,10 @@ final class CertificateTrust {
       }
     }
     if (anchors.isEmpty()) {
+      if (report.environment.equals("TEST") && pem.isBlank()) {
+        testHint(report, path);
+        return chain;
+      }
       report.unknown(
           FindingCode.TRUST_ANCHOR_MISSING,
           "Kein gültiger Vertrauensanker",
@@ -88,9 +92,9 @@ final class CertificateTrust {
           pem.isBlank() ? "V-PKI-Vertrauenskette" : "PKIX-Vertrauen gegen gewählte CA",
           vpki
               ? "Kette zu einer unabhängig veröffentlichten BSI-Wurzel im mitgelieferten"
-                    + " V-PKI-Truststore bestätigt."
+                  + " V-PKI-Truststore bestätigt."
               : "Kette gegen eine zusätzlich geladene CA bestätigt. Eine V-PKI-Zugehörigkeit ist"
-                    + " damit nicht bestätigt.",
+                  + " damit nicht bestätigt.",
           path,
           "https://www.bsi.bund.de/VPKI");
       List<X509Certificate> resolved = new ArrayList<>();
@@ -108,6 +112,11 @@ final class CertificateTrust {
       return resolved;
     } catch (CertPathBuilderException untrusted) {
       evidence.addProperty("trusted", false);
+      if (report.environment.equals("TEST") && pem.isBlank()) {
+        evidence.addProperty("source", "test-unanchored");
+        testHint(report, path);
+        return chain;
+      }
       report.check(
           false,
           pem.isBlank() ? "V-PKI-Vertrauenskette" : "PKIX-Vertrauen gegen gewählte CA",
@@ -117,5 +126,18 @@ final class CertificateTrust {
           "https://www.bsi.bund.de/VPKI");
       return chain;
     }
+  }
+
+  private static void testHint(Report report, String path) {
+    report.add(
+        "warning",
+        "TEST-Zertifikat ohne V-PKI-Verankerung",
+        "TEST erlaubt selbst erzeugte Zertifikate ohne V-PKI-Verankerung. Das ist kein Fehler des"
+            + " TEST-Zustellpunkts; V-PKI-Vertrauen wird damit nicht bestätigt.",
+        path,
+        "https://www.bsi.bund.de/VPKI",
+        "",
+        "Keine Aussage über Produktionseignung. Laufzeit, Schlüsselbindung und vorhandene"
+            + " Signaturen werden getrennt geprüft.");
   }
 }

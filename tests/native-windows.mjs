@@ -381,6 +381,24 @@ try {
     expect(jwkReport.data.keys[0].publicJwk.x5c.length).toBeGreaterThan(0);
     expect(jwkReport.data.certificates[0].pem).toContain('BEGIN CERTIFICATE');
     expect(jwkReport.rawResponses).toBeUndefined();
+    expect(jwkReport.findings.some((finding) => finding.status === 'error')).toBe(false);
+    if (jwkReport.data.certificates[0].subject === jwkReport.data.certificates[0].issuer) {
+      expect(jwkReport.data.certificateTrust[0].trusted).toBe(false);
+      expect(
+        jwkReport.findings.some(
+          (finding) =>
+            finding.title === 'TEST-Zertifikat ohne V-PKI-Verankerung' &&
+            finding.status === 'warning',
+        ),
+      ).toBe(true);
+      expect(
+        jwkReport.findings.some(
+          (finding) =>
+            finding.title === 'Sperrstatus des TEST-Zertifikats' && finding.status === 'warning',
+        ),
+      ).toBe(true);
+    }
+
     const ocspSources = new Set(
       jwkReport.findings
         .filter((finding) => finding.title.startsWith('OCSP'))

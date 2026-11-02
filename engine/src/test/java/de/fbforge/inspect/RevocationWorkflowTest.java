@@ -263,7 +263,7 @@ class RevocationWorkflowTest {
 
   @Test
   void absentEndpointsStayUnknownAndCrlLocationsAreBounded() throws Exception {
-    Report report = new Report("keys", "TEST", "v3");
+    Report report = new Report("keys", "PROD", "v3");
     CertificateRevocation.revocation(
         leaf(false),
         CryptoTest.issuer,
@@ -287,6 +287,23 @@ class RevocationWorkflowTest {
         },
         "$");
     assertEquals(2, calls.get());
+  }
+
+  @Test
+  void missingTestEndpointsAreHintsButRealTestFetchFailuresStayUnknown() throws Exception {
+    Report absent = new Report("keys", "TEST", "v3");
+    CertificateRevocation.revocation(
+        leaf(false), CryptoTest.issuer, absent, (url, post) -> fail("no endpoint"), "$");
+    assertEquals("warning", absent.findings.getFirst().status());
+    Report failed = new Report("keys", "TEST", "v3");
+    CertificateRevocation.revocation(
+        leaf(false, "https://example.org/crl"),
+        CryptoTest.issuer,
+        failed,
+        (url, post) -> new PublicHttp.Response(500, Map.of(), new byte[0], URI.create(url)),
+        "$");
+    assertEquals("unknown", failed.findings.getFirst().status());
+    assertTrue(failed.findings.getFirst().detail().contains("HTTP 500"));
   }
 
   @Test

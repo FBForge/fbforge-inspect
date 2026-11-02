@@ -392,7 +392,7 @@ class CryptoTest {
 
   @Test
   void receivedRootDoesNotBecomeImplicitTrust() throws Exception {
-    Report report = new Report("keys", "TEST", "v3");
+    Report report = new Report("keys", "PROD", "v3");
     Certificates.inspect(
         leafJwk(leafKey.getPublic()),
         report,

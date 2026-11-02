@@ -132,6 +132,9 @@ test('public RSA key is diagnosed by the real engine without inventing certifica
   await page.getByRole('textbox', { name: 'Öffentliches JWK / JWKS' }).fill(JSON.stringify(jwk));
   await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Prüfung mit Hinweisen abgeschlossen', exact: true }),
+  ).toBeVisible();
   await page.locator('.compact-findings > summary').click();
   await expect(page.getByText('RSA-Schlüssellänge', { exact: true })).toBeVisible();
   await expect(page.getByText('3072 Bit (Mindestvorgabe 3072)', { exact: true })).toBeVisible();
