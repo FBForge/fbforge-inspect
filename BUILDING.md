@@ -84,4 +84,34 @@ Vor Veröffentlichung bleiben separat zu prüfen: frischer Windows-Benutzer, Sta
 
 Abhängigkeiten mit `npm audit`, `cargo audit --file desktop/Cargo.lock` und `mvn -f engine/pom.xml dependency:list -DincludeScope=runtime` gegen aktuelle Advisories prüfen. Datenbankstand, Koordinaten und Grenzen protokollieren. Die bisherigen Linux-Hinweise zu `glib 0.18.5` und `proc-macro-error 1.0.4` waren nicht im ermittelten Windows-x64-Baum enthalten. Nach Lockfile-Änderungen diese Einordnung erneuern. Ein leerer Trefferbestand ist keine Sicherheitsgarantie und bewertet nicht automatisch die gebündelte JDK-Distribution.
 
-Signierung von EXE und Installer mit Zeitstempel sowie Veröffentlichung benötigen eine gesonderte Freigabe. Signierprovider und private Schlüssel sind nicht konfiguriert. Es gibt keine automatische Veröffentlichung oder Git-Hooks. Ein erfolgreicher unsignierter Kandidat wird nicht als signierter Release ausgegeben.
+## Lokal signiert unter Windows bauen
+
+Der gemeinsame Einstieg für lokale und CI-Builds ist `scripts/build-signed-windows.ps1`. In einer normalen interaktiven Windows-PowerShell ausführen. Windows-JDK 25, Node, Git, Rust/MSVC und Visual Studio C++ Build Tools mit Windows SDK werden benötigt. Maven wird bei Bedarf als geprüfter Download im lokalen Buildtools-Verzeichnis bereitgestellt.
+
+Das Code-Signing-Zertifikat muss im Speicher `Cert:\CurrentUser\My` des ausführenden Windows-Benutzers liegen und Zugriff auf seinen privaten Schlüssel haben. Beim Hardwaretoken dieselbe Middleware wie für FBForge Connect verwenden. Die PIN wird ausschließlich im Dialog des Providers eingegeben; Skripte und GitHub speichern sie nicht.
+
+```powershell
+Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert |
+    Select-Object Subject, Thumbprint, NotAfter, HasPrivateKey
+
+.\scripts\build-signed-windows.ps1 -Thumbprint 'THUMBPRINT-DES-CODE-SIGNING-ZERTIFIKATS'
+```
+
+Der Builder erwartet einen sauberen Checkout und baut in einem frischen temporären Verzeichnis. Er prüft JDK-Quellenzuordnung und Laufzeit, führt die Java-Kerntests und die Typprüfung aus und erzeugt ein Paket mit signierter EXE, signiertem NSIS-Installer, Laufzeit und Lizenzbeilagen. Tauri sichert beim Signieren die tatsächlich in NSIS verpackte Hauptdatei, da die lose Build-EXE nach dem Bundling wiederhergestellt wird. Beide ausgelieferten Dateien werden mit Authenticode und `signtool verify /pa /all /tw` auf erwarteten Signierer und Zeitstempel geprüft. SHA-256-Prüfsummen und `build-info.json` entstehen danach. Der Standardzeitstempeldienst ist `http://timestamp.digicert.com` mit RFC 3161 und SHA-256; `-TimestampUrl` erlaubt einen anderen passenden Dienst. Der ausgegebene Paketpfad kann mit `-InspectOutputDirectory` auf ein neues lokales Verzeichnis festgelegt werden.
+
+Die privaten Komfortskripte zum frischen Windows-Checkout und zur Einrichtung der GitHub-Variablen bleiben außerhalb des Repos. Für einen wiederholten Build ist weder ein Reset des WSL-Checkouts noch dessen Verwendung erforderlich.
+
+## Signierung in GitHub Actions
+
+`Sign Windows candidate` wird ausschließlich manuell auf `main` gestartet. Vor dem Signierrechner prüft ein gehosteter Job, dass die eingegebene Verify-Run-ID zu genau diesem Commit im eigenen Repository gehört und beide Jobs `verify` und `windows` erfolgreich abgeschlossen sind. Ein fehlgeschlagener, noch laufender oder fremder Lauf wird abgelehnt. Der Workflow veröffentlicht keinen Release und führt kein Deployment aus.
+
+Einmalig durch den Repository-Eigentümer einzurichten:
+
+1. Environment `windows-signing` mit genau `FBForge` als erforderlichem Reviewer; Eigenfreigabe zulassen und Deployments auf `main` beschränken.
+2. Repository-Variable `WINDOWS_SIGNING_THUMBPRINT` auf das verwendete Zertifikat setzen. Optional `WINDOWS_TIMESTAMP_URL` für den Zeitstempeldienst setzen. Private Schlüssel und PIN gehören nicht in GitHub-Variablen oder Secrets.
+3. Vor der Runner-Registrierung für das öffentliche Repository die Workflow-Freigabe für **alle externen Fork-Beitragenden** verlangen. Nur geprüfte Fork-Workflows freigeben; alle Schreibberechtigten des Repos müssen für den Signierrechner vertrauenswürdig sein. Ein Repo-Runner kann auch von anderen Workflows desselben Repos angesprochen werden; der Main- und Environment-Schutz dieses Signierworkflows allein ersetzt diese Prüfung nicht. Wo verfügbar, die Runner-Zulassung auf den Signierworkflow auf `main` beschränken.
+4. Einen für Inspect zugelassenen Windows-x64-Self-hosted-Runner mit dem zusätzlichen Label `fbforge-signing` registrieren. Für einen separaten Repo-Runner ein eigenes Verzeichnis verwenden. Er muss unter demselben angemeldeten Windows-Benutzer mit Zertifikat und Token laufen. Wegen Token-PIN-Dialogen `run.cmd` in der interaktiven Sitzung verwenden, keinen Windows-Dienst. Die Runner-Zulassung und der Schutz von `main` müssen in GitHub geprüft werden.
+
+Der Signierjob verwendet denselben PowerShell-Builder wie lokal. Ein unabhängiger gehosteter Windows-Job lädt ausschließlich den Kandidaten aus diesem Signierlauf, prüft vollständige Dateiprüfsummen, Commit-/Run-Zuordnung, Signaturen und Laufzeitprovenienz und führt Installation, nativen Kern-/Exportdurchlauf und NVDA-Prüfungen aus. Erst danach entsteht das Artefakt `windows-signed-verified`. `windows-signed-candidate` ist der noch nicht unabhängig abgenommene Zwischenstand.
+
+Der Workflow wird in Actions verfügbar, sobald seine Definition auf dem Standardbranch liegt. Das Vorbereiten auf `release/0.1.0` aktiviert keine Signierung und ersetzt keinen Main-Merge. Ein aktueller fehlgeschlagener Verify-Lauf bleibt ein Abnahmehindernis und wird durch Signieren nicht aufgehoben. Ein erfolgreicher unsignierter Kandidat ist kein signierter Release.
