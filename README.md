@@ -1,11 +1,11 @@
 # FBForge Inspect
 
-<img src="assets/brand/inspect-source.png" alt="" width="80" height="80">
+<img src="desktop/icons/128x128@2x.png" alt="" width="80" height="80">
 
 Desktop-Werkzeug für FIT-Connect-Zustellpunkte, Routing und PVOG-Adressierung. Für Entwickler und Integratoren.
 
 - Zustellpunkte über API v2/v3 abrufen und Konfiguration, Leistungen, Regionen und öffentliche Schlüssel prüfen.
-- Routing-Ziele und Gebiete suchen, Ergebniskontexte erhalten und PVOG-Adressierungssignaturen ergänzen.
+- Routing-Ziele und Gebiete suchen, PVOG-Leistungsbeschreibungen mit OE-Verweisen vorschlagen und Adressierungssignaturen abgleichen.
 - V3-Prozessnachrichten und zusammengehörige Konfigurationserwartungen prüfen.
 - Öffentliche JWK/JWKS, Zertifikatsketten und Sperrstatus untersuchen.
 - JSON Schema und XSD lokal einlesen, Struktur und Referenzen nachvollziehen.
