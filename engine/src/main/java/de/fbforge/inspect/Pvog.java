@@ -37,9 +37,11 @@ final class Pvog {
             ? "https://stage.pvog.fitko.net/suchdienst/api"
             : "https://pvog.fitko.net/suchdienst/api";
     if (lb.isBlank()) {
-      new PvogDiscovery(report, this::read).inspect(input, base, region);
-      return;
+      lb = new PvogDiscovery(report, this::read).inspect(input, base, region);
+      if (lb.isBlank()) return;
+      report.data.addProperty("pvogAutomaticallySelected", true);
     }
+    report.data.addProperty("pvogSelectedLbId", lb);
     JsonArray contexts = loadRelations(base, region, lb);
     inspectService(base, lb, input);
     inspectContexts(base, contexts, input, region, lb, signatures);
@@ -121,6 +123,7 @@ final class Pvog {
             ? "Öffentlicher Quellenvergleich, keine Rekonstruktion interner Auswahlregeln."
             : "Teilbestand oder inkonsistente Seitenmetadaten, kein vollständiger"
                 + " Negativnachweis.");
+    report.data.addProperty("pvogRelationsComplete", complete);
     return contexts;
   }
 
@@ -204,6 +207,7 @@ final class Pvog {
                   + " sein.",
               relationPath + ".leistungID",
               url);
+        inspectCommunication(relation, input, region, relationPath, signatures);
         JsonArray ids = JsonFields.array(relation, "idSekundaer");
         for (int k = 0; k < ids.size(); k++) {
           if (!ids.get(k).isJsonObject()) continue;
@@ -263,13 +267,27 @@ final class Pvog {
           contextPath + ".uebergeordnetesObjektID",
           source);
     }
-    report.unknown(
-        "PVOG-Parameter sind Konfigurationsevidenz",
-        "EfA- und individuelle Parameter bleiben ihrem Onlinedienst zugeordnet."
-            + " Kommunikationskennungen und Parameter sind keine verifizierten"
-            + " Adressierungssignaturen und keine Fachdatenschemata.",
-        "$.pvogOnlineServices",
-        DOC);
+  }
+
+  private void inspectCommunication(
+      JsonObject relation, JsonObject input, String region, String path, Signatures signatures) {
+    JsonArray systems = JsonFields.array(relation, "kommunikationssystem");
+    for (int i = 0; i < systems.size(); i++) {
+      if (!systems.get(i).isJsonObject()) continue;
+      JsonObject system = systems.get(i).getAsJsonObject();
+      if (!system.has("kanal") || !system.get("kanal").isJsonObject()) continue;
+      JsonObject channel = system.getAsJsonObject("kanal");
+      if (!"004".equals(JsonFields.text(channel, "code"))
+          || !"urn:xoev-de:fim:codeliste:xzufi.kommunikationssystemtyp"
+              .equals(JsonFields.text(channel, "listURI"))) continue;
+      // The channel identifies the format, not trust. The same independent JWKS/claim checks apply.
+      signatures.inspect(
+          JsonFields.text(system, "kennung"),
+          "",
+          JsonFields.value(input, "service"),
+          region,
+          path + ".kommunikationssystem[" + i + "].kennung");
+    }
   }
 
   private JsonObject read(String url) {

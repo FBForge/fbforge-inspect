@@ -14,7 +14,7 @@ final class PvogDiscovery {
     this.read = read;
   }
 
-  void inspect(JsonObject input, String base, String region) {
+  String inspect(JsonObject input, String base, String region) {
     String service = JsonFields.value(input, "service");
     if (!service.matches("[0-9]{14}"))
       throw new IllegalArgumentException("LeiKa-Schlüssel mit 14 Ziffern erwartet.");
@@ -123,14 +123,20 @@ final class PvogDiscovery {
         complete ? "confirmed" : "unknown",
         "PVOG-Vorschlagssuche",
         candidates.size()
-            + " Leistungsbeschreibungen zur Auswahl. Quelle: "
+            + " passende Leistungsbeschreibungen gefunden. Quelle: "
             + (report.environment.equals("TEST") ? "PVOG STAGE" : "PVOG PROD"),
         "$.pvogCandidates",
         url,
-        "Einen Vorschlag auswählen oder eine bekannte Leistungsbeschreibungs-ID eintragen.",
+        complete && candidates.size() == 1
+            ? "Der eindeutige Treffer wird automatisch geprüft."
+            : "Bei mehreren Treffern eine Leistungsbeschreibung auswählen.",
         complete
             ? "Suchtreffer und OE-Verweise sind noch kein bestätigter Adressierungsvergleich."
             : "Teilbestand, Abruffehler oder inkonsistente Suchantwort. Höchstens 20 Treffer werden"
                 + " geladen.");
+    report.data.addProperty("pvogDiscoveryComplete", complete);
+    return complete && candidates.size() == 1
+        ? candidates.get(0).getAsJsonObject().get("id").getAsString()
+        : "";
   }
 }

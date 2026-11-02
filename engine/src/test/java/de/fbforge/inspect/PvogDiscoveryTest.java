@@ -36,7 +36,7 @@ class PvogDiscoveryTest {
   }
 
   @Test
-  void discoversSelectableServiceIdsWithOrganisationAndSourceWithoutGuessing() throws Exception {
+  void automaticallyInspectsTheOnlyCompleteCandidateAndRetainsItsSource() throws Exception {
     Report report = new Report("routing", "TEST", "v3");
     List<String> requests = new ArrayList<>();
     Api api =
@@ -44,11 +44,19 @@ class PvogDiscoveryTest {
             report,
             url -> {
               requests.add(url);
+              if (url.contains("/leikaid?"))
+                return ApiTest.response(
+                    200, page(service("L1.LB.service", "99008001014002"), 0, 1, 1));
+              if (url.contains("/relations/"))
+                return ApiTest.response(
+                    200,
+                    "{\"content\":[],\"page\":{\"number\":0,\"size\":100,\"totalElements\":0,\"totalPages\":0}}");
               return ApiTest.response(
-                  200, page(service("L1.LB.service", "99008001014002"), 0, 1, 1));
+                  200,
+                  "{\"id\":{\"schemeAgencyID\":\"L1\",\"value\":\"service\"},\"referenzLeistungsschluessel\":[{\"value\":\"99008001014002\"}]}");
             });
     api.pvog(input(), new Signatures(api));
-    assertEquals(1, requests.size());
+    assertEquals(3, requests.size());
     assertTrue(
         requests
             .getFirst()
@@ -61,8 +69,14 @@ class PvogDiscoveryTest {
     assertEquals("L1.LB.service", candidate.get("id").getAsString());
     assertEquals("L1.OE.office", candidate.getAsJsonArray("organisationIds").get(0).getAsString());
     assertEquals(requests.getFirst(), candidate.get("source").getAsString());
-    assertFalse(
-        report.data.has("pvogRelations"), "A suggestion is not a completed addressing comparison");
+    assertTrue(report.data.has("pvogRelations"));
+    assertTrue(report.data.get("pvogAutomaticallySelected").getAsBoolean());
+    assertEquals("L1.LB.service", report.data.get("pvogSelectedLbId").getAsString());
+    assertTrue(
+        report.findings.stream()
+            .anyMatch(
+                f ->
+                    f.title().equals("PVOG-Leistungszuordnung") && f.status().equals("confirmed")));
   }
 
   @Test
@@ -108,6 +122,7 @@ class PvogDiscoveryTest {
                 ApiTest.response(200, page(service("L1.LB.service", "99008001014002"), 4, 1, 1)));
     api.pvog(input(), new Signatures(api));
     assertEquals(1, report.data.getAsJsonArray("pvogCandidates").size());
+    assertFalse(report.data.has("pvogSelectedLbId"));
     assertTrue(
         report.findings.stream()
             .anyMatch(
@@ -147,6 +162,7 @@ class PvogDiscoveryTest {
       api.pvog(input(), new Signatures(api));
       assertEquals(2, urls.size());
       assertEquals(20, report.data.getAsJsonArray("pvogCandidates").size());
+      assertFalse(report.data.has("pvogSelectedLbId"));
       String expectedStatus = total == 20 ? "confirmed" : "unknown";
       assertTrue(
           report.findings.stream()
