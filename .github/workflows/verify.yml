@@ -73,6 +73,8 @@ jobs:
         run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy; rustup default 1.96.0
       - run: npm ci
       - run: npm run build
+      - name: Signing contracts and package integrity without a token
+        run: node --test --test-isolation=none tests/signing-gate.test.mjs tests/signing.test.mjs tests/signed-package.test.mjs
       - run: cargo fetch --locked --manifest-path desktop/Cargo.toml
       - name: Check localized labels with Windows PowerShell
         run: node --test --test-isolation=none tests/windows-encoding.test.mjs

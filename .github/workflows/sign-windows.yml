@@ -1,0 +1,107 @@
+name: Sign Windows candidate
+on:
+  workflow_dispatch:
+    inputs:
+      validation_run:
+        description: Successful Verify run for this exact main commit
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+  deployments: read
+concurrency:
+  group: windows-signing
+  cancel-in-progress: false
+jobs:
+  verify-source:
+    if: github.repository_id == '1437423043' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Require exact successful validation and owner approval policy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VALIDATION_RUN: ${{ inputs.validation_run }}
+        run: python3 scripts/ci/check-signing-run.py
+  sign:
+    needs: verify-source
+    environment: windows-signing
+    runs-on: [self-hosted, Windows, X64, fbforge-signing]
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Build and sign using the interactive user's local token
+        env:
+          VALIDATION_RUN: ${{ inputs.validation_run }}
+          SIGNING_THUMBPRINT: ${{ vars.WINDOWS_SIGNING_THUMBPRINT }}
+          SIGNING_TIMESTAMP_URL: ${{ vars.WINDOWS_TIMESTAMP_URL || 'http://timestamp.digicert.com' }}
+        run: ./scripts/build-signed-windows.ps1 -CI -Thumbprint $env:SIGNING_THUMBPRINT -TimestampUrl $env:SIGNING_TIMESTAMP_URL
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: windows-signed-candidate
+          path: ${{ env.SIGNED_OUTPUT }}/
+          if-no-files-found: error
+          retention-days: 1
+          include-hidden-files: true
+  verify-package:
+    needs: sign
+    runs-on: windows-2025
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts
+      - name: Download the candidate from this signing run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $candidate = Join-Path $env:RUNNER_TEMP 'signed-candidate'
+          gh run download $env:GITHUB_RUN_ID --repo $env:GITHUB_REPOSITORY --name windows-signed-candidate --dir $candidate
+          if ($LASTEXITCODE -ne 0) { throw 'signed_candidate_download_failed' }
+          Add-Content -LiteralPath $env:GITHUB_ENV -Encoding UTF8 -Value ('SIGNED_CANDIDATE=' + $candidate)
+      - name: Check signed package identity and checksums
+        env:
+          VALIDATION_RUN: ${{ inputs.validation_run }}
+          SIGNING_THUMBPRINT: ${{ vars.WINDOWS_SIGNING_THUMBPRINT }}
+        run: ./scripts/ci/check-signed-package.ps1 -Directory $env:SIGNED_CANDIDATE -Thumbprint $env:SIGNING_THUMBPRINT
+      - name: Prepare official NVDA
+        run: ./scripts/ci/prepare-nvda.ps1
+      - name: Install exact signed candidate and check WebView, exports, keyboard and NVDA
+        run: |
+          $setup = @(Get-ChildItem -LiteralPath $env:SIGNED_CANDIDATE -Filter '*-setup.exe' -File)
+          if ($setup.Count -ne 1) { throw 'signed_installer_ambiguous' }
+          ./scripts/windows-accessibility-smoke.ps1 -InstallerPath $setup[0].FullName -ExpectedBinaryPath (Join-Path $env:SIGNED_CANDIDATE 'fbforge-inspect.exe') -NvdaPath $env:INSPECT_NVDA_PATH
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: windows-signed-verified
+          path: |
+            ${{ env.SIGNED_CANDIDATE }}/
+            .local/installed-native-evidence/
+            ${{ runner.temp }}/fbforge-accessibility-result.json
+          if-no-files-found: error
+          retention-days: 30
+          include-hidden-files: true

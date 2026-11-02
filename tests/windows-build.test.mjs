@@ -36,6 +36,7 @@ async function buildFixture(failCopy) {
   ])
     await writeFile(join(root, name), '{}');
   await copyFile('scripts/build-windows.ps1', join(root, 'scripts/build-windows.ps1'));
+  await copyFile('scripts/windows-signing.psm1', join(root, 'scripts/windows-signing.psm1'));
   await writeFile(join(root, 'jdk/legal/java.base/LICENSE'), 'GNU General Public License');
   await writeFile(join(root, 'jdk/legal/java.base/ADDITIONAL_LICENSE_INFO'), 'Classpath Exception');
   // This Linux-hosted harness tests PowerShell control flow, not Windows compilation.

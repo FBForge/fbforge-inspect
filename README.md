@@ -21,6 +21,8 @@ Die [CI-Prüfung](https://github.com/FBForge/fbforge-inspect/actions/workflows/v
 
 Zum Testen öffnen Sie einen erfolgreichen CI-Lauf für `release/0.1.0` und laden unter **Artifacts** das Paket `windows-unsigned-candidate` herunter. Nach dem Entpacken den `*-setup.exe`-Installer verwenden. `SHA256SUMS.txt` enthält die Prüfsummen. Das Paket ist unsigniert und noch kein veröffentlichter Release. Der Download der Actions-Artefakte benötigt eine GitHub-Anmeldung.
 
+Für lokale Authenticode-Builds und den vorbereiteten manuellen CI-Signierweg siehe [Signierung unter Windows](BUILDING.md#lokal-signiert-unter-windows-bauen). Beide verwenden denselben PowerShell-Builder und den lokalen Zertifikatsspeicher beziehungsweise Hardwaretoken. Ein signierter CI-Kandidat ist erst nach der unabhängigen Paket- und Installationsprüfung als `windows-signed-verified` abgenommen; eine Veröffentlichung erfolgt dabei nicht.
+
 ## Einstieg
 
 1. Den Windows-Testkandidaten installieren oder den Quellstand von `release/0.1.0` mit der [Bauanleitung](https://github.com/FBForge/fbforge-inspect/blob/release/0.1.0/BUILDING.md) bauen.
