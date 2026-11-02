@@ -140,6 +140,10 @@ Der Workflow wird in Actions verfügbar, sobald seine Definition auf dem Standar
 
 ### Vom geprüften Kandidaten zur Veröffentlichung
 
+`Publish verified Windows release` veröffentlicht einen vorhandenen Versions-Tag aus einem erfolgreich abgeschlossenen Signierlauf. Der manuelle Workflow läuft ausschließlich auf `main` im eigenen Repository. Er prüft den Tag-Commit gegen den Signierlauf und dessen erfolgreichen Main-Verify. Er lädt ausschließlich `windows-signed-verified`, prüft dessen unveränderlichen Artefakt-Digest, Signaturprovenienz und sämtliche Dateiprüfsummen und erzeugt Installer, vollständiges Paketarchiv, Release-Provenienz und Prüfsummen. Der Installer wird beim Übernehmen nur umbenannt, seine Bytes bleiben unverändert. Die hochgeladenen Release-Dateien müssen dieselben Größen und Digests haben, bevor der vorhandene Entwurf veröffentlicht wird. Der Publishjob benötigt keinen Zugriff auf den Hardwaretoken.
+
+Der Versions-Tag muss bereits auf den tatsächlich signierten und geprüften Quellcommit zeigen. Ein späterer Main-Commit mit ergänzter Release-Automatisierung wird nicht nachträglich zum Quellstand dieses Pakets erklärt. Bei fehlenden oder abweichenden Nachweisen bleibt der Release unveröffentlicht.
+
 1. Den Release-PR nach `main` prüfen und übernehmen. Für den daraus entstandenen Main-Commit müssen beide Verify-Jobs erfolgreich sein. Einen älteren grünen Release-Branch-Lauf nicht als Ersatz verwenden.
 2. Den Inspect-Runner unter dem angemeldeten Windows-Benutzer mit Zertifikat und Token über `run.cmd` starten. Einen parallelen Connect-Signierlauf am selben Token vermeiden.
 3. In Actions **Sign Windows candidate** auf `main` starten. Bei `validation_run` die numerische Run-ID des erfolgreichen Main-Verify-Laufs eintragen und die Freigabe für `windows-signing` erteilen. Die PIN ausschließlich im lokalen Providerdialog eingeben.
