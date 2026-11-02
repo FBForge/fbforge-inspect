@@ -1,8 +1,10 @@
 $ErrorActionPreference = 'Stop'
+# Windows PowerShell's per-chunk progress rendering slows large downloads considerably.
+$ProgressPreference = 'SilentlyContinue'
 $root = Join-Path $env:RUNNER_TEMP ('fbforge-nvda-' + [Guid]::NewGuid().ToString('N'))
 $null = New-Item -ItemType Directory -Path $root
 $download = Join-Path $root 'nvda_2026.2.exe'
-Invoke-WebRequest 'https://github.com/nvaccess/nvda/releases/download/release-2026.2/nvda_2026.2.exe' -OutFile $download
+Invoke-WebRequest -UseBasicParsing 'https://github.com/nvaccess/nvda/releases/download/release-2026.2/nvda_2026.2.exe' -OutFile $download
 if ((Get-FileHash -LiteralPath $download -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'f3f8d29974a88d687b3c4809be192219ec579c5bdabcda5aaf53635288bca824') { throw 'nvda_download_integrity_failed' }
 $portable = Join-Path $root 'portable'
 $setup = Start-Process -FilePath $download -ArgumentList ('--minimal --create-portable-silent --portable-path="' + $portable + '"') -PassThru
