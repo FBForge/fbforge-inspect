@@ -1,0 +1,87 @@
+@media (max-width: 920px) {
+  .app-shell {
+    grid-template-columns: 208px minmax(0, 1fr);
+  }
+  .topbar {
+    padding-inline: 14px;
+    gap: 14px;
+  }
+  .page-heading {
+    padding: 20px;
+  }
+  main {
+    padding: 18px;
+  }
+}
+@media (max-width: 640px) {
+  .app-shell {
+    grid-template-columns: 60px minmax(0, 1fr);
+  }
+  .sidebar {
+    padding: 16px 6px;
+  }
+  .nav-label,
+  .nav-item span,
+  .topbar-context,
+  .brand span {
+    display: none;
+  }
+  .nav-item {
+    justify-content: center;
+    padding: 10px;
+  }
+  .brand img {
+    width: 28px;
+    height: 28px;
+  }
+  .brand strong {
+    font-size: 12px;
+  }
+  .topbar {
+    gap: 8px;
+  }
+  .toolbar {
+    gap: 6px;
+  }
+  .toolbar label {
+    font-size: 11px;
+    gap: 4px;
+  }
+  .page-heading {
+    padding: 16px;
+  }
+  h1 {
+    font-size: 22px;
+  }
+  main {
+    padding: 12px;
+  }
+  .start-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 641px) {
+  .nav-label {
+    display: block;
+  }
+  .nav-item span {
+    display: inline;
+  }
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-item {
+  margin-bottom: 0;
+}
+p {
+  line-height: 1.5;
+}
+main {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}

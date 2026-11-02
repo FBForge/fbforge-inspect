@@ -1,0 +1,178 @@
+.nav-item.active,
+.appearance-picker .button[aria-pressed='true'] {
+  color: var(--active-ink);
+}
+
+.toolbar select {
+  border-color: var(--line);
+}
+.start-card {
+  box-shadow: none;
+}
+.start-task-section > .eyebrow {
+  margin: 0 0 10px;
+}
+.start-task-section > h2 {
+  font-size: 21px;
+  font-weight: 700;
+  margin: 0.83em 0;
+}
+.start-task-section > p.muted {
+  margin: 8px 0 14px;
+}
+
+/* Compact task flows retain the shared Connect typography and theme tokens. */
+.input-modes,
+.task-switch,
+.schema-history,
+.help-pages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.input-modes .button[aria-pressed='true'],
+.task-switch .button[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--active-ink);
+  background: var(--active);
+}
+[v-cloak],
+[hidden] {
+  display: none !important;
+}
+.result-overview h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.result-overview {
+  padding: 14px 16px;
+}
+.result-overview p {
+  max-width: 80ch;
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+.result-overview .result-summary {
+  margin: 10px 0 0;
+}
+.result-summary .badge {
+  cursor: pointer;
+  padding: 7px 10px;
+  min-height: 32px;
+  border: 1px solid transparent;
+  font: inherit;
+  font-size: 12px;
+}
+.result-summary .badge[aria-pressed='true'] {
+  border-color: currentColor;
+}
+.compact-finding {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.compact-finding:last-child {
+  border-bottom: 0;
+}
+.compact-finding h4 {
+  margin: 0;
+}
+.compact-finding p {
+  margin: 8px 0;
+  font-size: 13px;
+}
+.detail-row td {
+  padding-top: 0;
+}
+.detail-row details {
+  border-top: 0;
+}
+.detail-row pre {
+  max-height: 320px;
+}
+.wide-details-table {
+  max-height: none;
+}
+.parameter-table td {
+  vertical-align: top;
+}
+.parameter-table td details {
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+}
+.parameter-table td summary {
+  font-size: 12px;
+  font-weight: 500;
+}
+.structure-controls {
+  margin-block: 16px;
+}
+.structure-controls label:first-child {
+  min-width: 0;
+}
+.limits-facts {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr) minmax(0, 2fr);
+  gap: 8px 18px;
+}
+.limits-facts dt,
+.limits-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.help-picker {
+  max-width: 540px;
+  margin-bottom: 18px;
+}
+.help-pages {
+  flex-direction: row;
+  justify-content: space-between;
+}
+.export-html-preview {
+  display: block;
+  width: 100%;
+  min-height: 250px;
+  height: 45vh;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #fff;
+}
+.schema-history {
+  padding: 12px;
+}
+.results {
+  scroll-margin-top: 12px;
+}
+.sidebar .nav-item span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.page-heading h1 {
+  overflow-wrap: normal;
+  hyphens: auto;
+}
+@media (max-width: 920px) {
+  .page-heading p {
+    max-width: 60ch;
+  }
+}
+@media (max-width: 640px) {
+  .input-modes {
+    gap: 6px;
+  }
+  .input-modes .button {
+    padding-inline: 8px;
+  }
+  .panel {
+    padding: 14px;
+  }
+  .schema-history .button,
+  .help-pages .button {
+    flex: 1 1 130px;
+  }
+  .limits-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
