@@ -29,7 +29,7 @@ jobs:
       - name: Rust toolchain
         run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy && rustup default 1.96.0
       - run: npm ci
-      - run: npm run build
+      - run: npm run typecheck && npm run build:frontend && npm run quality:java
       - name: PowerShell for Windows packaging regression tests
         shell: pwsh
         run: $PSVersionTable.PSVersion.ToString()
@@ -42,15 +42,19 @@ jobs:
       - run: cargo test --locked --manifest-path desktop/Cargo.toml -j 4
       - run: cargo clippy --locked --manifest-path desktop/Cargo.toml --all-targets -j 4 -- -D warnings
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:ui
+      - run: npm run quality:duplicates
+      - run: npm run quality:ui
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: verification-evidence
           path: |
             engine/target/surefire-reports/
+            engine/target/site/jacoco/
+            .local/quality/
             test-results/
           if-no-files-found: warn
+          include-hidden-files: true
   windows:
     runs-on: windows-2025
     timeout-minutes: 45
