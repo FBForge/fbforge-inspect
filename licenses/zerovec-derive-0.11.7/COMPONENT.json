@@ -1,0 +1,8 @@
+{
+  "name": "zerovec-derive",
+  "version": "0.11.7",
+  "license": "Unicode-3.0",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

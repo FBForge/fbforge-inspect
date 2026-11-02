@@ -1,0 +1,9 @@
+{
+  "name": "idna_adapter",
+  "version": "1.2.2",
+  "license": "Apache-2.0 OR MIT",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

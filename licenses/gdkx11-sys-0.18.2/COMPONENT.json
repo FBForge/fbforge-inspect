@@ -1,0 +1,8 @@
+{
+  "name": "gdkx11-sys",
+  "version": "0.18.2",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

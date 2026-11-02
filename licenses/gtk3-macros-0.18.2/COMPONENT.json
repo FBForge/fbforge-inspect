@@ -1,0 +1,9 @@
+{
+  "name": "gtk3-macros",
+  "version": "0.18.2",
+  "license": "MIT",
+  "licenseFiles": [
+    "COPYRIGHT",
+    "LICENSE"
+  ]
+}

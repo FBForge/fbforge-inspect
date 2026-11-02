@@ -1,0 +1,8 @@
+{
+  "name": "@vue/runtime-core",
+  "version": "3.5.43",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

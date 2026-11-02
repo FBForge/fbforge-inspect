@@ -1,0 +1,9 @@
+{
+  "name": "toml_edit",
+  "version": "0.19.15",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

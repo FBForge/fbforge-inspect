@@ -1,0 +1,9 @@
+{
+  "name": "web_atoms",
+  "version": "0.2.6",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

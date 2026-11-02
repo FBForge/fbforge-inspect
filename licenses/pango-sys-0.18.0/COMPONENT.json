@@ -1,0 +1,8 @@
+{
+  "name": "pango-sys",
+  "version": "0.18.0",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "cssparser-macros",
+  "version": "0.7.1",
+  "license": "MPL-2.0",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}
