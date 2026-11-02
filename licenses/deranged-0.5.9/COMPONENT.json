@@ -1,0 +1,9 @@
+{
+  "name": "deranged",
+  "version": "0.5.9",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-Apache",
+    "LICENSE-MIT"
+  ]
+}

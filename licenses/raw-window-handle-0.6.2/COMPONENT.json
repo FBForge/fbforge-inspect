@@ -1,0 +1,10 @@
+{
+  "name": "raw-window-handle",
+  "version": "0.6.2",
+  "license": "MIT OR Apache-2.0 OR Zlib",
+  "licenseFiles": [
+    "LICENSE-APACHE.md",
+    "LICENSE-MIT.md",
+    "LICENSE-ZLIB.md"
+  ]
+}

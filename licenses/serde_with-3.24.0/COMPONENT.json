@@ -1,0 +1,9 @@
+{
+  "name": "serde_with",
+  "version": "3.24.0",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

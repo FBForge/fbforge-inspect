@@ -1,0 +1,9 @@
+{
+  "name": "block-buffer",
+  "version": "0.10.4",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

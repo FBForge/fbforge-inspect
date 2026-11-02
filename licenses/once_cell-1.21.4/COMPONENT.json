@@ -1,0 +1,9 @@
+{
+  "name": "once_cell",
+  "version": "1.21.4",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

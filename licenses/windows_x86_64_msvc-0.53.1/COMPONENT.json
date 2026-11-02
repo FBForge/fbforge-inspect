@@ -1,0 +1,9 @@
+{
+  "name": "windows_x86_64_msvc",
+  "version": "0.53.1",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "license-apache-2.0",
+    "license-mit"
+  ]
+}

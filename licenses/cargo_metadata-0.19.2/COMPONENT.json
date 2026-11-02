@@ -1,0 +1,8 @@
+{
+  "name": "cargo_metadata",
+  "version": "0.19.2",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE-MIT"
+  ]
+}

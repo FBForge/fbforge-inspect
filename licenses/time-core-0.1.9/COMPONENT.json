@@ -1,0 +1,9 @@
+{
+  "name": "time-core",
+  "version": "0.1.9",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-Apache",
+    "LICENSE-MIT"
+  ]
+}

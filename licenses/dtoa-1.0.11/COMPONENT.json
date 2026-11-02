@@ -1,0 +1,9 @@
+{
+  "name": "dtoa",
+  "version": "1.0.11",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

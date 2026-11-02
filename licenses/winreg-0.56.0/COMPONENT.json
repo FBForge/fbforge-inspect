@@ -1,0 +1,8 @@
+{
+  "name": "winreg",
+  "version": "0.56.0",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

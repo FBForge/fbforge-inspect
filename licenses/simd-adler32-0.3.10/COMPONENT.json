@@ -1,0 +1,8 @@
+{
+  "name": "simd-adler32",
+  "version": "0.3.10",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE.md"
+  ]
+}

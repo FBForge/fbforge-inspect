@@ -1,0 +1,9 @@
+{
+  "name": "system-deps",
+  "version": "6.2.2",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

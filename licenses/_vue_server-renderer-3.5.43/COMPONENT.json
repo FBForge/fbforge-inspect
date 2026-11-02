@@ -1,0 +1,8 @@
+{
+  "name": "@vue/server-renderer",
+  "version": "3.5.43",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

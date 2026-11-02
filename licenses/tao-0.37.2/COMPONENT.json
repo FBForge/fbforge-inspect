@@ -1,0 +1,9 @@
+{
+  "name": "tao",
+  "version": "0.37.2",
+  "license": "Apache-2.0",
+  "licenseFiles": [
+    "LICENSE",
+    "LICENSE.spdx"
+  ]
+}

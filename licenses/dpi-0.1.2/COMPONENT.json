@@ -1,0 +1,9 @@
+{
+  "name": "dpi",
+  "version": "0.1.2",
+  "license": "Apache-2.0 AND MIT",
+  "licenseFiles": [
+    "LICENSE",
+    "LICENSE-LIBM-MIT"
+  ]
+}

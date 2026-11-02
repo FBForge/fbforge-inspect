@@ -1,0 +1,9 @@
+{
+  "name": "byteorder",
+  "version": "1.5.0",
+  "license": "Unlicense OR MIT",
+  "licenseFiles": [
+    "COPYING",
+    "LICENSE-MIT"
+  ]
+}

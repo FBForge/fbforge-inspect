@@ -1,0 +1,8 @@
+{
+  "name": "x11",
+  "version": "2.21.0",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE-MIT"
+  ]
+}

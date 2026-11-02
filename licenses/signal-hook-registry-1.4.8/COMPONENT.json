@@ -1,0 +1,9 @@
+{
+  "name": "signal-hook-registry",
+  "version": "1.4.8",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}
