@@ -86,6 +86,8 @@ export interface PublicKeyData {
   publicJwk?: Record<string, unknown>;
 }
 export interface CertificateData {
+  signatureAlgorithm?: string;
+  signatureAlgorithmOid?: string;
   subject?: string;
   role?: string;
   chainIndex?: number;

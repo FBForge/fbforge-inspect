@@ -7,9 +7,12 @@ export function overview(report: Report) {
   if (count('warning') || count('unknown')) return 'Prüfung mit offenen Punkten abgeschlossen';
   if (report.operation === 'schema') return 'Schema eingelesen';
   if (report.operation === 'limits') return 'Limits abgerufen';
+  if (report.operation === 'network') return 'Verbindungen geprüft';
   return 'Einzelprüfungen abgeschlossen';
 }
 export function overviewDetail(report: Report) {
+  if (report.operation === 'network')
+    return 'Erreichbarkeit der geprüften öffentlichen Ziele und gewählter Verbindungsweg. Zertifikatsvertrauen und Sperrstatus werden separat geprüft.';
   if (report.operation === 'schema')
     return 'Syntax- und Strukturansicht, keine vollständige Schema- oder Instanzvalidierung.';
   if (report.operation === 'limits')
@@ -36,9 +39,9 @@ export function findingNext(f: Finding) {
     return 'Destination-ID und Umgebung mit der angefragten Quelle abgleichen.';
   if (f.nextStep !== 'Quelle oder Konfiguration gezielt prüfen.') return f.nextStep;
   if (f.code === 'TRUST_ANCHOR_MISSING')
-    return 'Unter Zertifikate und Sperrstatus unabhängig bezogene öffentliche CA-Zertifikate laden.';
+    return 'Den mitgelieferten V-PKI-Truststore und die Zertifikatskette prüfen. Zusätzliche CA-Zertifikate können unter Zertifikate und Sperrstatus geladen werden.';
   if (f.code === 'REVOCATION_NOT_REQUESTED')
-    return 'Bei Bedarf unter Zertifikate und Sperrstatus den öffentlichen OCSP-/CRL-Abruf auswählen und erneut prüfen.';
+    return 'Die ausgeschaltete OCSP-/CRL-Prüfung unter Zertifikate und Sperrstatus wieder aktivieren und erneut prüfen.';
   if (f.code === 'SCHEMA_REFERENCES_UNRESOLVED')
     return 'Eine Referenz bei Bedarf als eigene Prüfung vorbereiten. Das Ausgangsschema bleibt erhalten.';
   if (f.code === 'PVOG_INPUT_REQUIRED')

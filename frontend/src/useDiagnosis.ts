@@ -10,6 +10,7 @@ export function useDiagnosis(
   environment: Ref<string>,
   apiVersion: Ref<string>,
   onClear: () => void,
+  network?: () => Record<string, unknown>,
 ) {
   const busy = ref(false);
   let requestId = 0;
@@ -52,6 +53,7 @@ export function useDiagnosis(
           environment: environment.value,
           apiVersion: apiVersion.value,
           input,
+          ...(network ? { network: network() } : {}),
         },
       });
       if (active !== request || request.cancelled) return;

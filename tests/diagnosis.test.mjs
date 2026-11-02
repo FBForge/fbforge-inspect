@@ -26,8 +26,8 @@ test('finding behavior follows its code even when its visible title changes', ()
 test('actionable guidance remains independent of translated finding titles', () => {
   for (const [code, expected] of [
     ['DESTINATION_ID', 'Destination-ID und Umgebung'],
-    ['TRUST_ANCHOR_MISSING', 'unabhängig bezogene öffentliche CA-Zertifikate'],
-    ['REVOCATION_NOT_REQUESTED', 'OCSP-/CRL-Abruf'],
+    ['TRUST_ANCHOR_MISSING', 'mitgelieferten V-PKI-Truststore'],
+    ['REVOCATION_NOT_REQUESTED', 'OCSP-/CRL-Prüfung'],
     ['SCHEMA_REFERENCES_UNRESOLVED', 'Das Ausgangsschema bleibt erhalten.'],
     ['PVOG_INPUT_REQUIRED', '12-stelligen ARS'],
   ]) {

@@ -158,20 +158,17 @@ test.beforeEach(async ({ page }) => {
 test('F01 restores each scroll position and opens a new area at its beginning', async ({
   page,
 }) => {
-  await go(page, 'Hilfe');
+  await go(page, 'Fachdatenschemata');
   await page
-    .getByRole('combobox', { name: 'Hilfethema', exact: true })
-    .selectOption({ label: 'Fachdatenschemata lesen' });
-  await page.getByText('Grundlagen und Grenzen', { exact: true }).click();
-  await page.getByText('Beispiel anzeigen', { exact: true }).click();
+    .getByRole('textbox', { name: 'JSON Schema / XSD', exact: true })
+    .fill('{"type":"object"}');
+  await run(page);
   await page.locator('main').evaluate((e) => (e.scrollTop = e.scrollHeight));
   const before = await page.locator('main').evaluate((e) => e.scrollTop);
   expect(before).toBeGreaterThan(0);
   await go(page, 'Routing prüfen');
   await expect.poll(() => page.locator('main').evaluate((e) => e.scrollTop)).toBe(0);
-  await expect(page.getByRole('textbox', { name: 'LeiKa-Schlüssel', exact: true })).toBeVisible();
-  await go(page, 'Hilfe');
-  await expect(page.getByRole('combobox', { name: 'Hilfethema', exact: true })).toHaveValue('6');
+  await go(page, 'Fachdatenschemata');
   await expect.poll(() => page.locator('main').evaluate((e) => e.scrollTop)).toBe(before);
 });
 
@@ -269,6 +266,7 @@ test('F05 PVOG requires ARS before making a routing request', async ({ page }) =
   await page.getByRole('combobox', { name: 'Gebietsart', exact: true }).selectOption('areaId');
   await page.getByRole('textbox', { name: 'Gebietsschlüssel', exact: true }).fill('44273');
   await page.getByRole('checkbox', { name: 'PVOG-Adressierung mit abrufen', exact: true }).check();
+  await page.getByText('Bekannte Leistungsbeschreibungs-ID verwenden', { exact: true }).click();
   await page
     .getByRole('textbox', { name: 'PVOG-Leistungsbeschreibungs-ID', exact: true })
     .fill('L100012.LB.9413106');
@@ -391,6 +389,8 @@ test('F10 certificate and context details use full table width and published nam
   await expect(
     page.locator('td[colspan="3"]').filter({ hasText: 'BEGIN CERTIFICATE' }),
   ).toHaveCount(1);
+  await page.getByText('PVOG-Zuständigkeitskontexte im Detail', { exact: true }).click();
+  await page.getByText('PVOG-Onlinedienste und Parameter im Detail', { exact: true }).click();
   await page.getByText('Alle Kontextfelder und Feldpfad', { exact: true }).click();
   await expect(
     page.locator('td[colspan="3"]').filter({ hasText: '$.pvogRelations[0].zustaendigkeit[0]' }),
@@ -411,21 +411,17 @@ test('F11 unknown findings do not repeat generic next steps and confirmed labels
   ).toHaveCount(0);
 });
 
-test('F12 help starts with steps, preserves background information and offers working references', async ({
+test('F12 help opens the versioned public website and preserves the current task', async ({
   page,
 }) => {
+  await go(page, 'Routing prüfen');
+  await page.getByLabel('LeiKa-Schlüssel', { exact: true }).fill('99008001014002');
   await go(page, 'Hilfe');
-  await page
-    .getByRole('combobox', { name: 'Hilfethema', exact: true })
-    .selectOption({ label: 'Routing und PVOG' });
-  await expect(page.locator('.help-topic ol li')).toHaveCount(4);
-  await expect(page.getByText('Grundlagen und Grenzen', { exact: true })).toBeVisible();
-  await expect(page.locator('.help-topic details')).not.toHaveAttribute('open', '');
-  await page.getByText('Grundlagen und Grenzen', { exact: true }).click();
-  await expect(page.locator('.help-topic details')).toHaveAttribute('open', '');
-  await page.getByRole('link', { name: 'FIT-Connect-Dokumentation', exact: true }).click();
   expect(await page.evaluate(() => (window as any).inspectUx.calls.at(-1))).toMatchObject({
     command: 'open_reference',
-    reference: 'fitko',
+    reference: 'help',
   });
+  await expect(page.getByRole('heading', { name: 'Routing prüfen', exact: true })).toBeVisible();
+  await expect(page.getByLabel('LeiKa-Schlüssel', { exact: true })).toHaveValue('99008001014002');
+  await expect(page.getByRole('combobox', { name: 'Hilfethema' })).toHaveCount(0);
 });

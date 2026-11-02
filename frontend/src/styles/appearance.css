@@ -63,7 +63,7 @@ nav {
 .nav-item.active:before {
   display: none;
 }
-.nav-item:nth-child(7) {
+.nav-item.utility-start {
   margin-top: 26px;
 }
 .sidebar-bottom {

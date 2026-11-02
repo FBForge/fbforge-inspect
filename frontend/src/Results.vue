@@ -10,6 +10,7 @@ import KeyResults from './results/KeyResults.vue';
 import ServiceResults from './results/ServiceResults.vue';
 import SchemaResults from './results/SchemaResults.vue';
 import RequestLog from './results/RequestLog.vue';
+import NetworkResults from './results/NetworkResults.vue';
 defineProps<{ report: Report }>();
 const emit = defineEmits<{
   destination: [id: string];
@@ -27,15 +28,16 @@ const emit = defineEmits<{
         {{ new Date(report.createdAt).toLocaleTimeString('de-DE') }}</span
       >
     </div>
-    <Findings :report="report" />
-    <PvogCandidates :report="report" @pvog="emit('pvog', $event)" />
-    <DestinationSummary :report="report" />
-    <LimitsResults :report="report" />
     <RoutingResults
       :report="report"
       @destination="emit('destination', $event)"
       @area="emit('area', $event)"
     />
+    <Findings :report="report" />
+    <NetworkResults :report="report" />
+    <PvogCandidates :report="report" @pvog="emit('pvog', $event)" />
+    <DestinationSummary :report="report" />
+    <LimitsResults :report="report" />
     <PvogResults :report="report" @destination="emit('destination', $event)" />
     <KeyResults :report="report" />
     <ServiceResults :report="report" @schema="emit('schema', $event)" />

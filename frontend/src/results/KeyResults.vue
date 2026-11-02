@@ -22,6 +22,10 @@ const certificates = computed(() => records<CertificateData>(props.report.data.c
   </section>
   <div v-if="certificates.length" class="panel">
     <h3>Zertifikatsketten</h3>
+    <p class="hint">
+      Geprüft werden Schlüsselbindung, Laufzeit, Kette, Vertrauen und Sperrstatus. Die
+      JWK-Verwendung wird getrennt geprüft; dies ist keine vollständige V-PKI-Profilprüfung.
+    </p>
     <div
       class="table-scroll wide-details-table"
       tabindex="0"
@@ -57,6 +61,10 @@ const certificates = computed(() => records<CertificateData>(props.report.data.c
                 <details>
                   <summary>Zertifikat und x5c anzeigen</summary>
                   <p>Gültig ab {{ certificate.notBefore }}</p>
+                  <p>
+                    Signaturalgorithmus des Zertifikats: {{ certificate.signatureAlgorithm }} ·
+                    {{ certificate.signatureAlgorithmOid }}
+                  </p>
                   <pre tabindex="0">{{ certificate.pem }}</pre>
                   <p class="hint">x5c[{{ certificate.chainIndex }}] · Base64-DER</p>
                   <pre tabindex="0">{{ certificate.x5c }}</pre>

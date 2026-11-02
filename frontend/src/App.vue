@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, reactive, ref, watch } from 'vue';
+import { invoke, isTauri } from '@tauri-apps/api/core';
 import { pages, type Page } from './contracts';
 import DiagnosisForm from './DiagnosisForm.vue';
 import Results from './Results.vue';
 import Icon from './Icon.vue';
-import help from '../../docs/help.json';
 import { useTheme } from './useTheme';
 import AppearancePicker from './AppearancePicker.vue';
 import { useWorkspace } from './useWorkspace';
 import { useDiagnosis } from './useDiagnosis';
 import ExportDialog from './ExportDialog.vue';
-import HelpView from './HelpView.vue';
 import StartView from './StartView.vue';
 import InfoView from './InfoView.vue';
+import NetworkView from './NetworkView.vue';
+import { createNetworkSettings, networkRequest } from './network';
 const { appearance, systemDark } = useTheme();
 const page = ref<Page>('start'),
   environment = ref('TEST'),
@@ -30,13 +31,47 @@ const {
   moveSchema,
 } = useWorkspace(page, environment, apiVersion);
 const preview = ref(false);
+const helpError = ref('');
+async function navigate(target: Page) {
+  if (target !== 'help') {
+    page.value = target;
+    return;
+  }
+  helpError.value = '';
+  try {
+    if (isTauri()) await invoke('open_reference', { reference: 'help' });
+    else window.open('https://fbforge.de/inspect/hilfe/0.1/', '_blank', 'noopener,noreferrer');
+  } catch {
+    helpError.value = 'Hilfe im Browser öffnen: https://fbforge.de/inspect/hilfe/0.1/';
+  }
+}
 const mainContent = ref<HTMLElement>();
 const exportTrigger = ref<HTMLButtonElement>();
 const form = ref<InstanceType<typeof DiagnosisForm>>();
 const active = computed(() => pages.find((item) => item.id === page.value)!);
-const { busy, clear, run, cancel } = useDiagnosis(session, environment, apiVersion, () => {
-  preview.value = false;
+const network = reactive(createNetworkSettings());
+const networkCertificates = computed(() => {
+  const latest = Object.values(sessions)
+    .map((entry) => entry.report)
+    .filter((entry) => entry?.environment === environment.value && entry.data.certificates?.length)
+    .sort((a, b) => Date.parse(b!.createdAt) - Date.parse(a!.createdAt))[0];
+  return Array.from(
+    new Set(
+      (latest?.data.certificates || [])
+        .map((item) => item.pem)
+        .filter((pem): pem is string => typeof pem === 'string'),
+    ),
+  ).slice(0, 12);
 });
+const { busy, clear, run, cancel } = useDiagnosis(
+  session,
+  environment,
+  apiVersion,
+  () => {
+    preview.value = false;
+  },
+  () => networkRequest(network),
+);
 watch(preview, async (open) => {
   if (!open) {
     await nextTick();
@@ -49,8 +84,7 @@ function inspectPvog(id: string) {
   void run('routing', { ...session.value.form });
 }
 function openNetworkHelp() {
-  page.value = 'help';
-  session.value.view.helpTopic = help.findIndex((topic) => topic.id === 'limits');
+  page.value = 'network';
 }
 watch([page, environment, apiVersion], () => {
   preview.value = false;
@@ -120,16 +154,17 @@ async function openSchema(url: string) {
           v-for="item in pages"
           :key="item.id"
           class="nav-item"
-          :class="{ active: page === item.id }"
+          :class="{ active: page === item.id, 'utility-start': item.id === 'network' }"
           :aria-label="item.label"
           :title="item.label"
           :aria-current="page === item.id ? 'page' : undefined"
           :disabled="busy"
-          @click="page = item.id"
+          @click="navigate(item.id)"
         >
           <Icon :name="item.icon" /><span>{{ item.label }}</span>
         </button>
       </nav>
+      <p v-if="helpError" class="hint" role="alert">{{ helpError }}</p>
       <div class="sidebar-bottom">
         <span class="local-dot"></span>Lokal auf Ihrem Gerät<span class="version">0.1.0</span>
       </div>
@@ -154,7 +189,21 @@ async function openSchema(url: string) {
       </div>
       <main id="main-content" ref="mainContent" tabindex="0">
         <template v-if="page === 'start'">
-          <StartView @navigate="page = $event" @network="openNetworkHelp" />
+          <StartView @navigate="navigate" @network="openNetworkHelp" />
+        </template>
+        <template v-else-if="page === 'network'">
+          <NetworkView
+            :settings="network"
+            :certificates="networkCertificates"
+            :busy="busy"
+            @run="run('network', $event)"
+            @changed="clear"
+          />
+          <div v-if="busy" class="busy-panel panel" role="status">
+            Verbindungen werden geprüft …
+            <button class="button secondary" @click="cancel">Abbrechen</button>
+          </div>
+          <p v-if="error" class="notice error-notice" role="alert">{{ error }}</p>
         </template>
         <template v-else-if="!['help', 'about'].includes(page)"
           ><div v-if="environment === 'STAGE' && page === 'routing'" class="notice">
@@ -233,9 +282,6 @@ async function openSchema(url: string) {
             <p>Ergebnis, Befunde und Quellen erscheinen hier nach dem Start.</p>
           </div></template
         >
-        <template v-else-if="page === 'help'">
-          <HelpView :topics="help" :view="session.view"
-        /></template>
         <InfoView v-else @network="openNetworkHelp" />
         <KeepAlive>
           <Results
