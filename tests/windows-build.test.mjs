@@ -162,3 +162,61 @@ test(
   },
 );
 
+test(
+  'hosted WebView2 test overrides reject a different repository before registry access',
+  { skip: !available && 'Linux PowerShell harness unavailable' },
+  () => {
+    const result = spawnSync(
+      pwsh,
+      [
+        '-NoProfile',
+        '-NonInteractive',
+        '-File',
+        'scripts/ci/webview-test-policy.ps1',
+        '-Mode',
+        'enable',
+        '-Directory',
+        tmpdir(),
+        '-Port',
+        '9222',
+      ],
+      {
+        encoding: 'utf8',
+        timeout: 10000,
+        env: {
+          ...process.env,
+          GITHUB_REPOSITORY: 'unrelated/repository',
+          GITHUB_EVENT_NAME: 'push',
+          RUNNER_ENVIRONMENT: 'github-hosted',
+        },
+      },
+    );
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /ui_policy_context_denied/);
+  },
+);
+
+test(
+  'native Save dialog helper rejects an unrelated process before accessing UI Automation',
+  { skip: !available && 'Linux PowerShell harness unavailable' },
+  () => {
+    const result = spawnSync(
+      pwsh,
+      [
+        '-NoProfile',
+        '-NonInteractive',
+        '-File',
+        'tests/native-save-dialog.ps1',
+        '-ApplicationProcessId',
+        String(process.pid),
+        '-Mode',
+        'cancel',
+        '-TestDirectory',
+        tmpdir(),
+      ],
+      { encoding: 'utf8', timeout: 10000 },
+    );
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /save_dialog_wrong_process/);
+  },
+);
