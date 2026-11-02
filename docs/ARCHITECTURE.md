@@ -10,7 +10,7 @@ flowchart LR
   Host -->|expliziter Speicherdialog| Reports[Lokaler Bericht]
 ```
 
-Die Vue-Oberfläche besitzt keinen direkten Netzwerkzugriff auf externe APIs. Der Rust-Host stellt `diagnose`, `cancel`, `save_report` und `open_reference` bereit. `open_reference` öffnet ausschließlich drei fest hinterlegte öffentliche Ziele im Systembrowser und akzeptiert keine beliebigen URLs. Für Diagnosen startet der Host pro Prüflauf einen gebündelten Java-Prozess, begrenzt Ein- und Ausgabe und beendet ihn bei Abbruch oder Zeitüberschreitung. Es gibt keinen lokalen HTTP-Server und kein Shell-Plugin. Der Entwicklungsmodus kann den lokal installierten Java-Befehl verwenden, eine Release-App benötigt ihre gebündelte Laufzeit.
+Die Vue-Oberfläche besitzt keinen direkten Netzwerkzugriff auf externe APIs. Der Rust-Host stellt `diagnose`, `cancel`, `save_report` und `open_reference` bereit. `open_reference` öffnet ausschließlich vier fest hinterlegte öffentliche Ziele im Systembrowser und akzeptiert keine beliebigen URLs. Für Diagnosen startet der Host pro Prüflauf einen gebündelten Java-Prozess, begrenzt Ein- und Ausgabe und beendet ihn bei Abbruch oder Zeitüberschreitung. Es gibt keinen lokalen HTTP-Server und kein Shell-Plugin. Der Entwicklungsmodus kann den lokal installierten Java-Befehl verwenden, eine Release-App benötigt ihre gebündelte Laufzeit.
 
 Der Java-Kern implementiert die öffentlichen API-Verträge eigenständig. Er enthält keinen FIT-Connect-SDK-Adapter. `Api` übernimmt Destination, Routing und Prozesssuche, `Pvog` erhält die Zuständigkeitsseiten und ergänzt Leistungs- und Onlinedienstquellen mit expliziten Kontextpfaden. `KeyDiagnostics` übernimmt die JWK-Regeln, `Certificates` PKIX und Sperrstatus, `Signatures` Adressierungssignaturen, `Schemas` sichere Strukturinspektion und `PublicHttp` die gemeinsame Transportgrenze. Die vollständige Feldzuordnung steht in [PVOG-MAPPING.md](PVOG-MAPPING.md).
 
@@ -38,7 +38,7 @@ Tauri und Vue halten die Anwendung in der bestehenden FBForge-Produktfamilie. Ja
 
 Keine empfangene CA-Wurzel wird automatisch zum Vertrauensanker. Ein ausdrücklich geladener Anker beweist PKIX-Vertrauen gegen diese CA, deren V-PKI-Zugehörigkeit ist separat zu prüfen. OCSP/CRL werden unabhängig davon bewertet. Referenzen von JSON Schema und XSD werden nie automatisch aufgelöst. Eine Strukturansicht wird nicht als vollständige Validierung ausgegeben.
 
-`docs/help.json` ist die gemeinsame Hilfequelle. Vue bündelt sie offline, `scripts/build-help.mjs` exportiert daraus die statische Websitehilfe. Lokale Arbeitsplanung und Abnahmebelege liegen in `.local/` und werden nicht versioniert.
+`docs/help.json` ist die Quelle der öffentlichen Anleitung. `scripts/build-help.mjs` erzeugt daraus die statische Websitehilfe. Die App öffnet diese Anleitung im Systembrowser und bündelt keine Offline-Hilfe. Lokale Arbeitsplanung und Abnahmebelege liegen in `.local/` und werden nicht versioniert.
 
 ## Arbeitsstände der Oberfläche
 
@@ -46,6 +46,6 @@ Eingaben und Ergebnisberichte bleiben im Arbeitsspeicher nach Bereich, Umgebung 
 
 Die öffentliche JWK-Zusammenfassung enthält den öffentlichen JWK einschließlich x5c. Jedes Zertifikat erhält Kettenindex, Rolle und PEM. Die Verwendungsprüfung bewertet ausschließlich die veröffentlichten JWK-Felder key_ops und use in Verbindung mit alg. Die X.509-Key-Usage ist kein Akzeptanzkriterium dieser JWK-Diagnose. Eine vollständige Verwaltungs-PKI-Konformität wird nicht bestätigt. Die Prüfung der Signierberechtigung von OCSP-/CRL-Ausstellern bleibt Bestandteil der optionalen Sperrstatusprüfung.
 
-Die Oberfläche führt getrennte Arbeitsstände inklusive Scrollposition. Schemareferenzen erhalten eigene navigierbare Stände. Limits werden unabhängig von der Prozesssuche abgerufen (v3). Die HTML-Vorschau nutzt denselben maskierten HTML-Bericht wie der Export in einem Frame ohne Skript-, Formular- oder Navigationsfreigaben. Quellenlinks öffnen ausschließlich drei fest hinterlegte öffentliche Ziele im Systembrowser.
+Die Oberfläche führt getrennte Arbeitsstände inklusive Scrollposition. Schemareferenzen erhalten eigene navigierbare Stände. Limits werden unabhängig von der Prozesssuche abgerufen (v3). Die HTML-Vorschau nutzt denselben maskierten HTML-Bericht wie der Export in einem Frame ohne Skript-, Formular- oder Navigationsfreigaben. Quellenlinks öffnen ausschließlich vier fest hinterlegte öffentliche Ziele im Systembrowser.
 
 Der Vorschauframe erlaubt ausschließlich Same-Origin-DOM-Zugriff für die Escape-Behandlung durch das Elternfenster. Skripte, Formulare und Top-Level-Navigation bleiben gesperrt; Berichtswerte sind HTML-maskiert und der Bericht besitzt zusätzlich default-src none.
