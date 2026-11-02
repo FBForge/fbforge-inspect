@@ -1,0 +1,10 @@
+/* Import order preserves the shared desktop cascade, including responsive refinements. */
+@import './theme.css';
+@import './styles/shell.css';
+@import './styles/workspace.css';
+@import './styles/results.css';
+@import './styles/responsive.css';
+@import './styles/appearance.css';
+@import './styles/tasks.css';
+@import './styles/compact-layout.css';
+@import './styles/detail-layout.css';

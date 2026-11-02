@@ -1,0 +1,60 @@
+<script setup lang="ts">
+import type { DiagnosisDraft, DiagnosisView } from '../session';
+defineProps<{ form: DiagnosisDraft; view: DiagnosisView }>();
+const emit = defineEmits<{ search: [] }>();
+</script>
+<template>
+  <div class="form-grid">
+    <label
+      >LeiKa-Schlüssel<input
+        v-model.trim="form.service"
+        required
+        pattern="[0-9]{14}"
+        placeholder="14 Ziffern" /></label
+    ><label
+      >Gebietsart<select v-model="form.regionKind">
+        <option value="ars">ARS · 12 Ziffern</option>
+        <option value="ags">AGS · 8 Ziffern</option>
+        <option value="areaId">Gebiets-ID</option>
+      </select></label
+    ><label
+      >Gebietsschlüssel<input
+        v-model.trim="form.region"
+        required
+        placeholder="ARS, AGS oder ausgewählte ID"
+    /></label>
+  </div>
+  <details
+    :open="view.areaSearchOpen"
+    @toggle="view.areaSearchOpen = ($event.target as HTMLDetailsElement).open"
+  >
+    <summary>Gebiet über Ortsnamen finden</summary>
+    <label>Ortsname<input v-model.trim="form.areaSearch" placeholder="z. B. Musterstadt" /></label
+    ><button
+      class="button secondary"
+      type="button"
+      :disabled="form.areaSearch.length < 2"
+      @click="emit('search')"
+    >
+      Gebiete suchen
+    </button>
+  </details>
+  <label class="check"
+    ><input v-model="form.pvog" type="checkbox" />PVOG-Adressierung mit abrufen</label
+  >
+  <p v-if="form.pvog" class="hint" id="pvog-ars-hint">
+    Mit LeiKa und 12-stelligem ARS sucht Inspect passende Leistungsbeschreibungen samt OE-Verweisen.
+    Wählen Sie danach einen Vorschlag für den Abgleich aus. Die Ortssuche liefert eine Gebiets-ID
+    für die Routingabfrage.
+  </p>
+  <label v-if="form.pvog"
+    >PVOG-Leistungsbeschreibungs-ID (optional)<input
+      v-model.trim="form.lbId"
+      aria-label="PVOG-Leistungsbeschreibungs-ID"
+      placeholder="Bekannte ID oder zunächst Vorschläge suchen"
+  /></label>
+  <p class="hint">
+    Alle Antwortkontexte bleiben erhalten. Die Diagnose zeigt öffentlich beobachtbare Daten und ihre
+    Grenzen.
+  </p>
+</template>
