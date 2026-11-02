@@ -22,9 +22,9 @@ const emit = defineEmits<{ network: [] }>();
     </p>
     <h3>Netzwerk</h3>
     <p>
-      Inspect verbindet sich direkt mit öffentlichen Quellen. Authentifizierte Proxys, PAC und
-      eigene Unternehmens-CAs werden in 0.1.0 nicht eingerichtet.
+      Unter Netzwerk können Sie einen manuellen HTTP-/HTTPS-Proxy mit Benutzername und Passwort
+      einrichten und öffentliche API-, OCSP- und CRL-Verbindungen prüfen.
     </p>
-    <button class="button secondary" @click="emit('network')">Netzwerkhinweise öffnen</button>
+    <button class="button secondary" @click="emit('network')">Netzwerk öffnen</button>
   </section>
 </template>

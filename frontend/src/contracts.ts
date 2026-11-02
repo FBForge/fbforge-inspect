@@ -27,6 +27,8 @@ export interface RequestEvidence {
   status: number;
   bytes: number;
   outcome: string;
+  durationMs?: number;
+  viaProxy?: boolean;
 }
 export interface Report {
   protocolVersion: number;
@@ -88,6 +90,12 @@ export const pages = [
     label: 'Fachdatenschemata',
     icon: 'schema',
     description: 'JSON Schema und XSD strukturiert lesen.',
+  },
+  {
+    id: 'network',
+    label: 'Netzwerk',
+    icon: 'network',
+    description: 'Proxy einrichten und öffentliche Verbindungen prüfen.',
   },
   {
     id: 'help',

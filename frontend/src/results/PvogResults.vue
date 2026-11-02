@@ -60,7 +60,8 @@ const pvog = computed(() =>
 );
 </script>
 <template>
-  <div v-if="pvog.length" class="panel">
+  <details v-if="pvog.length" class="panel">
+    <summary>PVOG-Zuständigkeitskontexte im Detail</summary>
     <h3>PVOG-Adressierungskontexte</h3>
     <p class="hint">
       Adressierungssignaturen aus PVOG identifizieren den Zustellpunkt. Fachdatenschemata werden an
@@ -132,8 +133,9 @@ const pvog = computed(() =>
         </tbody>
       </table>
     </div>
-  </div>
-  <div v-if="onlineServices.length" class="panel">
+  </details>
+  <details v-if="onlineServices.length" class="panel">
+    <summary>PVOG-Onlinedienste und Parameter im Detail</summary>
     <h3>PVOG-Onlinedienste und Parameter</h3>
     <p class="hint">
       Parameter bleiben beim übergeordneten Onlinedienst. Sie werden als veröffentlichte
@@ -191,7 +193,7 @@ const pvog = computed(() =>
         <pre tabindex="0">{{ JSON.stringify(service.data, null, 2) }}</pre>
       </details>
     </div>
-  </div>
+  </details>
   <details v-if="report.data.pvogService" class="panel">
     <summary>PVOG-Leistungsbeschreibung und LeiKa-Zuordnung</summary>
     <p class="mono hint">{{ report.data.pvogServiceSource }}</p>

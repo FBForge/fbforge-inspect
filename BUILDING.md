@@ -54,6 +54,10 @@ Die [offizielle XZuFi-Paketprüfung](docs/PVOG-MAPPING.md#reproduzierbare-paketp
 
 Alle drei Prüfungen laufen im bestehenden Linux-CI-Job; ihre Berichte werden als Prüfartefakt bereitgestellt. Windows prüft weiterhin den tatsächlichen Installer, WebView2 und NVDA. Die öffentliche Zielprüfung und TLS-Verifikation bleiben im produktiven `PublicHttp`/`PinnedHttp`-Pfad. Tests ersetzen DNS und Abrufantworten nur über interne Schnittstellen; der reine Antwortparser benötigt keine Netzwerkfreigabe.
 
+## V-PKI-Truststore aktualisieren
+
+`engine/src/main/resources/de/fbforge/inspect/vpki/manifest.json` bindet alle gebündelten DER-Dateien an Herkunft und SHA-256. Neue Wurzeln ausschließlich aus dem offiziellen BSI-HTTPS-Angebot beziehen und gegen die separat veröffentlichten BSI-Fingerabdrücke prüfen. Untergeordnete CAs aus dem offiziellen x500-Verzeichnis erst nach erfolgreicher Kettenprüfung zu diesen Wurzeln als Kettenmaterial aufnehmen. Eigenständige, nicht unabhängig verankerte Wurzeln bleiben ausgeschlossen. Manifest und Dateien gemeinsam aktualisieren und `VpkiTrustStoreTest` sowie den vollständigen Java-Testlauf ausführen. Die App lädt keine neuen Vertrauensanker automatisch aus dem Netz; abgelaufene Einträge werden nicht verwendet.
+
 ## Windows-Paket und native Prüfung
 
 Zuerst den Java-Kern mit `mvn -f engine/pom.xml package` bauen. Anschließend in Windows PowerShell:

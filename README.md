@@ -28,7 +28,7 @@ Zum Testen öffnen Sie einen erfolgreichen CI-Lauf für `release/0.1.0` und lade
 3. Einen Zustellpunkt prüfen oder eine lokale Schlüssel- beziehungsweise Schemadatei einlesen.
 4. Befunde und Quellen prüfen und bei Bedarf einen Bericht lokal speichern.
 
-Die [Anleitung mit Bildern und Beispielen](https://fbforge.de/inspect/hilfe/0.1/) und die gebündelte Offline-Hilfe beschreiben dieselben Abläufe. Helle, dunkle und automatische Darstellung sind verfügbar.
+Die [Anleitung mit Bildern und Beispielen](https://fbforge.de/inspect/hilfe/0.1/) beschreibt die Abläufe. Die Hilfe öffnet sich aus der App auf der Website. Helle, dunkle und automatische Darstellung sind verfügbar.
 
 ## Quellen und Grenzen
 

@@ -9,9 +9,6 @@ export function createSession() {
     view: {
       fileName: '',
       fileText: '',
-      helpTopic: 0,
-      helpBasicsOpen: false,
-      helpExampleOpen: false,
       inputMode: 'text' as 'url' | 'text' | 'file',
       expectedOpen: false,
       certificatesOpen: false,
@@ -26,7 +23,7 @@ export function createSession() {
       mime: '',
       metadata: '',
       compare: false,
-      revocation: false,
+      revocation: true,
       trustPem: '',
       processModelId: '',
       messageId: '',
@@ -35,7 +32,7 @@ export function createSession() {
       text: '',
       url: '',
       areaSearch: '',
-      pvog: false,
+      pvog: true,
       lbId: '',
     },
   };
