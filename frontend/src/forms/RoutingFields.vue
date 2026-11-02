@@ -44,15 +44,18 @@ const emit = defineEmits<{ search: [] }>();
   >
   <p v-if="form.pvog" class="hint" id="pvog-ars-hint">
     Mit LeiKa und 12-stelligem ARS sucht Inspect passende Leistungsbeschreibungen samt OE-Verweisen.
-    Wählen Sie danach einen Vorschlag für den Abgleich aus. Die Ortssuche liefert eine Gebiets-ID
-    für die Routingabfrage.
+    Ein eindeutiger Treffer wird automatisch geprüft. Bei mehreren Treffern wählen Sie eine
+    Leistungsbeschreibung aus. Die Ortssuche liefert eine Gebiets-ID für die Routingabfrage.
   </p>
-  <label v-if="form.pvog"
-    >PVOG-Leistungsbeschreibungs-ID (optional)<input
-      v-model.trim="form.lbId"
-      aria-label="PVOG-Leistungsbeschreibungs-ID"
-      placeholder="Bekannte ID oder zunächst Vorschläge suchen"
-  /></label>
+  <details v-if="form.pvog">
+    <summary>Bekannte Leistungsbeschreibungs-ID verwenden</summary>
+    <label
+      >PVOG-Leistungsbeschreibungs-ID (optional)<input
+        v-model.trim="form.lbId"
+        aria-label="PVOG-Leistungsbeschreibungs-ID"
+        placeholder="Bekannte ID oder zunächst Vorschläge suchen"
+    /></label>
+  </details>
   <p class="hint">
     Alle Antwortkontexte bleiben erhalten. Die Diagnose zeigt öffentlich beobachtbare Daten und ihre
     Grenzen.

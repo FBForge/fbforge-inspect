@@ -242,7 +242,7 @@ automaticUpdates = disabled
     }
     $null = Check-Spoken 'JSON Schema / XSD' $editType
     $help = Check-Spoken 'Hilfe' $buttonType
-    Invoke-Control $help
+    # Help opens the public website. Its label is checked without moving focus to an external browser.
     # Repeat the proven native engine/export flow against the installed resources,
     # after stopping the screen reader and its app so they cannot intercept input.
     if ($taskNvda -and -not $taskNvda.HasExited) { $taskNvda.Kill(); $taskNvda.WaitForExit() }

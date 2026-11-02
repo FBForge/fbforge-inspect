@@ -25,7 +25,7 @@ test.beforeEach(async ({ page }) => {
             if (outcome === 'failure') throw new Error('synthetic write failure');
             return outcome;
           }
-          if (command === 'cancel') return;
+          if (command === 'cancel' || command === 'open_reference') return;
           const request = args.request;
           return {
             ok: true,
@@ -126,22 +126,15 @@ test('PVOG suggestions need no manual ID and selection preserves the routing con
   );
   await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
 });
-test('network guidance is discoverable on Start and Info without implying proxy configuration', async ({
-  page,
-}) => {
+test('network configuration is reachable from Start and Info', async ({ page }) => {
   await page.getByRole('button', { name: 'Netzwerk und Verbindungsprobleme', exact: true }).click();
-  await expect(page.getByRole('combobox', { name: 'Hilfethema' })).toHaveValue('8');
-  await expect(
-    page.getByRole('heading', { name: 'Grenzen und Fehlersuche', exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Netzwerk', exact: true })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Verbindung', exact: true })).toHaveValue(
+    'direct',
+  );
   await navigate(page, 'Info');
-  await expect(
-    page.getByText('Authentifizierte Proxys, PAC und eigene Unternehmens-CAs', { exact: false }),
-  ).toBeVisible();
-  await page.getByRole('button', { name: 'Netzwerkhinweise öffnen', exact: true }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Grenzen und Fehlersuche', exact: true }),
-  ).toBeVisible();
+  await page.getByRole('button', { name: 'Netzwerk öffnen', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Netzwerk', exact: true })).toBeVisible();
 });
 test('navigation retains independent drafts and reports across pages, environments and versions', async ({
   page,
@@ -356,6 +349,8 @@ test('PVOG retains roles, source contexts and parameter languages without assign
   await page.getByRole('textbox', { name: 'LeiKa-Schlüssel', exact: true }).fill('99150085001000');
   await page.getByRole('textbox', { name: 'Gebietsschlüssel', exact: true }).fill('010000000000');
   await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  await page.getByText('PVOG-Zuständigkeitskontexte im Detail', { exact: true }).click();
+  await page.getByText('PVOG-Onlinedienste und Parameter im Detail', { exact: true }).click();
   await expect(
     page.getByRole('cell', { name: /02 · Zuständige Stelle, 03 · Ansprechpunkt/ }),
   ).toHaveCount(2);
@@ -468,7 +463,10 @@ test('both themes have no horizontal overflow and navigation is keyboard reachab
     .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('button', { name: 'Hilfe', exact: true })
     .click();
-  await expect(page.getByRole('heading', { name: 'Schnellstart' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Was möchten Sie prüfen?' })).toBeVisible();
+  expect(await page.evaluate(() => (window as any).inspectTest.calls.at(-1).command)).toBe(
+    'open_reference',
+  );
 });
 
 test('export cancellation keeps the preview and write failures are announced inside the dialog', async ({
@@ -613,4 +611,176 @@ test('failed cancellation is announced and a subsequent completion is still acce
   await page.evaluate(() => (window as any).finishDiagnosis());
   await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
   await expect(page.getByRole('alert')).toHaveCount(0);
+});
+
+test('manual proxy stays in memory, applies across tasks and is excluded from report exports', async ({
+  page,
+}) => {
+  await navigate(page, 'Netzwerk');
+  await page.getByRole('combobox', { name: 'Verbindung', exact: true }).selectOption('manual');
+  await page.getByLabel('Proxy-Adresse', { exact: true }).fill('http://proxy.example:8080');
+  await page
+    .getByLabel('Proxy-Benutzername (optional)', { exact: true })
+    .fill('fixture-proxy-user');
+  await page.getByLabel('Proxy-Passwort', { exact: true }).fill('fixture-proxy-password');
+  await expect(page.getByText('Bei http://', { exact: false })).toBeVisible();
+  await page.evaluate(() => {
+    (window as any).inspectTest.diagnosisData = {
+      networkChecks: [
+        {
+          name: 'FIT-Connect',
+          host: 'test.fit-connect.fitko.dev',
+          port: 443,
+          method: 'GET',
+          url: 'https://test.fit-connect.fitko.dev/.well-known/jwks.json',
+          status: 'confirmed',
+          httpStatus: 200,
+          durationMs: 123,
+          detail: 'Verbindung erfolgreich.',
+        },
+      ],
+    };
+  });
+  await page.getByRole('button', { name: 'Verbindungen prüfen', exact: true }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Netzwerkverbindungen', exact: true }),
+  ).toBeVisible();
+  await page.getByText('Freigabeliste für die IT anzeigen', { exact: true }).click();
+  await expect(
+    page.getByText('Ziel: test.fit-connect.fitko.dev:443', { exact: false }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Bericht exportieren', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Format', exact: true }).selectOption('json');
+  const content = await page.locator('dialog pre').innerText();
+  expect(content).toContain('networkChecks');
+  expect(content).not.toContain('fixture-proxy-user');
+  expect(content).not.toContain('fixture-proxy-password');
+  await page.getByRole('button', { name: 'Schließen', exact: true }).click();
+  await navigate(page, 'Destination prüfen');
+  await page.getByLabel('Destination-ID', { exact: true }).fill(uuid);
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  const requests = await page.evaluate(() =>
+    (window as any).inspectTest.calls
+      .filter((c: any) => c.command === 'diagnose')
+      .map((c: any) => c.args.request),
+  );
+  for (const request of requests)
+    expect(request.network).toEqual({
+      mode: 'manual',
+      proxyUrl: 'http://proxy.example:8080',
+      username: 'fixture-proxy-user',
+      password: 'fixture-proxy-password',
+    });
+  await navigate(page, 'Netzwerk');
+  await page.getByRole('combobox', { name: 'Verbindung', exact: true }).selectOption('direct');
+  await expect(
+    page.getByRole('heading', { name: 'Netzwerkverbindungen', exact: true }),
+  ).toHaveCount(0);
+  await page.getByRole('button', { name: 'Verbindungen prüfen', exact: true }).click();
+  expect(
+    await page.evaluate(
+      () =>
+        (window as any).inspectTest.calls.filter((c: any) => c.command === 'diagnose').at(-1).args
+          .request.network,
+    ),
+  ).toEqual({ mode: 'direct' });
+  const stored = await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }));
+  expect(stored).not.toContain('fixture-proxy');
+  await page.reload();
+  await navigate(page, 'Netzwerk');
+  await page.getByRole('combobox', { name: 'Verbindung', exact: true }).selectOption('manual');
+  await expect(page.getByLabel('Proxy-Passwort', { exact: true })).toHaveValue('');
+});
+
+test('network checks use prior public certificates only from the current environment', async ({
+  page,
+}) => {
+  await navigate(page, 'Schlüssel prüfen');
+  await page.getByLabel('Öffentliches JWK / JWKS', { exact: true }).fill('{"kty":"RSA"}');
+  await page.evaluate(() => {
+    (window as any).inspectTest.diagnosisData = {
+      certificates: [
+        { pem: '-----BEGIN CERTIFICATE-----\nfixture-public\n-----END CERTIFICATE-----' },
+      ],
+    };
+  });
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  await navigate(page, 'Netzwerk');
+  await expect(
+    page.getByRole('checkbox', { name: 'Zertifikatsendpunkte', exact: false }),
+  ).toBeEnabled();
+  await page.getByRole('button', { name: 'Verbindungen prüfen', exact: true }).click();
+  expect(
+    await page.evaluate(
+      () =>
+        (window as any).inspectTest.calls.filter((c: any) => c.command === 'diagnose').at(-1).args
+          .request.input.certificates,
+    ),
+  ).toHaveLength(1);
+  await page.getByRole('combobox', { name: /^Umgebung/ }).selectOption('PROD');
+  await expect(
+    page.getByRole('checkbox', { name: 'Zertifikatsendpunkte', exact: false }),
+  ).toBeDisabled();
+  await page.getByRole('button', { name: 'Verbindungen prüfen', exact: true }).click();
+  expect(
+    await page.evaluate(
+      () =>
+        (window as any).inspectTest.calls.filter((c: any) => c.command === 'diagnose').at(-1).args
+          .request.input.certificates,
+    ),
+  ).toEqual([]);
+});
+
+test('automatic PVOG comparison shows matches and differences without a redundant chooser', async ({
+  page,
+}) => {
+  await navigate(page, 'Routing prüfen');
+  await expect(
+    page.getByRole('checkbox', { name: 'PVOG-Adressierung mit abrufen', exact: true }),
+  ).toBeChecked();
+  await page.getByLabel('LeiKa-Schlüssel', { exact: true }).fill('99008001014002');
+  await page.getByLabel('Gebietsschlüssel', { exact: true }).fill('020000000000');
+  await page.evaluate(() => {
+    (window as any).inspectTest.diagnosisData = {
+      routes: [{ destinationId: 'same', destinationName: 'Beispielbehörde' }],
+      pvogRelations: [],
+      pvogSelectedLbId: 'L1.LB.only',
+      pvogAutomaticallySelected: true,
+      pvogCandidates: [{ id: 'L1.LB.only' }],
+      routingComparison: [
+        {
+          destinationId: 'same',
+          routingPath: '$.routes[0]',
+          status: 'confirmed',
+          detail: 'Dieselbe Destination-ID in beiden Quellen.',
+          pvogContexts: ['$.pvogRelations[0]'],
+          routing: { destinationId: 'same', oeId: 'OE1' },
+        },
+        {
+          destinationId: 'pvog-only',
+          routingPath: '',
+          status: 'warning',
+          detail: 'Nur in PVOG enthalten.',
+          pvogContexts: ['$.pvogRelations[1]'],
+        },
+      ],
+    };
+  });
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  await expect(
+    page
+      .locator('.service-group p')
+      .filter({ hasText: 'Dieselbe Destination-ID in beiden Quellen.' }),
+  ).toBeVisible();
+  await expect(
+    page.locator('.service-group p').filter({ hasText: 'Nur in PVOG enthalten.' }),
+  ).toBeVisible();
+  await expect(
+    page.getByText('Leistungsbeschreibung automatisch ausgewählt:', { exact: false }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Leistungsbeschreibung für den PVOG-Abgleich wählen' }),
+  ).toHaveCount(0);
+  await page.getByText('Quellkontexte anzeigen', { exact: true }).first().click();
+  await expect(page.locator('.service-group pre')).toContainText('OE1');
 });

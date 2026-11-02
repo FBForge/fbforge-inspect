@@ -199,6 +199,7 @@ fn reference_url(reference: &str) -> Result<&'static str, String> {
         "repository" => Ok("https://github.com/FBForge/fbforge-inspect"),
         "fitko" => Ok("https://docs.fitko.de/fit-connect/"),
         "pvog" => Ok("https://pvog.fitko.net/"),
+        "help" => Ok("https://fbforge.de/inspect/hilfe/0.1/"),
         _ => Err("Unbekannte Referenz.".into()),
     }
 }
@@ -291,6 +292,10 @@ mod tests {
         assert_eq!(
             reference_url("fitko").unwrap(),
             "https://docs.fitko.de/fit-connect/"
+        );
+        assert_eq!(
+            reference_url("help").unwrap(),
+            "https://fbforge.de/inspect/hilfe/0.1/"
         );
         assert!(reference_url("https://untrusted.example").is_err());
         assert!(reference_url("file:///local").is_err());

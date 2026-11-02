@@ -4,6 +4,11 @@ import type { DiagnosisDraft } from '../session';
 defineProps<{ form: DiagnosisDraft; apiVersion: string }>();
 </script>
 <template>
+  <p class="notice">
+    Die Prozesssuche ist derzeit eingeschränkt: Die öffentliche Schnittstelle kann eine Anmeldung
+    verlangen (HTTP 401). Inspect unterstützt diesen Anmeldeweg nicht. Die separate Abfrage „Limits
+    prüfen“ bleibt verfügbar.
+  </p>
   <div v-if="apiVersion !== 'v3'" class="notice">
     Prozesssuche ist eine Funktion von v3. Bitte oben v3 auswählen.
   </div>

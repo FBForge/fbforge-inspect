@@ -19,7 +19,16 @@ defineProps<{ report: Report }>();
         <tbody>
           <tr v-for="(request, i) in report.requests" :key="i">
             <td>{{ new Date(request.at).toLocaleTimeString('de-DE') }}</td>
-            <td>{{ request.method }} {{ request.status || 'Fehler' }}</td>
+            <td>
+              {{ request.method }} {{ request.status || 'Fehler' }}
+              <p class="hint">
+                {{ request.viaProxy ? 'Proxy' : 'Direkt'
+                }}<template v-if="request.durationMs !== undefined">
+                  · {{ request.durationMs }} ms</template
+                >
+              </p>
+              <p v-if="!request.status" class="mono hint">{{ request.outcome }}</p>
+            </td>
             <td class="mono">{{ request.url }}</td>
           </tr>
         </tbody>

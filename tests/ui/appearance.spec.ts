@@ -105,19 +105,12 @@ test('enabled form fields have a visible boundary in both themes', async ({ page
   }
 });
 
-test('offline help includes schema steps and a usable synthetic example', async ({ page }) => {
+test('help has no embedded help content', async ({ page }) => {
   await page.goto('/');
-  await page
-    .getByRole('navigation', { name: 'Hauptnavigation' })
-    .getByRole('button', { name: 'Hilfe', exact: true })
-    .click();
-  await page
-    .getByRole('combobox', { name: 'Hilfethema', exact: true })
-    .selectOption({ label: 'Fachdatenschemata lesen' });
-  await page.getByText('Beispiel anzeigen', { exact: true }).click();
-  const topic = page.locator('#schemas');
-  await expect(topic.locator('ol li')).toHaveCount(3);
-  const example = JSON.parse(await topic.locator('pre').innerText());
-  expect(example.type).toBe('object');
-  expect(example.properties.vorgangsnummer.type).toBe('string');
+  await expect(page.locator('.help-topic')).toHaveCount(0);
+  await expect(
+    page
+      .getByRole('navigation', { name: 'Hauptnavigation' })
+      .getByRole('button', { name: 'Hilfe', exact: true }),
+  ).toBeVisible();
 });

@@ -149,9 +149,7 @@ svg {
   background: var(--accent);
   border-radius: 0 2px 2px 0;
 }
-.nav-item:nth-last-child(2) {
-  margin-top: 26px;
-}
+
 .sidebar-bottom {
   margin-top: auto;
   padding: 20px 16px;

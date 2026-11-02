@@ -7,7 +7,7 @@ const emit = defineEmits<{ pvog: [id: string] }>();
 </script>
 <template>
   <section
-    v-if="Array.isArray(report.data.pvogCandidates)"
+    v-if="Array.isArray(report.data.pvogCandidates) && !report.data.pvogSelectedLbId"
     class="panel"
     aria-labelledby="pvog-candidates-title"
   >

@@ -171,15 +171,8 @@ try {
     .getByRole('button', { name: 'Fachdatenschemata', exact: true })
     .click();
   results.push('Native workspace navigation preserves separate inputs and completed reports');
-  await page
-    .getByRole('navigation', { name: 'Hauptnavigation' })
-    .getByRole('button', { name: 'Hilfe', exact: true })
-    .click();
-  await page
-    .getByRole('combobox', { name: 'Hilfethema', exact: true })
-    .selectOption({ label: 'Fachdatenschemata lesen' });
-  await page.getByText('Beispiel anzeigen', { exact: true }).click();
   await page.locator('main').evaluate((element) => (element.scrollTop = element.scrollHeight));
+  expect(await page.locator('main').evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
   await page
     .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('button', { name: 'Routing prüfen', exact: true })
@@ -376,7 +369,7 @@ try {
     await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
     await expect(
       page.getByRole('heading', { name: 'Öffentliche Schlüssel · JWK / JWKS', exact: true }),
-    ).toBeVisible({ timeout: 30000 });
+    ).toBeVisible({ timeout: 150000 });
     await page.getByRole('button', { name: 'Bericht exportieren', exact: true }).click();
     await page
       .getByRole('dialog')
@@ -388,7 +381,25 @@ try {
     expect(jwkReport.data.keys[0].publicJwk.x5c.length).toBeGreaterThan(0);
     expect(jwkReport.data.certificates[0].pem).toContain('BEGIN CERTIFICATE');
     expect(jwkReport.rawResponses).toBeUndefined();
-    expect(jwkReport.requests.every((request) => request.method === 'GET')).toBe(true);
+    const ocspSources = new Set(
+      jwkReport.findings
+        .filter((finding) => finding.title.startsWith('OCSP'))
+        .map((finding) => finding.source),
+    );
+    expect(
+      jwkReport.requests.every(
+        (request) =>
+          request.method === 'GET' || (request.method === 'POST' && ocspSources.has(request.url)),
+      ),
+    ).toBe(true);
+    expect(
+      jwkReport.requests.some(
+        (request) =>
+          request.method === 'GET' &&
+          request.url.includes('/destinations/') &&
+          request.status === 200,
+      ),
+    ).toBe(true);
     expect(
       jwkReport.findings.some((f) => /X\.509.*(Key-Usage|Zertifikatsverwendung)/.test(f.title)),
     ).toBe(false);

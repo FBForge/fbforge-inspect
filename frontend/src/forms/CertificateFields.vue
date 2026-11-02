@@ -26,7 +26,7 @@ const emit = defineEmits<{ file: [event: Event] }>();
       Diese Auswahl erlaubt zusätzlich HTTP und OCSP-POST an öffentliche Zertifikatsendpunkte.
     </p>
     <label
-      >Unabhängig gewählte öffentliche CA-Zertifikate (PEM)<textarea
+      >Zusätzliche öffentliche CA-Zertifikate (optional, PEM)<textarea
         v-model="form.trustPem"
         rows="3"
         placeholder="-----BEGIN CERTIFICATE-----"
@@ -37,8 +37,8 @@ const emit = defineEmits<{ file: [event: Event] }>();
       >CA-Datei laden<input type="file" accept=".pem,.crt,.cer" @change="emit('file', $event)"
     /></label>
     <p class="hint">
-      Die x5c-Wurzel wird nicht automatisch vertraut. Zugehörigkeit der geladenen CA zur V-PKI
-      separat prüfen.
+      Die gültigen BSI-Wurzeln und verifizierten Zwischenzertifikate der V-PKI sind mitgeliefert.
+      Eigene CA-Zertifikate ergänzen diesen Truststore.
     </p>
   </details>
 </template>
