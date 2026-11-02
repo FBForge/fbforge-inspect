@@ -47,11 +47,11 @@
     "steps": [
       "Geben Sie den 14-stelligen LeiKa-Schlüssel und die Gebietsart an.",
       "Tragen Sie AGS/ARS oder eine Gebiets-ID ein. Alternativ öffnen Sie die Gebietssuche, suchen einen Ortsnamen und übernehmen das passende Gebiet.",
-      "Für den PVOG-Abgleich verwenden Sie einen 12-stelligen ARS. Der Abruf ist voreingestellt. Ein einziger Treffer aus einer vollständigen Suche wird automatisch geprüft; bei mehreren Treffern wählen Sie eine Leistungsbeschreibung. Eine bekannte ID können Sie unter den zusätzlichen Eingaben verwenden. Eine Gebiets-ID ersetzt keinen ARS.",
+      "Für den PVOG-Abgleich verwenden Sie einen 12-stelligen ARS. Der Abruf ist voreingestellt. Ein einziger Treffer aus einer vollständigen Suche wird automatisch geprüft. Bei mehreren Treffern wählen Sie eine Leistungsbeschreibung. Eine bekannte ID können Sie unter den zusätzlichen Eingaben verwenden. Eine Gebiets-ID ersetzt keinen ARS.",
       "Prüfen Sie die Rollen und Leistungs-/Gebietskennungen pro Kontext. Öffnen Sie bei Bedarf die vollständigen Kontextfelder sowie Onlinedienstparameter mit Sprachangaben und Quelle. Ein unvollständiger Abruf oder fehlende Signatur ist kein vollständiger Negativnachweis."
     ],
     "example": null,
-    "summary": "Routing benötigt LeiKa und ein Gebiet. Für PVOG geben Sie einen 12-stelligen ARS an. Inspect kann passende Leistungsbeschreibungs-IDs vorschlagen. Erst Ihre Auswahl startet den Adressierungsvergleich."
+    "summary": "Routing benötigt LeiKa und ein Gebiet. Für PVOG geben Sie einen 12-stelligen ARS an. Inspect kann passende Leistungsbeschreibungs-IDs vorschlagen. Ein eindeutiger Treffer wird automatisch geprüft. Bei mehreren Treffern wählen Sie eine Leistungsbeschreibung."
   },
   {
     "id": "process",
@@ -75,10 +75,10 @@
     "paragraphs": [
       "JWK/JWKS können eingefügt, aus einer lokalen Datei geladen oder per öffentlicher HTTPS-URL abgerufen werden. Private und symmetrische Schlüssel werden abgewiesen. Bitte ausschließlich öffentliche Daten verwenden.",
       "FBForge Inspect prüft JWK-Felder, kid, RSA-Größe, Algorithmus und key_ops. Der öffentliche Schlüssel muss zum ersten x5c-Zertifikat passen. Zertifikatslaufzeit, Kettensignaturen und PKIX-Vertrauen sind eigenständige Befunde.",
-      "Die Wurzel aus x5c gilt nicht automatisch als vertrauenswürdig. Inspect verwendet unabhängig geprüfte BSI-Wurzeln aus dem mitgelieferten V-PKI-Truststore. Eigene CA-Anker können zusätzlich als PEM geladen werden; deren V-PKI-Zugehörigkeit wird dadurch nicht bestätigt.",
+      "Die Wurzel aus x5c gilt nicht automatisch als vertrauenswürdig. Inspect verwendet unabhängig geprüfte BSI-Wurzeln aus dem mitgelieferten V-PKI-Truststore. Eigene CA-Anker können zusätzlich als PEM geladen werden. Deren V-PKI-Zugehörigkeit wird dadurch nicht bestätigt.",
       "TEST erlaubt selbst erzeugte und selbstsignierte Zertifikate sowie Schlüssel ohne x5c. Fehlende V-PKI-Verankerung und fehlende Sperrendpunkte werden dort als Hinweise ausgegeben, ohne Vertrauen oder Sperrstatus zu bestätigen. Abgelaufene Zertifikate, ungültige Signaturen und falsche JWK-Schlüsselbindung bleiben Fehler. Eine ausdrücklich ausgewählte CA wird auch in TEST geprüft. STAGE und PROD behalten ihre strengere Bewertung.",
       "Öffentliche JWK-Felder einschließlich x5c sowie jedes Zertifikat als PEM und Base64-DER sind direkt im Ergebnis einsehbar. Die Verwendungsprüfung bewertet die JWK-Felder key_ops und use zusammen mit alg. Die X.509-Key-Usage wird nicht als JWK-Anforderung bewertet. Diese Diagnose bestätigt keine vollständige Verwaltungs-PKI-Konformität.",
-      "Ein V-PKI-Truststore mit vier BSI-Wurzeln und 32 geprüften untergeordneten CAs (Stand 02.11.2026) wird mitgeliefert. Zusätzliche eigene CA-Anker sind optional. JWK-Verwendung und Zertifikatspfad werden getrennt bewertet; die App bescheinigt keine vollständige V-PKI-Profilkonformität."
+      "Ein V-PKI-Truststore mit vier BSI-Wurzeln und 32 geprüften untergeordneten CAs (Stand 02.11.2026) wird mitgeliefert. Zusätzliche eigene CA-Anker sind optional. JWK-Verwendung und Zertifikatspfad werden getrennt bewertet. Die App bescheinigt keine vollständige V-PKI-Profilkonformität."
     ],
     "steps": [
       "Wählen Sie Einfügen, HTTPS-URL oder Datei und geben Sie den öffentlichen JWK/JWKS an.",
@@ -95,7 +95,7 @@
       "Die optionale Online-Sperrprüfung erlaubt öffentliche Zertifikatsendpunkte über HTTPS sowie HTTP auf Standardports. OCSP verwendet einen öffentlichen Leseaufruf per POST. Lokale und private Netzadressen bleiben blockiert.",
       "Nur eine dem Zertifikat zugeordnete, autorisiert signierte und aktuelle Antwort kann einen Good- oder Revoked-Befund liefern. Delegierte OCSP-Signierer benötigen eine gültige CA-signierte nocheck-Ausnahme oder einen aktuellen direkten vollständigen CRL-Nachweis ihres eigenen Sperrstatus. Eine rekursive OCSP-Prüfung findet nicht statt. Für OCSP gelten 24 Stunden maximale thisUpdate-Alterung, für CRLs das signierte Veröffentlichungsintervall bis nextUpdate, jeweils mit fünf Minuten Zeittoleranz und notwendigem nextUpdate.",
       "Nicht erreichbare Dienste, unbekannte Antworten, fehlende Aussteller, ungültige Signaturen sowie Delta-, indirekte oder eingeschränkte CRLs erzeugen keinen grünen Nachweis. Die Wurzel wird nicht auf Sperrung geprüft. Vertrauen und Sperrstatus bleiben getrennt.",
-      "Die Online-Prüfung ist voreingestellt und startet mit der eigentlichen Prüfung. Ein Aufklappen der zusätzlichen Zertifikatsoptionen ist nicht erforderlich. Für CRL werden unterstützte HTTP(S)-Adressen vor der Abrufbegrenzung ausgewählt; vorangestellte LDAP-Adressen verbrauchen dieses Budget nicht.",
+      "Die Online-Prüfung ist voreingestellt und startet mit der eigentlichen Prüfung. Ein Aufklappen der zusätzlichen Zertifikatsoptionen ist nicht erforderlich. Für CRL werden unterstützte HTTP(S)-Adressen vor der Abrufbegrenzung ausgewählt. Vorangestellte LDAP-Adressen verbrauchen dieses Budget nicht.",
       "HTTP-Fehler und Verbindungsfehler werden als fehlgeschlagener Abruf mit Status beziehungsweise sicherer Netzwerkbeschreibung angezeigt. Eine erhaltene, aber nicht verifizierbare Antwort wird davon getrennt bewertet. Erlaubte TEST-Zertifikate ohne öffentlichen Sperrendpunkt erzeugen lediglich einen Hinweis."
     ],
     "steps": [
@@ -145,13 +145,15 @@
     "paragraphs": [
       "Grenzen: 2 MiB IPC-Eingabe, 1,5 MB lokale Datei, 4 MiB pro HTTP-Antwort, 40 HTTP-Abrufe, 20 MiB Antwortbudget und 120 Sekunden Netzbudget pro Lauf. Der Host beendet einen Lauf spätestens nach 150 Sekunden. Ergebnisse außerhalb der Budgets bleiben unvollständig.",
       "Öffentliche HTTP-Ziele dürfen keine Zugangsdaten, privaten IP-Adressen oder Sonderports enthalten. Umleitungen werden erneut geprüft und TLS-Downgrades blockiert. Der Transport verbindet sich mit der bereits geprüften IP und behält TLS-Hostnamenprüfung bei.",
-      "Der Transport nutzt System-DNS und den TLS-Truststore der gebündelten Java-Laufzeit. Unter Netzwerk wählen Sie einen manuellen HTTP(S)-Proxy mit optionaler Basic-Anmeldung. Systemproxy/PAC, Windows-Anmeldung und eigene TLS-Unternehmens-CAs werden nicht eingerichtet. Ein Netzwerkfehler beweist keine fehlerhafte Destination."
+      "Der Transport nutzt System-DNS und den TLS-Truststore der gebündelten Java-Laufzeit. Unter Netzwerk wählen Sie einen manuellen HTTP(S)-Proxy mit optionaler Basic-Anmeldung. Systemproxy/PAC, Windows-Anmeldung und eigene TLS-Unternehmens-CAs werden nicht eingerichtet. Ein Netzwerkfehler beweist keine fehlerhafte Destination.",
+      "Bei TLS_FAILED ist die TLS-Verbindung oder die Serverzertifikatsprüfung fehlgeschlagen. Der Sammelcode allein nennt keine genaue Ursache. Ein erfolgreicher Browserabruf ist kein Nachweis für denselben Java-Verbindungsweg. Der V-PKI-Truststore prüft x5c-Zertifikatsketten und erweitert nicht den HTTPS-CA-Speicher der Java-Laufzeit. Eigene CA-Anker unter Zertifikate und Sperrstatus ändern daran nichts."
     ],
     "steps": [
       "Lesen Sie den konkreten Befund und öffnen Sie dessen Quelle und Feldpfad.",
       "Prüfen Sie im Abfrageprotokoll HTTP-Status und Ziel. Bei einer lokalen Datei prüfen Sie Format und angegebene Position.",
       "Korrigieren Sie die passende Eingabe oder versuchen Sie die betroffene öffentliche Quelle später erneut.",
-      "Öffnen Sie Netzwerk, tragen Sie bei Bedarf den Proxy ein und starten Sie Verbindungen prüfen. Nach einer Schlüssel- oder Destination-Prüfung können deren OCSP-/CRL-Ziele mitgeprüft werden. Die Freigabeliste enthält Adressen, Ports und Methoden für Ihre IT, ohne Proxy-Zugangsdaten. Erreichbarkeit allein bestätigt keinen Sperrstatus."
+      "Öffnen Sie Netzwerk, tragen Sie bei Bedarf den Proxy ein und starten Sie Verbindungen prüfen. Nach einer Schlüssel- oder Destination-Prüfung können deren OCSP-/CRL-Ziele mitgeprüft werden. Die Freigabeliste enthält Adressen, Ports und Methoden für Ihre IT, ohne Proxy-Zugangsdaten. Erreichbarkeit allein bestätigt keinen Sperrstatus.",
+      "Bei TLS-Fehlern dieselbe vollständige URL und den Verbindungsweg vergleichen. Der Bericht zeigt, ob Inspect den manuellen Proxy verwendet hat. Systemzeit und die Freigabe des Zielhosts durch die IT prüfen. Keine TLS-Prüfung abschalten und keine ungeprüften Serverzertifikate als vertrauenswürdig importieren."
     ],
     "example": null,
     "summary": "Ein Netzwerkfehler beweist keine fehlerhafte Destination. Prüfen Sie zuerst die konkrete Meldung und die betroffene Quelle."
