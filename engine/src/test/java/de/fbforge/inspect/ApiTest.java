@@ -7,11 +7,61 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class ApiTest {
   static PublicHttp.Response response(int status, String body) {
     return new PublicHttp.Response(
         status, Map.of(), body.getBytes(), URI.create("https://example.org"));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"v2", "v3"})
+  void destinationKeyLookupUsesOneEncodedPathSegment(String version) throws Exception {
+    String id = SignatureFixtures.DESTINATION;
+    String kid = "GRP: Beispielbehörde A+B/2026?%# encryption";
+    String base = Api.submission("PROD") + "/" + version + "/destinations/" + id;
+    String expected =
+        base + "/keys/GRP%3A%20Beispielbeh%C3%B6rde%20A%2BB%2F2026%3F%25%23%20encryption";
+    JsonObject configuration =
+        JsonParser.parseString(
+                "{\"status\":\"active\",\"type\":\"A\",\"metadataVersions\":[\"1.3.0\"]}")
+            .getAsJsonObject();
+    configuration.addProperty("destinationId", id);
+    configuration.addProperty("encryptionKid", kid);
+    String key =
+        new com.nimbusds.jose.jwk.RSAKey.Builder(SignatureFixtures.key().toRSAPublicKey())
+            .keyID(kid)
+            .algorithm(com.nimbusds.jose.JWEAlgorithm.RSA_OAEP_256)
+            .keyOperations(java.util.Set.of(com.nimbusds.jose.jwk.KeyOperation.WRAP_KEY))
+            .build()
+            .toJSONString();
+    Report report = new Report("destination", "PROD", version);
+    List<String> requests = new java.util.ArrayList<>();
+    Api api =
+        new Api(
+            report,
+            url -> {
+              requests.add(url);
+              if (url.equals(base)) return response(200, configuration.toString());
+              return response(url.equals(expected) ? 200 : 404, url.equals(expected) ? key : "{}");
+            });
+    JsonObject input = new JsonObject();
+    input.addProperty("destinationId", id);
+    api.destination(input, new PublicHttp(report));
+    assertEquals(List.of(base, expected), requests);
+    URI uri = URI.create(requests.getLast());
+    assertNull(uri.getRawQuery());
+    assertNull(uri.getRawFragment());
+    assertEquals(
+        base.substring("https://prod.fit-connect.fitko.net".length()) + "/keys/" + kid,
+        uri.getPath());
+    assertEquals(
+        kid, report.data.getAsJsonArray("keys").get(0).getAsJsonObject().get("kid").getAsString());
+    assertFalse(
+        report.findings.stream()
+            .anyMatch(finding -> finding.title().equals("Abruf nicht erfolgreich")));
   }
 
   @Test

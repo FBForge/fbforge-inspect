@@ -45,8 +45,15 @@ final class CertificateRevocation {
                   new JcaX509CertificateHolder(issuer),
                   certificate.getSerialNumber());
           try {
-            var response = http.pki(url, new OCSPReqBuilder().addRequest(id).build().getEncoded());
-            if (!response.ok()) throw new IOException();
+            var response =
+                fetch(
+                    http,
+                    url,
+                    new OCSPReqBuilder().addRequest(id).build().getEncoded(),
+                    report,
+                    path,
+                    "OCSP");
+            if (response == null) continue;
             Instant now = Instant.now();
             String status =
                 validateOcsp(
@@ -70,7 +77,8 @@ final class CertificateRevocation {
           } catch (Exception e) {
             report.unknown(
                 "OCSP nicht verifizierbar",
-                "Abruf, Signatur, Zuordnung oder Aktualität nicht nachgewiesen.",
+                "OCSP-Antwort erhalten (HTTP 200–299), aber Format, Signatur, Zuordnung oder"
+                    + " Aktualität nicht nachgewiesen.",
                 path,
                 url);
           }
@@ -79,8 +87,8 @@ final class CertificateRevocation {
       for (String url : CrlEndpoints.locations(points)) {
         found = true;
         try {
-          var response = http.pki(url, null);
-          if (!response.ok()) throw new IOException();
+          var response = fetch(http, url, null, report, path, "CRL");
+          if (response == null) continue;
           String status = validateCrl(response.body(), certificate, issuer, Instant.now());
           report.add(
               status,
@@ -99,7 +107,8 @@ final class CertificateRevocation {
         } catch (Exception e) {
           report.unknown(
               "CRL nicht verifizierbar",
-              "Abruf, Signatur oder Aktualität nicht nachgewiesen.",
+              "CRL erhalten (HTTP 200–299), aber Format, Signatur oder Aktualität nicht"
+                  + " nachgewiesen.",
               path,
               url);
         }
@@ -114,6 +123,38 @@ final class CertificateRevocation {
           "Kein vollständiger direkter HTTP(S)-CRL- oder OCSP-Endpunkt im Zertifikat.",
           path,
           RFC);
+  }
+
+  private static PublicHttp.Response fetch(
+      PkiFetch http, String url, byte[] post, Report report, String path, String kind) {
+    try {
+      var response = http.pki(url, post);
+      if (response.ok()) return response;
+      report.unknown(
+          kind + "-Abruf nicht erfolgreich",
+          "HTTP "
+              + response.status()
+              + ": Der öffentliche Endpunkt hat keine erfolgreiche Antwort geliefert. Ohne"
+              + " Sperrauskunft ist keine kryptographische Statusprüfung möglich.",
+          path,
+          url);
+    } catch (IOException failure) {
+      report.unknown(
+          kind + "-Abruf fehlgeschlagen",
+          failure instanceof NetworkFailure known
+              ? known.description()
+              : "Die öffentliche Sperrauskunft konnte nicht vollständig abgerufen werden. Netzwerk"
+                    + " und Abfrageprotokoll prüfen.",
+          path,
+          url);
+    } catch (IllegalArgumentException unsupported) {
+      report.unknown(
+          kind + "-Abruf nicht zulässig",
+          "Der veröffentlichte Endpunkt erfüllt die Regeln für öffentliche HTTP(S)-Ziele nicht.",
+          path,
+          url);
+    }
+    return null;
   }
 
   static boolean fresh(Date start, Date end, Instant now, Duration maxAge) {

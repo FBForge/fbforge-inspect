@@ -446,6 +446,72 @@ try {
     results.push(
       'Native independent limits request uses only two destinations and returns real public limits',
     );
+    await page
+      .getByRole('navigation', { name: 'Hauptnavigation' })
+      .getByRole('button', { name: 'Destination prüfen', exact: true })
+      .click();
+    await page.getByRole('combobox', { name: 'Umgebung', exact: true }).selectOption('PROD');
+    const productionReports = [];
+    for (const version of ['v2', 'v3']) {
+      await page.getByRole('combobox', { name: 'API', exact: true }).selectOption(version);
+      const destinationId = '9854de30-5547-42b1-b6d2-d7bd80253c49';
+      await page.getByRole('textbox', { name: 'Destination-ID', exact: true }).fill(destinationId);
+      await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+      await expect(
+        page.getByRole('heading', { name: 'Öffentliche Schlüssel · JWK / JWKS', exact: true }),
+      ).toBeVisible({ timeout: 150000 });
+      await page.getByRole('button', { name: 'Bericht exportieren', exact: true }).click();
+      await page
+        .getByRole('dialog')
+        .getByRole('combobox', { name: 'Format', exact: true })
+        .selectOption('json');
+      const production = JSON.parse(await page.getByRole('dialog').locator('pre').innerText());
+      expect(production.environment).toBe('PROD');
+      expect(production.apiVersion).toBe(version);
+      const kid = production.data.destination.encryptionKid;
+      expect(kid).toContain(' ');
+      expect(production.data.keys[0].kid).toBe(kid);
+      const keyRequest = production.requests.find((request) => request.url.includes('/keys/'));
+      expect(keyRequest?.status).toBe(200);
+      expect(keyRequest.url).toContain(
+        `/submission-api/${version}/destinations/${destinationId}/keys/`,
+      );
+      expect(keyRequest.url).toContain('%20');
+      expect(keyRequest.url).not.toContain('+');
+      expect(new URL(keyRequest.url).pathname.split('/').map(decodeURIComponent).at(-1)).toBe(kid);
+      expect(production.rawResponses).toBeUndefined();
+      await writeFile(
+        join(output, `live-prod-destination-${version}.json`),
+        JSON.stringify(production, null, 2),
+      );
+      await page.keyboard.press('Escape');
+      await page.screenshot({ path: join(output, `windows-live-prod-destination-${version}.png`) });
+      productionReports.push(production);
+      results.push(
+        `Native PROD ${version} destination resolves a key ID containing spaces; its complete PKI report is retained`,
+      );
+    }
+    // Collect both versions before requiring positive status from the external PKI services.
+    // An external outage still fails this acceptance check and remains visible in both reports.
+    for (const production of productionReports) {
+      expect(production.data.certificateTrust[0].trusted).toBe(true);
+      expect(production.data.certificateTrust[0].source).toBe('bundled-vpki');
+      expect(
+        production.findings.some(
+          (finding) => finding.status === 'error' || finding.status === 'unknown',
+        ),
+      ).toBe(false);
+      expect(
+        production.findings.some(
+          (finding) => finding.title === 'OCSP-Sperrstatus' && finding.status === 'confirmed',
+        ),
+      ).toBe(true);
+      expect(
+        production.findings.filter(
+          (finding) => finding.title === 'CRL-Sperrstatus' && finding.status === 'confirmed',
+        ).length,
+      ).toBeGreaterThanOrEqual(2);
+    }
   }
   if (errors.length)
     throw new Error('Native renderer reported runtime errors: ' + errors.join('\n'));
