@@ -11,7 +11,7 @@ Desktop-Werkzeug für FIT-Connect-Zustellpunkte, Routing und PVOG-Adressierung. 
 - JSON Schema und XSD lokal einlesen, Struktur und Referenzen nachvollziehen.
 - Befunde als JSON oder HTML speichern. Rohantworten nur nach ausdrücklicher Auswahl einschließen.
 
-Für **Windows x64 und FIT-Connect TEST, STAGE und PROD**. Java wird mitgeliefert. Lokale Schlüssel- und Schemainspektion funktionieren offline. Die Anwendung benötigt keine Zugangsdaten und führt keine Verwaltungsoperationen oder Zustellungen aus.
+Für **Windows x64 und FIT-Connect TEST, STAGE und PROD**. Java wird mitgeliefert. Lokale Schlüssel- und Schemainspektion funktionieren offline. Für FIT-Connect werden keine Zugangsdaten benötigt. Ein manueller Proxy kann eigene Zugangsdaten erfordern. Die Anwendung führt keine Verwaltungsoperationen oder Zustellungen aus.
 
 ## Entwicklungsstand
 

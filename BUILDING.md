@@ -112,6 +112,26 @@ Einmalig durch den Repository-Eigentümer einzurichten:
 3. Vor der Runner-Registrierung für das öffentliche Repository die Workflow-Freigabe für **alle externen Fork-Beitragenden** verlangen. Nur geprüfte Fork-Workflows freigeben; alle Schreibberechtigten des Repos müssen für den Signierrechner vertrauenswürdig sein. Ein Repo-Runner kann auch von anderen Workflows desselben Repos angesprochen werden; der Main- und Environment-Schutz dieses Signierworkflows allein ersetzt diese Prüfung nicht. Wo verfügbar, die Runner-Zulassung auf den Signierworkflow auf `main` beschränken.
 4. Einen für Inspect zugelassenen Windows-x64-Self-hosted-Runner mit dem zusätzlichen Label `fbforge-signing` registrieren. Für einen separaten Repo-Runner ein eigenes Verzeichnis verwenden. Er muss unter demselben angemeldeten Windows-Benutzer mit Zertifikat und Token laufen. Wegen Token-PIN-Dialogen `run.cmd` in der interaktiven Sitzung verwenden, keinen Windows-Dienst. Die Runner-Zulassung und der Schutz von `main` müssen in GitHub geprüft werden.
 
+### Inspect-Runner neben Connect einrichten
+
+Das offizielle Windows-x64-Runnerpaket aus den GitHub-Repositoryeinstellungen nach `C:\actions-runner-inspect` entpacken. Den vorhandenen Connect-Runner und dessen Ordner beibehalten. Den Inspect-Runner unter dem angemeldeten Benutzer mit Zertifikat und Token registrieren:
+
+```powershell
+Set-Location 'C:\actions-runner-inspect'
+
+.\config.cmd `
+    --url 'https://github.com/FBForge/fbforge-inspect' `
+    --name 'fbforge-signing' `
+    --labels 'fbforge-signing' `
+    --work '_work'
+```
+
+Den kurzlebigen Registration Token ausschließlich im lokalen Dialog eingeben. Bei einer angebotenen Runnergruppe genügt für diesen Repo-Runner `Default`. Bei **Run as a service?** mit **N** antworten. Anschließend `.\run.cmd` starten und das Fenster während der Nutzung offen lassen. In GitHub muss der Runner die Labels `self-hosted`, `Windows`, `X64` und `fbforge-signing` besitzen. Der Name dient der Anzeige, das Label wählt den Runner im Workflow aus.
+
+Meldet die Einrichtung **already configured**, zuerst den laufenden Inspect-Runner mit Strg+C stoppen. Beim bisherigen Inspect-Runner in GitHub **Remove** öffnen und den dort bereitgestellten Befehl mit Removal Token lokal ausführen. Danach mit einem neuen Registration Token erneut konfigurieren. Keine Konfigurationsdateien manuell löschen und den Connect-Runner nicht entfernen.
+
+Connect und Inspect dürfen denselben Rechner mit getrennten Runnerordnern verwenden. Signierläufe am gemeinsamen Hardwaretoken nacheinander starten. Die Concurrency-Regel des Inspect-Workflows serialisiert keine Jobs aus dem Connect-Repository. Vor dem Start müssen die oben genannten Freigabe- und Runner-Zulassungsregeln geprüft sein.
+
 Der Signierjob verwendet denselben PowerShell-Builder wie lokal. Ein unabhängiger gehosteter Windows-Job lädt ausschließlich den Kandidaten aus diesem Signierlauf, prüft vollständige Dateiprüfsummen, Commit-/Run-Zuordnung, Signaturen und Laufzeitprovenienz und führt Installation, nativen Kern-/Exportdurchlauf und NVDA-Prüfungen aus. Erst danach entsteht das Artefakt `windows-signed-verified`. `windows-signed-candidate` ist der noch nicht unabhängig abgenommene Zwischenstand.
 
 Der Workflow wird in Actions verfügbar, sobald seine Definition auf dem Standardbranch liegt. Das Vorbereiten auf `release/0.1.0` aktiviert keine Signierung und ersetzt keinen Main-Merge. Ein aktueller fehlgeschlagener Verify-Lauf bleibt ein Abnahmehindernis und wird durch Signieren nicht aufgehoben. Ein erfolgreicher unsignierter Kandidat ist kein signierter Release.
