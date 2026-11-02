@@ -239,6 +239,17 @@ final class CertificateRevocation {
     }
   }
 
+  private static boolean currentCrl(X509CRL crl, Instant now) {
+    Date start = crl.getThisUpdate(), end = crl.getNextUpdate();
+    // The issuer's signed nextUpdate defines the publication interval (V-PKI CA CRLs can exceed
+    // seven days).
+    return start != null
+        && end != null
+        && end.after(start)
+        && !start.toInstant().isAfter(now.plusSeconds(300))
+        && !end.toInstant().isBefore(now.minusSeconds(300));
+  }
+
   static String validateCrl(
       byte[] encoded, X509Certificate certificate, X509Certificate issuer, Instant now)
       throws Exception {
@@ -255,8 +266,7 @@ final class CertificateRevocation {
     if (crl.getExtensionValue("2.5.29.27") != null
         || crl.getExtensionValue("2.5.29.28") != null
         || crl.hasUnsupportedCriticalExtension()
-        || !fresh(crl.getThisUpdate(), crl.getNextUpdate(), now, Duration.ofDays(7)))
-      return "unknown";
+        || !currentCrl(crl, now)) return "unknown";
     X509CRLEntry entry = crl.getRevokedCertificate(certificate.getSerialNumber());
     if (entry == null) return "confirmed";
     if (entry.hasUnsupportedCriticalExtension()

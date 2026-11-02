@@ -1,5 +1,6 @@
 package de.fbforge.inspect;
 
+import java.net.URI;
 import java.util.*;
 import org.bouncycastle.asn1.x509.*;
 
@@ -18,7 +19,14 @@ final class CrlEndpoints {
       for (GeneralName name :
           GeneralNames.getInstance(point.getDistributionPoint().getName()).getNames()) {
         if (name.getTagNo() != GeneralName.uniformResourceIdentifier) continue;
-        locations.add(name.getName().toString());
+        String location = name.getName().toString();
+        try {
+          PublicHttp.validateUri(URI.create(location), true);
+        } catch (IllegalArgumentException unsupported) {
+          continue;
+        }
+        if (locations.contains(location)) continue;
+        locations.add(location);
         if (locations.size() == 2) return locations;
       }
     }
