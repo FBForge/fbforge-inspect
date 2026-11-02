@@ -64,7 +64,9 @@ public final class Main {
       throw new IllegalArgumentException(
           "Private oder symmetrische Schlüssel sind nicht zulässig. Eingabe verworfen.");
     Report report = new Report(operation, env, version);
-    PublicHttp http = new PublicHttp(report);
+    NetworkOptions network =
+        NetworkOptions.read(request.has("network") ? request.getAsJsonObject("network") : null);
+    PublicHttp http = new PublicHttp(report, network);
     Api api = new Api(report, http::get);
     try {
       switch (operation) {
@@ -73,6 +75,7 @@ public final class Main {
         case "areas" -> api.areas(input);
         case "process" -> api.process(input);
         case "limits" -> api.limits(input);
+        case "network" -> NetworkDiagnostics.inspect(input, report, http);
         case "keys" -> {
           if (!JsonFields.value(input, "url").isBlank()) {
             var response = http.get(JsonFields.value(input, "url"));
@@ -105,8 +108,10 @@ public final class Main {
     } catch (IOException e) {
       report.unknown(
           "Öffentlicher Abruf fehlgeschlagen",
-          "Netzwerkziel, DNS, TLS oder Abfragebudget prüfen. Bereits geladene Daten bleiben"
-              + " Teilbestand.",
+          e instanceof NetworkFailure failure
+              ? failure.description()
+              : "Netzwerkziel, DNS, TLS oder Abfragebudget prüfen. Bereits geladene Daten bleiben"
+                    + " Teilbestand.",
           "$",
           "");
     }

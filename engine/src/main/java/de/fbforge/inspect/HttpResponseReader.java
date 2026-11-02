@@ -82,7 +82,7 @@ final class HttpResponseReader {
     return new PublicHttp.Response(status, headers, body.toByteArray(), uri);
   }
 
-  private static Map.Entry<String, String> header(String row) throws IOException {
+  static Map.Entry<String, String> header(String row) throws IOException {
     int colon = row.indexOf(':');
     if (colon <= 0
         || !row.substring(0, colon).matches("[!#$%&'*+.^_`|~0-9A-Za-z-]+")
@@ -120,7 +120,7 @@ final class HttpResponseReader {
     }
   }
 
-  private static String line(InputStream input, NetworkBudget budget) throws IOException {
+  static String line(InputStream input, NetworkBudget budget) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     while (true) {
       budget.checkTime();
