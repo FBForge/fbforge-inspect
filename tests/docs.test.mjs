@@ -57,6 +57,28 @@ test('exported guide uses the product website shell and preserves every help top
   assert.ok(processTopic.summary.includes('Nur die Prozesssuche benötigt einen Modellbezug.'));
   assert.ok(processTopic.steps.some((text) => /Größenlimits.*v3/.test(text)));
   assert.ok(pvogTopic.summary.includes('vorschlagen'));
+  assert.ok(guide.includes('/inspect/guide-flows-v1.css'));
+  for (const id of ['destination', 'routing']) {
+    const topic = topics.find((entry) => entry.id === id);
+    const flow = guide.match(
+      new RegExp(
+        `<figure class="guide-workflow" aria-labelledby="${id}-workflow">([\\s\\S]*?)</figure>`,
+      ),
+    )?.[1];
+    assert.ok(flow, `Missing ${id} workflow`);
+    assert.equal((flow.match(/<li>/g) || []).length, topic.workflow.steps.length);
+    for (const step of topic.workflow.steps) {
+      assert.ok(flow.includes(step.title));
+      assert.ok(flow.includes(step.source));
+    }
+    assert.ok(flow.includes('Aufrufe und Datenquellen'));
+  }
+  assert.ok(pvogTopic.workflow.steps.some((step) => step.text.includes('Kanal 004')));
+  assert.ok(
+    pvogTopic.workflow.steps.some((step) =>
+      step.text.includes('ruft nicht automatisch jede gefundene Destination'),
+    ),
+  );
 });
 
 test('website export inventories only public files with matching checksums', async () => {
@@ -82,6 +104,7 @@ test('website export inventories only public files with matching checksums', asy
     'inspect/images/start.png',
     'inspect/images/schema.png',
     'inspect/hilfe/0.1/index.html',
+    'inspect/guide-flows-v1.css',
   ]) {
     assert.ok(
       manifest.files.some((file) => file.path === name),
