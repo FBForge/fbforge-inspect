@@ -27,6 +27,7 @@ final class Certificates {
     var x5c = key.getX509CertChain();
     if (x5c == null || x5c.isEmpty()) {
       r.add(
+          FindingCode.CERTIFICATE_CHAIN,
           r.environment.equals("TEST") ? "warning" : "error",
           "Zertifikatskette fehlt",
           "TEST erlaubt Testschlüssel. Ohne x5c kein Produktionsnachweis.",
@@ -46,6 +47,7 @@ final class Certificates {
     PublicKey publicKey =
         key instanceof RSAKey rsa ? rsa.toRSAPublicKey() : key.toECKey().toECPublicKey();
     r.check(
+        FindingCode.CERTIFICATE_BINDING,
         Arrays.equals(publicKey.getEncoded(), leaf.getPublicKey().getEncoded()),
         "JWK und Zertifikat",
         "SPKI des ersten x5c-Zertifikats muss zum JWK passen.",
@@ -83,6 +85,7 @@ final class Certificates {
         valid = false;
       }
       r.check(
+          FindingCode.CERTIFICATE_VALIDITY,
           valid,
           "Zertifikatslaufzeit",
           c.getSubjectX500Principal()
@@ -106,6 +109,7 @@ final class Certificates {
           signature = false;
         }
         r.check(
+            FindingCode.CERTIFICATE_SIGNATURE,
             signature,
             "Kettensignatur",
             signer == c
@@ -134,6 +138,7 @@ final class Certificates {
       if (r.environment.equals("TEST")
           && leaf.getSubjectX500Principal().equals(leaf.getIssuerX500Principal())) {
         r.add(
+            FindingCode.REVOCATION_UNAVAILABLE,
             "warning",
             "Sperrstatus des TEST-Zertifikats",
             "Für dieses selbstsignierte TEST-Zertifikat ist kein unabhängiger Aussteller verfügbar."
@@ -146,7 +151,11 @@ final class Certificates {
         return;
       }
       r.unknown(
-          "Sperrstatus ohne Aussteller", "Kein Ausstellerzertifikat in x5c vorhanden.", path, RFC);
+          FindingCode.REVOCATION_UNAVAILABLE,
+          "Sperrstatus ohne Aussteller",
+          "Kein Ausstellerzertifikat in x5c vorhanden.",
+          path,
+          RFC);
       return;
     }
     for (int i = 0; i < resolved.size() - 1; i++) {

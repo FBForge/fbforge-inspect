@@ -100,6 +100,9 @@ class RevocationWorkflowTest {
         leaf(true, "https://example.org/crl"), CryptoTest.issuer, report, fetch, "$.keys[0]");
     assertEquals(2, calls.get());
     assertEquals(2, report.findings.stream().filter(f -> f.status().equals("confirmed")).count());
+    assertEquals(
+        Set.of(FindingCode.OCSP_STATUS, FindingCode.CRL_STATUS),
+        new HashSet<>(report.findings.stream().map(Report.Finding::code).toList()));
   }
 
   @Test
@@ -220,6 +223,7 @@ class RevocationWorkflowTest {
             .anyMatch(
                 f ->
                     f.title().equals("CRL-Abruf nicht erfolgreich")
+                        && f.code() == FindingCode.CRL_STATUS
                         && f.status().equals("unknown")
                         && f.detail().contains("HTTP 500")
                         && f.path().equals("$.keys[0].x5c[0]")));

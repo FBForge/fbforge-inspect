@@ -88,6 +88,7 @@ final class CertificateTrust {
       evidence.addProperty("anchor", root.getSubjectX500Principal().getName());
       evidence.addProperty("anchorSha256", fingerprint);
       report.check(
+          FindingCode.CERTIFICATE_TRUST,
           true,
           pem.isBlank() ? "V-PKI-Vertrauenskette" : "PKIX-Vertrauen gegen gewählte CA",
           vpki
@@ -118,6 +119,7 @@ final class CertificateTrust {
         return chain;
       }
       report.check(
+          FindingCode.CERTIFICATE_TRUST,
           false,
           pem.isBlank() ? "V-PKI-Vertrauenskette" : "PKIX-Vertrauen gegen gewählte CA",
           "Keine gültige Kette zu einer mitgelieferten V-PKI-Wurzel oder zusätzlich gewählten CA."
@@ -130,6 +132,7 @@ final class CertificateTrust {
 
   private static void testHint(Report report, String path) {
     report.add(
+        FindingCode.CERTIFICATE_TRUST,
         "warning",
         "TEST-Zertifikat ohne V-PKI-Verankerung",
         "TEST erlaubt selbst erzeugte Zertifikate ohne V-PKI-Verankerung. Das ist kein Fehler des"

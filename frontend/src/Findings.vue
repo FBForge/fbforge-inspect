@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import FindingEvidence from './FindingEvidence.vue';
+import { diagnosisSummary } from './diagnosisSummary';
 import { labels, type Report, type Status } from './contracts';
 import {
   overview,
@@ -12,6 +13,7 @@ import {
 } from './diagnosis';
 const props = defineProps<{ report: Report }>();
 const filter = ref('all');
+const conclusion = computed(() => diagnosisSummary(props.report));
 watch(
   () => props.report,
   () => {
@@ -47,7 +49,20 @@ function select(id: string) {
 <template>
   <div class="result-overview panel" role="status">
     <h3>{{ overview(report) }}</h3>
-    <p>{{ overviewDetail(report) }}</p>
+    <template v-if="conclusion">
+      <p>{{ conclusion.message }}</p>
+      <dl class="diagnosis-areas" aria-label="Zusammenfassung der Prüfbereiche">
+        <div v-for="item in conclusion.items" :key="item.id" :class="item.status">
+          <dt><span class="status-dot" aria-hidden="true"></span>{{ item.label }}</dt>
+          <dd>
+            <span class="badge" :class="item.status">{{ labels[item.status] }}</span
+            >{{ item.text }}
+          </dd>
+        </div>
+      </dl>
+      <p class="hint">{{ overviewDetail(report) }}</p>
+    </template>
+    <p v-else>{{ overviewDetail(report) }}</p>
     <div class="result-summary" aria-label="Befunde filtern">
       <button
         v-for="s in summary"

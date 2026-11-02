@@ -63,6 +63,7 @@ final class CertificateRevocation {
                     now,
                     signer -> responderCrlStatus(signer, issuer, http, now));
             report.add(
+                FindingCode.OCSP_STATUS,
                 status,
                 "OCSP-Sperrstatus",
                 status.equals("confirmed")
@@ -76,6 +77,7 @@ final class CertificateRevocation {
                 status.equals("unknown") ? "Erreichbarkeit ist kein Sperrstatusnachweis." : "");
           } catch (Exception e) {
             report.unknown(
+                FindingCode.OCSP_STATUS,
                 "OCSP nicht verifizierbar",
                 "OCSP-Antwort erhalten (HTTP 200–299), aber Format, Signatur, Zuordnung oder"
                     + " Aktualität nicht nachgewiesen.",
@@ -91,6 +93,7 @@ final class CertificateRevocation {
           if (response == null) continue;
           String status = validateCrl(response.body(), certificate, issuer, Instant.now());
           report.add(
+              FindingCode.CRL_STATUS,
               status,
               "CRL-Sperrstatus",
               status.equals("confirmed")
@@ -106,6 +109,7 @@ final class CertificateRevocation {
                   : "");
         } catch (Exception e) {
           report.unknown(
+              FindingCode.CRL_STATUS,
               "CRL nicht verifizierbar",
               "CRL erhalten (HTTP 200–299), aber Format, Signatur oder Aktualität nicht"
                   + " nachgewiesen.",
@@ -115,11 +119,16 @@ final class CertificateRevocation {
       }
     } catch (Exception e) {
       report.unknown(
-          "Sperrstatusdaten ungültig", "Zertifikatserweiterungen nicht auswertbar.", path, RFC);
+          FindingCode.REVOCATION_UNAVAILABLE,
+          "Sperrstatusdaten ungültig",
+          "Zertifikatserweiterungen nicht auswertbar.",
+          path,
+          RFC);
     }
     if (!found) {
       if (report.environment.equals("TEST"))
         report.add(
+            FindingCode.REVOCATION_UNAVAILABLE,
             "warning",
             "Kein unterstützter Sperrendpunkt",
             "Dieses TEST-Zertifikat veröffentlicht keinen unterstützten OCSP-/CRL-Endpunkt. Das ist"
@@ -130,6 +139,7 @@ final class CertificateRevocation {
             "Kein öffentlicher Good-Nachweis.");
       else
         report.unknown(
+            FindingCode.REVOCATION_UNAVAILABLE,
             "Kein unterstützter Sperrendpunkt",
             "Kein vollständiger direkter HTTP(S)-CRL- oder OCSP-Endpunkt im Zertifikat.",
             path,
@@ -139,10 +149,12 @@ final class CertificateRevocation {
 
   private static PublicHttp.Response fetch(
       PkiFetch http, String url, byte[] post, Report report, String path, String kind) {
+    FindingCode code = kind.equals("OCSP") ? FindingCode.OCSP_STATUS : FindingCode.CRL_STATUS;
     try {
       var response = http.pki(url, post);
       if (response.ok()) return response;
       report.unknown(
+          code,
           kind + "-Abruf nicht erfolgreich",
           "HTTP "
               + response.status()
@@ -152,6 +164,7 @@ final class CertificateRevocation {
           url);
     } catch (IOException failure) {
       report.unknown(
+          code,
           kind + "-Abruf fehlgeschlagen",
           failure instanceof NetworkFailure known
               ? known.description()
@@ -161,6 +174,7 @@ final class CertificateRevocation {
           url);
     } catch (IllegalArgumentException unsupported) {
       report.unknown(
+          code,
           kind + "-Abruf nicht zulässig",
           "Der veröffentlichte Endpunkt erfüllt die Regeln für öffentliche HTTP(S)-Ziele nicht.",
           path,

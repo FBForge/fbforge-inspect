@@ -135,6 +135,14 @@ test('public RSA key is diagnosed by the real engine without inventing certifica
   await expect(
     page.getByRole('heading', { name: 'Prüfung mit Hinweisen abgeschlossen', exact: true }),
   ).toBeVisible();
+  const conclusion = page.getByLabel('Zusammenfassung der Prüfbereiche');
+  await expect(conclusion).toContainText(
+    'Der öffentliche Schlüssel erfüllt die geprüften JWK-Vorgaben.',
+  );
+  await expect(conclusion).toContainText('Kein x5c veröffentlicht; in TEST zulässig.');
+  await expect(conclusion).toContainText(
+    'TEST-Ausnahme: keine vollständige öffentliche Sperrauskunft verfügbar.',
+  );
   await page.locator('.compact-findings > summary').click();
   await expect(page.getByText('RSA-Schlüssellänge', { exact: true })).toBeVisible();
   await expect(page.getByText('3072 Bit (Mindestvorgabe 3072)', { exact: true })).toBeVisible();

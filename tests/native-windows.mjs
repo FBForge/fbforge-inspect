@@ -503,6 +503,16 @@ try {
         JSON.stringify(production, null, 2),
       );
       await page.keyboard.press('Escape');
+      if (
+        production.findings.every((finding) =>
+          ['confirmed', 'notApplicable'].includes(finding.status),
+        )
+      ) {
+        await expect(
+          page.getByRole('heading', { name: 'Geprüfte Konfiguration in Ordnung', exact: true }),
+        ).toBeVisible();
+        results.push(`Native PROD ${version} positive findings have a matching result summary`);
+      }
       await page.screenshot({ path: join(output, `windows-live-prod-destination-${version}.png`) });
       productionReports.push(production);
       results.push(

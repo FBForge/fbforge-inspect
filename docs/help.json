@@ -127,6 +127,7 @@
     "title": "Berichte und Datenschutz",
     "paragraphs": [
       "Befunde haben die Zustände Bestätigt, Fehler, Hinweis, Nicht nachgewiesen oder Nicht anwendbar. Der Beleg enthält Feldpfad, Quelle, Umgebung, Version und Abfragezeit. Bestätigt gilt jeweils nur für die beschriebene Einzelprüfung.",
+      "Bei Destination- und Schlüsselprüfungen fasst die Ergebnisübersicht die geprüften Bereiche in Worten zusammen: Zustellpunkt, öffentliche Schlüssel, Zertifikatskette und Sperrstatus. Offene Online-Nachweise und zulässige TEST-Ausnahmen bleiben sichtbar. Die Anzahl bestätigter Einzelprüfungen dient zusätzlich als Filter. Der HTML-Bericht enthält dieselbe Zusammenfassung.",
       "JSON und eigenständiges HTML werden lokal gespeichert. Vor dem Speichern zeigt die App den vollständigen Exportumfang an. Rohantworten sind standardmäßig ausgeschlossen und müssen ausdrücklich hinzugefügt werden.",
       "Auch öffentliche Behördenkontakte und technische Konfiguration können Informationen enthalten, die Sie nicht weitergeben möchten. Prüfen Sie die Exportvorschau vor dem Teilen. Die App sendet keine Telemetrie und betreibt keinen Server."
     ],
