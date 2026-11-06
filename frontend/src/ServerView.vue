@@ -1,13 +1,61 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { parseJob, type PortableJob } from './portable';
+import { jobDigest } from './workflow';
+import FailureGuidance from './FailureGuidance.vue';
 import { invoke, isTauri } from '@tauri-apps/api/core';
 import { labels } from './contracts';
 import { parseResult, type PortableResult } from './portable';
 import SupportPanel from './SupportPanel.vue';
 import NetworkResults from './results/NetworkResults.vue';
 import { serverNetworkEvidence } from './serverEvidence';
-const props = defineProps<{ result: PortableResult | null }>();
-const emit = defineEmits<{ imported: [result: PortableResult]; batch: [] }>();
+const props = defineProps<{
+  result: PortableResult | null;
+  job?: PortableJob | null;
+  expectedDigest?: string;
+  jobError?: string;
+}>();
+const emit = defineEmits<{
+  imported: [result: PortableResult];
+  batch: [];
+  prepared: [digest: string];
+}>();
+const comparisonDigest = ref('');
+const invalidReference = ref(false);
+let referenceSequence = 0;
+const association = computed(() => {
+  if (invalidReference.value) return 'Auftragsdatei ungültig. Zuordnung nicht nachgewiesen.';
+  const expected = comparisonDigest.value || props.expectedDigest;
+  if (!expected)
+    return 'Zum Zuordnen den Auftrag exportieren oder die verwendete Auftragsdatei öffnen.';
+  if (!props.result?.jobSha256)
+    return 'Dieses Ergebnis enthält keinen Auftragsfingerabdruck. Zuordnung nicht nachgewiesen.';
+  return props.result.jobSha256 === expected
+    ? 'Ergebnis passt zu den Bytes der ausgewählten Auftragsdatei.'
+    : 'Das Ergebnis passt nicht zur ausgewählten Auftragsdatei. Auftrag und Ergebnis prüfen.';
+});
+async function reference(event: Event) {
+  const input = event.target as HTMLInputElement,
+    file = input.files?.[0];
+  input.value = '';
+  if (!file) return;
+  const sequence = ++referenceSequence;
+  invalidReference.value = true;
+  try {
+    if (file.size > 2 * 1024 * 1024) throw new Error('Auftrag überschreitet 2 MiB.');
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    parseJob(new TextDecoder().decode(bytes));
+    const digest = await jobDigest(bytes);
+    if (sequence !== referenceSequence) return;
+    comparisonDigest.value = digest;
+    invalidReference.value = false;
+    error.value = '';
+  } catch (e) {
+    if (sequence !== referenceSequence) return;
+    comparisonDigest.value = '';
+    error.value = e instanceof Error ? e.message : 'Auftrag ungültig.';
+  }
+}
 const error = ref(''),
   message = ref('');
 async function open(event: Event) {
@@ -27,10 +75,23 @@ async function open(event: Event) {
 }
 async function exportCli() {
   try {
+    if (props.jobError) throw new Error(props.jobError);
     if (!isTauri())
       throw new Error('Das portable CLI-Paket wird aus der installierten Desktop-App exportiert.');
-    if (await invoke<boolean>('export_cli'))
-      message.value = 'Portables Java-CLI mit Windows- und Linux-Startskript exportiert.';
+    const content = props.job ? JSON.stringify(parseJob(JSON.stringify(props.job))) : null;
+    if (await invoke<boolean>('export_cli', { jobContent: content })) {
+      error.value = '';
+      if (content) {
+        const digest = await jobDigest(new TextEncoder().encode(content));
+        comparisonDigest.value = '';
+        invalidReference.value = false;
+        referenceSequence++;
+        emit('prepared', digest);
+      }
+      message.value = content
+        ? 'CLI und auftrag.json gemeinsam exportiert. Startbefehle stehen unten und in README.txt.'
+        : 'Portables Java-CLI mit Windows- und Linux-Startskript exportiert.';
+    }
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e);
   }
@@ -43,9 +104,23 @@ async function exportCli() {
       Ein erfolgreicher Abruf auf Ihrem Arbeitsplatz sagt nichts über den Netzwerkweg des
       Fachverfahrensservers aus. Führen Sie denselben öffentlichen Prüfauftrag direkt dort aus.
     </p>
+    <p class="hint">
+      Der Export legt einen neuen CLI-Ordner an. Vorhandene Ordner werden nicht überschrieben.
+    </p>
+    <p v-if="jobError" role="alert">{{ jobError }}</p>
+    <p v-if="job">
+      <strong>Auftrag bereit:</strong> {{ job.checks.length }} Prüfungen · {{ job.environment }} ·
+      {{ job.apiVersion }}. Der CLI-Export nimmt auftrag.json mit.
+    </p>
+    <p v-else>
+      Bereiten Sie zunächst einen Auftrag vor. Das CLI lässt sich auch ohne Auftrag exportieren.
+    </p>
     <ol>
-      <li>Unter Sammelprüfung die gewünschten Prüfungen vorbereiten und den Auftrag speichern.</li>
-      <li>Das portable CLI exportieren und mit dem Auftrag auf das Zielsystem übertragen.</li>
+      <li>Unter Sammelprüfung die gewünschten Prüfungen vorbereiten.</li>
+      <li>
+        Das CLI gemeinsam mit dem vorbereiteten Auftrag exportieren und den Ordner auf das
+        Zielsystem übertragen.
+      </li>
       <li>
         Auf Windows oder Linux mit Java 25 oder neuer ausführen. Verwenden Sie das Benutzerkonto und
         den Netzwerkweg Ihrer Anwendung.
@@ -54,10 +129,23 @@ async function exportCli() {
     </ol>
     <div class="action-row">
       <button class="button secondary" @click="emit('batch')">Prüfauftrag vorbereiten</button
-      ><button class="button secondary" @click="exportCli">Portables CLI exportieren</button>
+      ><button class="button secondary" @click="exportCli" :disabled="!!jobError">
+        Portables CLI exportieren
+      </button>
     </div>
     <details>
       <summary>Aufrufe und Rückgabecodes</summary>
+      <p>
+        Voraussetzung: Java 25 oder neuer. Prüfen Sie auf dem Zielsystem zuerst
+        <code>java -version</code>. Bei einer älteren Laufzeit eine passende portable Java-Laufzeit
+        separat entpacken und deren java direkt aufrufen. Die Laufzeit der Fachanwendung muss dafür
+        nicht geändert werden.
+      </p>
+      <p>
+        Jeder Lauf benötigt einen neuen Ergebnisdateinamen. Bestehende Dateien werden nicht
+        überschrieben. Ein erfolgreicher Lauf mit dieser Java-Laufzeit belegt nicht die
+        TLS-Konfiguration einer anderen Anwendung.
+      </p>
       <p>PowerShell auf Windows:</p>
       <pre tabindex="0">
 .\inspect.ps1 --job auftrag.json --output ergebnis.inspect.json
@@ -91,6 +179,9 @@ java -jar inspect-engine.jar --job auftrag.json --output ergebnis.inspect.json</
         werden über benannte Umgebungsvariablen eingelesen. <code>--help</code> zeigt die Optionen.
       </p>
     </details>
+    <label
+      >Auftragsdatei zur Zuordnung öffnen<input type="file" accept=".json" @change="reference"
+    /></label>
     <label>Serverergebnis öffnen<input type="file" accept=".json" @change="open" /></label>
     <p class="hint">
       Die Datei ist ein übertragener Prüfbeleg und kein Herkunftsnachweis des Servers. Inspect führt
@@ -102,6 +193,10 @@ java -jar inspect-engine.jar --job auftrag.json --output ergebnis.inspect.json</
   <template v-if="props.result">
     <section class="panel analysis-context">
       <h2>Übertragenes Serverergebnis</h2>
+      <p role="status">{{ association }}</p>
+      <p class="hint">
+        Der Fingerabdruck ordnet Dateien einander zu. Er bestätigt keine Serveridentität.
+      </p>
       <p>
         {{ props.result.runtime.os }} · {{ props.result.runtime.architecture }} · Java
         {{ props.result.runtime.javaVersion }}
@@ -123,6 +218,7 @@ java -jar inspect-engine.jar --job auftrag.json --output ergebnis.inspect.json</
       </h3>
       <p v-if="check.error" class="error-text">{{ check.error }}</p>
       <template v-if="check.report">
+        <FailureGuidance :report="check.report" />
         <NetworkResults :report="serverNetworkEvidence(check.report)" read-only />
         <article v-for="(finding, i) in check.report.findings" :key="i" class="imported-finding">
           <h4>{{ finding.title }} · {{ labels[finding.status] }}</h4>

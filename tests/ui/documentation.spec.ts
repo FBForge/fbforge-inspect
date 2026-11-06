@@ -68,8 +68,10 @@ test('capture current help screens from the application with explicitly syntheti
   await page.screenshot({ path: `${imageRoot}/reports.png` });
   await page.keyboard.press('Escape');
   await navigate('Sammelprüfung');
+  await page.getByText('Mehrere Kennungen einfügen und Aufträge öffnen', { exact: true }).click();
   await page.getByRole('textbox', { name: 'Prüfeingaben' }).fill(`${id}\nnetwork`);
   await page.getByRole('button', { name: 'Prüfungen vorbereiten' }).click();
+  await page.getByText('Mehrere Kennungen einfügen und Aufträge öffnen', { exact: true }).click();
   await page.screenshot({ path: `${imageRoot}/batch.png` });
   await navigate('Werkzeuge');
   await page.getByRole('combobox', { name: 'Aufgabe', exact: true }).selectOption('reverse');
@@ -135,6 +137,17 @@ test('capture current help screens from the application with explicitly syntheti
     await selectAppearance(page, appearance);
     await navigate('Sammelprüfung');
     await page.screenshot({ path: `.local/quality/screenshots/0.2.0-batch-${appearance}.png` });
+    await navigate('Serverdiagnose');
+    await page.screenshot({ path: `.local/quality/screenshots/0.2.0-server-${appearance}.png` });
+    await page.setViewportSize({ width: 860, height: 720 });
+    await navigate('Sammelprüfung');
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+      .toBe(true);
+    await page.screenshot({
+      path: `.local/quality/screenshots/0.2.0-batch-compact-${appearance}.png`,
+    });
+    await page.setViewportSize({ width: 1180, height: 800 });
     await navigate('Zertifikatsinventar');
     await page.screenshot({ path: `.local/quality/screenshots/0.2.0-inventory-${appearance}.png` });
   }

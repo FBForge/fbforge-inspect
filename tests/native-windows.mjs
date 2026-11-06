@@ -345,6 +345,7 @@ try {
     ],
   };
   await navigate('Sammelprüfung');
+  await page.getByText('Mehrere Kennungen einfügen und Aufträge öffnen', { exact: true }).click();
   await page.getByLabel('Prüfauftrag öffnen', { exact: true }).setInputFiles({
     name: 'native-job.json',
     mimeType: 'application/json',
@@ -352,7 +353,9 @@ try {
   });
   await expect(page.getByRole('heading', { name: 'Prüfwarteschlange · TEST · v3' })).toBeVisible();
   await page.getByRole('button', { name: 'Sammelprüfung starten', exact: true }).click();
-  await expect(page.getByText('Abgeschlossen', { exact: true })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText('Geprüfte Einzelpunkte bestätigt', { exact: true })).toBeVisible({
+    timeout: 15000,
+  });
   await page.getByText('Befunde anzeigen', { exact: true }).click();
   await expect(page.getByText('Schema eingelesen', { exact: true })).toBeVisible();
   await page.screenshot({ path: join(output, 'windows-batch.png') });
@@ -386,6 +389,12 @@ try {
   await expect(page.getByRole('heading', { name: 'Schema eingelesen · Bestätigt' })).toBeVisible();
   await expect(
     page.getByText('Auftrag SHA-256: ' + serverResult.jobSha256, { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByLabel('Auftragsdatei zur Zuordnung öffnen', { exact: true })
+    .setInputFiles(jobPath);
+  await expect(
+    page.getByText('Ergebnis passt zu den Bytes der ausgewählten Auftragsdatei.', { exact: true }),
   ).toBeVisible();
   await page.screenshot({ path: join(output, 'windows-server-result.png') });
   results.push(

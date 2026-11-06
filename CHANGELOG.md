@@ -2,6 +2,10 @@
 
 ## 0.2.0
 
+- Geführte Prüfaufträge, sichtbare Sammelergebnisse mit Handlungsbedarf und Filter. Bereits abgeschlossene Ergebnisse bleiben beim Ergänzen erhalten.
+- CLI und vorbereiteter öffentlicher Auftrag werden gemeinsam exportiert. Serverergebnisse lassen sich anhand der exakten Auftragsbytes zuordnen.
+- Fehlgeschlagene Verbindungsphasen erklären nachfolgende ungeprüfte Schritte und führen bei lokalen Prüfungen direkt zu den Netzwerkeinstellungen.
+
 - Portables Java-CLI für Windows und Linux mit vorbereitbaren Prüfaufträgen, versionierten Ergebnisdateien und stabilen Exitcodes.
 - Serverergebnisse lokal öffnen, Transportphasen auswerten und öffentliche Zertifikate ins Inventar übernehmen.
 - Sammelprüfung mit begrenzter Warteschlange, Pause, Abbruch und gezielter Wiederholung. Rohantworten bleiben außerhalb der Sammelergebnisse.

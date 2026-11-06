@@ -283,7 +283,8 @@
     "paragraphs": [
       "Jede Einzelprüfung verwendet das bestehende begrenzte Abfragebudget. Es gibt keine automatische Endlosschleife oder automatische Wiederholung bei Ratenlimits. Die App führt höchstens eine Diagnose gleichzeitig aus. Nicht ausgeführte Einträge bleiben als solche erkennbar.",
       "Prüfaufträge verwenden fbforge-inspect-job mit formatVersion 1. Umgebung, API-Version, öffentliche Eingaben und optional ein ausdrücklicher Proxy sowie öffentliche HTTPS-CAs sind enthalten. Proxy-Benutzername, Passwort und private Schlüssel gehören nicht in die Datei.",
-      "Importierte Aufträge starten keine Verbindung. Der verwendete Netzwerkweg muss vor dem Start bewusst geprüft werden. Die Eingaben bleiben in der Sitzung oder werden durch einen ausdrücklichen Speicherdialog exportiert. Eine Bibliothek benannter Projekte wird nicht automatisch angelegt."
+      "Importierte Aufträge starten keine Verbindung. Der verwendete Netzwerkweg muss vor dem Start bewusst geprüft werden. Die Eingaben bleiben in der Sitzung oder werden durch einen ausdrücklichen Speicherdialog exportiert. Eine Bibliothek benannter Projekte wird nicht automatisch angelegt.",
+      "Jeder fertige Eintrag zeigt das Ergebnis der Einzelpunkte und den wichtigsten offenen Befund. Der Filter grenzt Handlungsbedarf, ungeklärte Ergebnisse und Hinweise ein. Das Hinzufügen einer Prüfung erhält bereits vorhandene Ergebnisse."
     ],
     "example": "00000000-0000-4000-8000-000000000001\nrouting,99008001014002,020000000000\nnetwork"
   },
@@ -329,8 +330,8 @@
     "title": "CLI auf Windows und Linux",
     "summary": "Den öffentlichen Prüfauftrag im Netzwerk des tatsächlichen Anwendungssystems ausführen und die Ergebnisdatei in Inspect auswerten.",
     "steps": [
-      "Erstellen und speichern Sie den Auftrag unter Sammelprüfung.",
-      "Exportieren Sie unter Serverdiagnose das portable CLI oder verwenden Sie das Java-CLI-Archiv des veröffentlichten Releases.",
+      "Stellen Sie unter Sammelprüfung die gewünschten Aufgaben mit Prüfung hinzufügen zusammen. Für mehrere Kennungen bleibt die Texteingabe verfügbar.",
+      "Exportieren Sie unter Serverdiagnose das CLI. Der vorbereitete öffentliche Auftrag wird als auftrag.json in denselben neuen Ordner aufgenommen.",
       "Übertragen Sie CLI und Auftrag auf das Zielsystem. Das plattformneutrale CLI benötigt Java 25 oder neuer und keine grafische Oberfläche.",
       "Führen Sie das CLI mit dem Benutzerkonto und Netzwerkweg der Anwendung aus. Wählen Sie für jeden Lauf einen neuen Ergebnisdateinamen.",
       "Öffnen Sie die Ergebnisdatei unter Serverdiagnose. Prüfen Sie Betriebssystem, Architektur, Java-Version, Exitcode und die einzelnen Befunde."
@@ -340,7 +341,8 @@
       "Optionen: --job und --output sind erforderlich. --proxy-url legt den Proxy ausdrücklich fest. --proxy-user-env und --proxy-password-env nennen Umgebungsvariablen, deren Werte nur für diesen Lauf gelesen werden. --ca-file lädt öffentliche zusätzliche HTTPS-CAs. Passwörter gehören nicht in Argumentwerte oder Auftragsdateien.",
       "Exitcode 0 bedeutet abgeschlossen ohne Fehlerbefund oder ungeklärten Punkt. Hinweise können vorhanden sein. Exitcode 2 bedeutet mindestens einen Fehlerbefund. Exitcode 3 bedeutet einen nicht vollständig nachgewiesenen oder fehlgeschlagenen Prüfpunkt. 64 bezeichnet ungültige Eingaben, 70 einen internen Fehler und 74 einen Dateifehler oder ein Größenlimit.",
       "Aufträge sind auf 2 MiB und 32 Einträge begrenzt. Ergebnisdateien sind auf 16 MiB begrenzt. Der CLI-Lauf hat ein Gesamtzeitbudget von zehn Minuten und ein Zeitlimit pro Einzelprüfung. Bei einem Zeitlimit bleiben übrige Einträge ausdrücklich nicht nachgewiesen. Vorhandene Ergebnisdateien werden nicht überschrieben.",
-      "Ergebnisdateien verwenden fbforge-inspect-result mit formatVersion 1. Rohantworten werden nicht aufgenommen. Betriebssystem, Architektur und Java-Version werden erfasst. Rechnername und Benutzername gehören nicht zum Laufzeitkontext. Eine Datei beweist ihre Herkunft nicht und startet beim Import keine Programme oder Folgeabrufe."
+      "Ergebnisdateien verwenden fbforge-inspect-result mit formatVersion 1. Rohantworten werden nicht aufgenommen. Betriebssystem, Architektur und Java-Version werden erfasst. Rechnername und Benutzername gehören nicht zum Laufzeitkontext. Eine Datei beweist ihre Herkunft nicht und startet beim Import keine Programme oder Folgeabrufe.",
+      "Beim Ergebnisimport kann der Fingerabdruck die Datei dem exportierten Auftrag zuordnen. Alternativ lässt sich die tatsächlich verwendete Auftragsdatei öffnen. Unterschiedliche Dateibytes ergeben unterschiedliche Fingerabdrücke. Die Zuordnung bestätigt keine Serveridentität."
     ],
     "example": "# Windows PowerShell\n.\\inspect.ps1 --job auftrag.json --output ergebnis.inspect.json\n$LASTEXITCODE\n\n# Linux\nsh ./inspect.sh --job auftrag.json --output ergebnis.inspect.json\necho $?\n\n# Direkt mit Java\njava -jar inspect-engine.jar --job auftrag.json --output ergebnis.inspect.json"
   },

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Report } from './contracts';
 import Findings from './Findings.vue';
+import FailureGuidance from './FailureGuidance.vue';
 import PvogCandidates from './results/PvogCandidates.vue';
 import DestinationSummary from './results/DestinationSummary.vue';
 import LimitsResults from './results/LimitsResults.vue';
@@ -23,6 +24,7 @@ const emit = defineEmits<{
   keys: [text: string];
   reverse: [id: string];
   context: [context: PasteContext];
+  network: [];
   'follow-up': [operation: string, input: Record<string, unknown>];
 }>();
 </script>
@@ -40,6 +42,7 @@ const emit = defineEmits<{
       @destination="emit('destination', $event)"
       @area="emit('area', $event)"
     />
+    <FailureGuidance :report="report" can-configure @network="emit('network')" />
     <Findings :report="report" />
     <NetworkResults :report="report" @retry="emit('follow-up', 'network', $event)" />
     <AnalysisResults

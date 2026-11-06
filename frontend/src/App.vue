@@ -15,6 +15,7 @@ import NetworkView from './NetworkView.vue';
 import BatchView from './BatchView.vue';
 import ToolsView from './ToolsView.vue';
 import ServerView from './ServerView.vue';
+const exportedJobDigest = ref('');
 import InventoryView from './InventoryView.vue';
 import UpdatePanel from './UpdatePanel.vue';
 import OfflineHelp from './OfflineHelp.vue';
@@ -76,6 +77,18 @@ const {
   () => networkRequest(network),
 );
 const batch = reactive(useBatch(() => networkRequest(network)));
+const serverPreparation = computed(() => {
+  if (!batch.checks.length) return { job: null, error: '' };
+  try {
+    return { job: batch.job(), error: '' };
+  } catch {
+    return {
+      job: null,
+      error:
+        'Der vorbereitete Auftrag kann nicht exportiert werden. Eingaben und Verbindungsweg unter Netzwerk prüfen.',
+    };
+  }
+});
 const imported = ref<PortableResult | null>(null);
 const busy = computed(() => diagnosisBusy.value || batch.busy);
 const allReports = computed(() => [
@@ -328,6 +341,7 @@ async function openSchema(url: string) {
           <BatchView
             v-if="page === 'batch'"
             :batch="batch"
+            @network="openNetworkHelp"
             :environment="environment"
             :api-version="apiVersion"
             :settings="network"
@@ -358,6 +372,10 @@ async function openSchema(url: string) {
         <ServerView
           v-if="page === 'server'"
           :result="imported"
+          :job="serverPreparation.job"
+          :job-error="serverPreparation.error"
+          :expected-digest="exportedJobDigest"
+          @prepared="exportedJobDigest = $event"
           @imported="imported = $event"
           @batch="navigate('batch')"
         />
@@ -369,6 +387,7 @@ async function openSchema(url: string) {
             "
             :key="sessionKey"
             :report="report"
+            @network="openNetworkHelp"
             @destination="openDestination"
             @keys="openKeys"
             @reverse="openReverse"
