@@ -10,7 +10,13 @@ const esc = (value) =>
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
   );
 const images = {
-  batch: [['batch.png', 'Sammelprüfung mit ausdrücklich vorbereiteten öffentlichen Prüfeingaben']],
+  batch: [
+    ['batch.png', 'Sammelprüfung mit ausdrücklich vorbereiteten öffentlichen Prüfeingaben'],
+    [
+      'batch-results.png',
+      'Fiktive Sammelprüfung mit Ergebniszählern, Filter Handlungsbedarf und sichtbarem nächsten Schritt',
+    ],
+  ],
   tools: [['tools.png', 'Werkzeuge mit Rückwärtsrouting für einen bekannten Zustellpunkt']],
   inventory: [
     ['inventory.png', 'Zertifikatsinventar mit fiktiven öffentlichen Zertifikatszuordnungen'],
@@ -19,6 +25,10 @@ const images = {
     [
       'server.png',
       'Serverdiagnose mit vorbereitetem Prüfauftrag, gemeinsamem CLI-Export und Dateiimport',
+    ],
+    [
+      'server-association.png',
+      'Fiktives Serverergebnis mit passendem Auftragsfingerabdruck und ausdrücklich begrenzter Herkunftsaussage',
     ],
   ],
   updates: [['updates.png', 'Info und ausdrücklich gestartete integrierte Aktualisierung']],
@@ -70,7 +80,13 @@ const images = {
       'Vollständige HTML-Exportvorschau mit standardmäßig ausgeschlossenen Rohantworten',
     ],
   ],
-  limits: [['network.png', 'Netzwerkbereich mit manuellem Proxy und optionaler Anmeldung']],
+  limits: [
+    ['network.png', 'Netzwerkbereich mit manuellem Proxy und optionaler Anmeldung'],
+    [
+      'network-failure.png',
+      'Fiktive fehlende Proxy-Anmeldung mit nicht nachgewiesenen Folgeschritten und nächster Aktion',
+    ],
+  ],
 };
 function workflow(topic) {
   if (!topic.workflow) return '';
