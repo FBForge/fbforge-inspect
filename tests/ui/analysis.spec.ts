@@ -866,3 +866,51 @@ test('failed proxy phase explains unreached checks without asserting a certifica
     }),
   ).toBeVisible();
 });
+
+for (const status of [200, 404]) {
+  test(`received HTTP ${status} is not presented as an interrupted connection`, async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await navigate(page, 'Serverdiagnose');
+    const response = {
+      ...result,
+      checks: [
+        {
+          id: 'http-response',
+          report: {
+            ...report,
+            findings: [],
+            data: {
+              networkTraces: [
+                {
+                  url: 'https://example.org/',
+                  route: 'direct',
+                  phases: [
+                    { stage: 'dns', outcome: 'confirmed', durationMs: 1 },
+                    { stage: 'tcp', outcome: 'confirmed', durationMs: 1 },
+                    { stage: 'tls', outcome: 'confirmed', durationMs: 1 },
+                    { stage: 'http', outcome: `HTTP_${status}`, durationMs: 1 },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      ],
+    };
+    await page.getByLabel('Serverergebnis öffnen', { exact: true }).setInputFiles({
+      name: 'http-response.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(response)),
+    });
+    await expect(page.getByRole('heading', { name: 'Übertragenes Serverergebnis' })).toBeVisible();
+    await expect(
+      page.getByRole('region', { name: 'Fehlgeschlagene Verbindungsphasen' }),
+    ).toHaveCount(0);
+    await page.getByText('Verbindungsphasen und HTTPS-Vertrauen', { exact: true }).click();
+    await expect(
+      page.getByText(`HTTP-Antwort · 1 ms · HTTP_${status}`, { exact: true }),
+    ).toBeVisible();
+  });
+}

@@ -17,7 +17,12 @@ const names: Record<string, string> = {
 };
 const failures = computed(() =>
   records(serverNetworkEvidence(props.report).data.networkTraces).flatMap((trace) => {
-    const failed = records(trace.phases).find((p) => p.outcome && p.outcome !== 'confirmed');
+    const failed = records(trace.phases).find(
+      (p) =>
+        p.outcome &&
+        p.outcome !== 'confirmed' &&
+        !(p.stage === 'http' && /^HTTP_[1-5][0-9]{2}$/.test(String(p.outcome))),
+    );
     if (!failed) return [];
     const finding = props.report.findings.find((f) => f.source === trace.url && f.nextStep);
     return [
