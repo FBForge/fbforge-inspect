@@ -41,7 +41,11 @@ for (const path of new Set(paths)) {
   const p = JSON.parse(await readFile(join(path, 'package.json'), 'utf8'));
   await collect(path, p.name, p.version, p.license);
 }
-const target = process.platform === 'win32' ? 'x86_64-pc-windows-msvc' : 'x86_64-unknown-linux-gnu';
+const target =
+  process.env.INSPECT_LICENSE_TARGET ||
+  (process.platform === 'win32' ? 'x86_64-pc-windows-msvc' : 'x86_64-unknown-linux-gnu');
+if (!['x86_64-pc-windows-msvc', 'x86_64-unknown-linux-gnu'].includes(target))
+  throw new Error('Unbekanntes Lizenz-Zielsystem.');
 const cargo = JSON.parse(
   execFileSync(
     'cargo',

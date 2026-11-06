@@ -1,0 +1,10 @@
+{
+  "name": "rustls",
+  "version": "0.23.46",
+  "license": "Apache-2.0 OR ISC OR MIT",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-ISC",
+    "LICENSE-MIT"
+  ]
+}

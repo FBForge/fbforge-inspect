@@ -6,7 +6,7 @@ const emit = defineEmits<{ network: [] }>();
 <template>
   <section class="panel about">
     <img src="/inspect.png" alt="" width="88" height="88" />
-    <h2>FBForge Inspect <span class="muted">0.1.0</span></h2>
+    <h2>FBForge Inspect <span class="muted">0.2.0</span></h2>
     <p class="mono">Build: {{ buildCommit === 'local' ? 'Lokaler Arbeitsstand' : buildCommit }}</p>
     <p>
       Eine eigenständige Open-Source-Desktop-App für die Diagnose öffentlicher FIT-Connect- und

@@ -13,8 +13,39 @@ interface NetworkCheck {
   httpStatus?: number;
   durationMs?: number;
   code?: string;
+  certificateEndpoint?: boolean;
 }
-const props = defineProps<{ report: Report }>();
+const props = defineProps<{ report: Report; readOnly?: boolean }>();
+const emit = defineEmits<{ retry: [input: Record<string, unknown>] }>();
+interface TlsEvidence {
+  protocol: string;
+  cipher: string;
+  certificates: { subject: string; issuer: string; notAfter: string; sha256: string }[];
+}
+interface Trace {
+  url: string;
+  route: string;
+  phases: { stage: string; durationMs: number; outcome: string }[];
+  tls?: TlsEvidence;
+  proxyTls?: TlsEvidence;
+}
+const tlsConnections = (trace: Trace) =>
+  [
+    { label: 'Vorgelegtes Zertifikat des HTTPS-Proxys', evidence: trace.proxyTls },
+    { label: 'Vorgelegtes HTTPS-Serverzertifikat', evidence: trace.tls },
+  ].filter((item): item is { label: string; evidence: TlsEvidence } => !!item.evidence);
+const traces = computed(() => records<Trace>(props.report.data.networkTraces));
+const stages: Record<string, string> = {
+  dns: 'DNS',
+  tcp: 'TCP-Verbindung',
+  proxy: 'Proxy-Verbindung und Tunnel',
+  proxyDns: 'DNS des Proxys',
+  proxyTcp: 'TCP zum Proxy',
+  proxyTls: 'TLS zum HTTPS-Proxy',
+  proxyConnect: 'Proxy-Tunnel und Anmeldung',
+  tls: 'TLS und Serverzertifikat',
+  http: 'HTTP-Antwort',
+};
 const checks = computed(() => records<NetworkCheck>(props.report.data.networkChecks));
 const allowlist = computed(() =>
   checks.value
@@ -49,8 +80,21 @@ const allowlist = computed(() =>
               {{ item.detail }}
               <p v-if="item.code" class="mono hint">{{ item.code }}</p>
               <p v-if="item.httpStatus" class="hint">HTTP {{ item.httpStatus }}</p>
+              <button
+                v-if="item.url && !readOnly"
+                class="button secondary"
+                @click="
+                  emit('retry', {
+                    onlyUrl: item.url,
+                    certificates: report.data.networkCertificates || [],
+                    certificateEndpoints: item.certificateEndpoint ? [item.url] : [],
+                  })
+                "
+              >
+                Dieses Ziel erneut prüfen
+              </button>
             </td>
-            <td>{{ item.durationMs }} ms</td>
+            <td>{{ item.durationMs === undefined ? 'Keine Messung' : `${item.durationMs} ms` }}</td>
           </tr>
         </tbody>
       </table>
@@ -64,4 +108,34 @@ const allowlist = computed(() =>
       <pre tabindex="0">{{ allowlist }}</pre>
     </details>
   </section>
+  <details v-if="traces.length" class="panel">
+    <summary>Verbindungsphasen und HTTPS-Vertrauen</summary>
+    <p v-if="report.data.networkContext">
+      {{ (report.data.networkContext as { httpsTrust?: string }).httpsTrust }}
+    </p>
+    <p class="hint">
+      Ein abgebrochener Schritt verhindert spätere Schritte. Nicht erreichte Phasen wurden nicht
+      geprüft. HTTPS-Vertrauen und V-PKI-Vertrauen sind getrennte Prüfungen.
+    </p>
+    <article v-for="(trace, index) in traces" :key="index">
+      <h4 class="mono">{{ trace.url }}</h4>
+      <p>{{ trace.route === 'manualProxy' ? 'Manueller Proxy' : 'Direkte Verbindung' }}</p>
+      <ol class="phase-list">
+        <li v-for="(phase, i) in trace.phases" :key="i">
+          {{ stages[phase.stage] || phase.stage }} · {{ phase.durationMs }} ms ·
+          {{ phase.outcome === 'confirmed' ? 'Abgeschlossen' : phase.outcome }}
+        </li>
+      </ol>
+      <details v-for="connection in tlsConnections(trace)" :key="connection.label">
+        <summary>{{ connection.label }}</summary>
+        <p>{{ connection.evidence.protocol }} · {{ connection.evidence.cipher }}</p>
+        <div v-for="(cert, i) in connection.evidence.certificates" :key="i">
+          <p>{{ cert.subject }}</p>
+          <p>Aussteller: {{ cert.issuer }}</p>
+          <p>Gültig bis {{ cert.notAfter }}</p>
+          <p class="mono">SHA-256: {{ cert.sha256 }}</p>
+        </div>
+      </details>
+    </article>
+  </details>
 </template>

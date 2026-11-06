@@ -29,12 +29,14 @@ final class ProxyConnection {
       throws IOException {
     Socket socket = new Socket();
     try {
+      TransportTrace.stage("proxyDns");
       InetAddress proxy;
       try {
         proxy = InetAddress.getByName(options.proxy().getHost());
       } catch (UnknownHostException failure) {
         throw new NetworkFailure("PROXY_DNS_FAILED", failure);
       }
+      TransportTrace.stage("proxyTcp");
       try {
         socket.connect(
             new InetSocketAddress(proxy, options.proxyPort()), budget.timeoutMillis(8000));
@@ -44,9 +46,12 @@ final class ProxyConnection {
       } catch (IOException failure) {
         throw new NetworkFailure("PROXY_CONNECT_FAILED", failure);
       }
-      if (options.proxy().getScheme().equals("https"))
+      if (options.proxy().getScheme().equals("https")) {
+        TransportTrace.stage("proxyTls");
         socket = PinnedHttp.secure(socket, options.proxy(), budget, "PROXY_TLS_FAILED", tlsFactory);
+      }
       if (destination.getScheme().equals("https")) {
+        TransportTrace.stage("proxyConnect");
         socket.getOutputStream().write(connectRequest(validated, options.authorization()));
         socket.getOutputStream().flush();
         tunnel(socket.getInputStream(), budget, options.authorization() != null);

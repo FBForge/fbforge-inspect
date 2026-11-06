@@ -1,0 +1,8 @@
+{
+  "name": "http-body-util",
+  "version": "0.1.5",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

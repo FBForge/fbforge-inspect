@@ -17,11 +17,11 @@ if ($inspectJavaVersion -notmatch ' 25\.') { throw 'JDK 25 erforderlich.' }
 $inspectLicense = Get-Content (Join-Path $InspectJavaHome 'legal\java.base\LICENSE') -Raw
 $inspectAdditional = Get-Content (Join-Path $InspectJavaHome 'legal\java.base\ADDITIONAL_LICENSE_INFO') -Raw
 if ($inspectLicense -notmatch 'GNU General Public License' -or $inspectAdditional -notmatch 'Classpath') { throw 'OpenJDK mit GPL/Classpath Exception erforderlich, damit Laufzeit und Distributionshinweise übereinstimmen.' }
-if (!(Test-Path (Join-Path $inspectSource 'engine\target\inspect-engine-0.1.0.jar'))) { throw 'Zuerst den Java-Kern mit mvn -f engine/pom.xml package bauen und prüfen.' }
+if (!(Test-Path (Join-Path $inspectSource 'engine\target\inspect-engine-0.2.0.jar'))) { throw 'Zuerst den Java-Kern mit mvn -f engine/pom.xml package bauen und prüfen.' }
 New-Item -ItemType Directory -Force $InspectWorkDirectory | Out-Null
 $inspectWorkRoot = (Resolve-Path $InspectWorkDirectory).Path
 Write-Output "Windows build workspace: $inspectWorkRoot"
-foreach ($inspectFolder in @('frontend','desktop','scripts','docs','assets','licenses','tests')) {
+foreach ($inspectFolder in @('frontend','desktop','scripts','docs','assets','licenses','tests','cli')) {
   $inspectTarget = Join-Path $inspectWorkRoot $inspectFolder
   # Build trees, local session files and IDE data must never enter the staging directory.
   & robocopy (Join-Path $inspectSource $inspectFolder) $inspectTarget /E /XD target node_modules resources gen .local android ios /NFL /NDL /NJH /NJS /NP | Out-Null
@@ -29,7 +29,7 @@ foreach ($inspectFolder in @('frontend','desktop','scripts','docs','assets','lic
 }
 foreach ($inspectFile in @('package.json','package-lock.json','tsconfig.json','LICENSE','THIRD_PARTY_NOTICES.md')) { Copy-Item (Join-Path $inspectSource $inspectFile) $inspectWorkRoot }
 New-Item -ItemType Directory -Force (Join-Path $inspectWorkRoot 'engine\target') | Out-Null
-Copy-Item (Join-Path $inspectSource 'engine\target\inspect-engine-0.1.0.jar') (Join-Path $inspectWorkRoot 'engine\target')
+Copy-Item (Join-Path $inspectSource 'engine\target\inspect-engine-0.2.0.jar') (Join-Path $inspectWorkRoot 'engine\target')
 $env:PATH = (Join-Path $InspectJavaHome 'bin') + ';' + $env:PATH
 $env:JAVA_HOME = $InspectJavaHome
 Push-Location $inspectWorkRoot
@@ -82,6 +82,9 @@ try {
   if ($LASTEXITCODE) { throw 'Laufzeit-Hinweise passen nicht zum Windows-Paket.' }
   Copy-Item '.\desktop\target\release\bundle\nsis\*.exe' $inspectArtifacts
   Copy-Item LICENSE $inspectArtifacts
+  $inspectCliArtifacts = Join-Path $inspectArtifacts 'cli'
+  New-Item -ItemType Directory -Force $inspectCliArtifacts | Out-Null
+  foreach ($inspectCliFile in @('inspect.ps1','inspect.sh','README.txt')) { Copy-Item -LiteralPath (Join-Path $inspectWorkRoot ('cli\' + $inspectCliFile)) -Destination $inspectCliArtifacts }
   Copy-Item (Join-Path $inspectEngineArtifacts 'THIRD_PARTY_NOTICES.md') $inspectArtifacts
   Write-WindowsPackageHashes -Directory $inspectArtifacts
   Write-Output "Windows build (signed=$([bool]$InspectSigningThumbprint)): $inspectArtifacts"

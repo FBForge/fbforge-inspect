@@ -1,0 +1,8 @@
+{
+  "name": "minisign-verify",
+  "version": "0.3.0",
+  "license": "MIT",
+  "licenseFiles": [
+    "LICENSE"
+  ]
+}

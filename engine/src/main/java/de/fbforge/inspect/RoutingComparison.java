@@ -49,12 +49,12 @@ final class RoutingComparison {
               ? "Routing-Adressierung für Leistung und ARS nicht vollständig verifiziert."
               : !matches.isEmpty()
                   ? "Dieselbe Destination-ID ist in Routing und im signierten"
-                        + " PVOG-Leistungs-/Gebietskontext enthalten."
+                      + " PVOG-Leistungs-/Gebietskontext enthalten."
                   : complete
                       ? "Keine passende signierte Destination-ID in den geladenen"
-                            + " PVOG-Zuständigkeiten."
+                          + " PVOG-Zuständigkeiten."
                       : "PVOG-Abgleich noch nicht möglich: Auswahl, vollständige Quelle oder"
-                            + " verifizierte Adressierung fehlt.";
+                          + " verifizierte Adressierung fehlt.";
       JsonObject row = row(destination, path, status, detail);
       JsonArray contexts = new JsonArray();
       for (JsonObject match : matches) contexts.add(JsonFields.text(match, "context"));

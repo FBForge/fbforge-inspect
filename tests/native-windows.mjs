@@ -324,6 +324,87 @@ try {
   await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('Private oder symmetrische Schlüssel');
   results.push('Native private-key rejection passed');
+  const navigate = (name) =>
+    page
+      .getByRole('navigation', { name: 'Hauptnavigation' })
+      .getByRole('button', { name, exact: true })
+      .click();
+  const job = {
+    format: 'fbforge-inspect-job',
+    formatVersion: 1,
+    environment: 'TEST',
+    apiVersion: 'v3',
+    checks: [
+      {
+        id: 'native-local-schema',
+        operation: 'schema',
+        input: {
+          text: '{"type":"object","properties":{"native":{"type":"string"}}}',
+        },
+      },
+    ],
+  };
+  await navigate('Sammelprüfung');
+  await page.getByLabel('Prüfauftrag öffnen', { exact: true }).setInputFiles({
+    name: 'native-job.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(job)),
+  });
+  await expect(page.getByRole('heading', { name: 'Prüfwarteschlange · TEST · v3' })).toBeVisible();
+  await page.getByRole('button', { name: 'Sammelprüfung starten', exact: true }).click();
+  await expect(page.getByText('Abgeschlossen', { exact: true })).toBeVisible({ timeout: 15000 });
+  await page.getByText('Befunde anzeigen', { exact: true }).click();
+  await expect(page.getByText('Schema eingelesen', { exact: true })).toBeVisible();
+  await page.screenshot({ path: join(output, 'windows-batch.png') });
+  results.push('Native batch import and sequential bundled engine execution passed');
+  const jobPath = join(profile, 'native-job.json');
+  const resultPath = join(profile, 'native-result.json');
+  const jobBytes = JSON.stringify(job);
+  await writeFile(jobPath, jobBytes);
+  const cli = await promisify(execFile)(
+    join(dirname(executable), 'engine/runtime/bin/java.exe'),
+    [
+      '-jar',
+      join(dirname(executable), 'engine/inspect-engine.jar'),
+      '--job',
+      jobPath,
+      '--output',
+      resultPath,
+    ],
+    { encoding: 'utf8', timeout: 20000, windowsHide: true },
+  );
+  const serverResult = JSON.parse(await readFile(resultPath, 'utf8'));
+  expect(serverResult.format).toBe('fbforge-inspect-result');
+  expect(serverResult.runtime.os).toContain('Windows');
+  expect(serverResult.jobSha256).toBe(createHash('sha256').update(jobBytes).digest('hex'));
+  expect(serverResult.exitCode).toBe(0);
+  expect(serverResult.checks[0].report.rawResponses).toBeUndefined();
+  await writeFile(join(output, 'native-cli-stdout.txt'), cli.stdout);
+  await navigate('Serverdiagnose');
+  await page.getByLabel('Serverergebnis öffnen', { exact: true }).setInputFiles(resultPath);
+  await expect(page.getByRole('heading', { name: 'Übertragenes Serverergebnis' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Schema eingelesen · Bestätigt' })).toBeVisible();
+  await expect(
+    page.getByText('Auftrag SHA-256: ' + serverResult.jobSha256, { exact: true }),
+  ).toBeVisible();
+  await page.screenshot({ path: join(output, 'windows-server-result.png') });
+  results.push(
+    'Real packaged Java CLI result reopens in native Inspect with matching job digest and findings',
+  );
+  await navigate('Hilfe');
+  await page.getByRole('searchbox', { name: 'Hilfe durchsuchen', exact: true }).fill('CLI');
+  await expect(
+    page.getByRole('heading', { name: 'CLI auf Windows und Linux', exact: true }),
+  ).toBeVisible();
+  results.push('Native offline help covers server CLI workflow');
+  await navigate('Info');
+  await expect(
+    page.getByRole('heading', { name: 'Inspect aktualisieren', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Nach Updates suchen', exact: true }),
+  ).toBeEnabled();
+  results.push('Native updater is configured and stays idle until an explicit check');
   if (process.env.INSPECT_LIVE_READONLY === '1') {
     await page.getByRole('combobox', { name: 'Umgebung', exact: true }).selectOption('TEST');
     await page

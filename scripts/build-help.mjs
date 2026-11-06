@@ -10,6 +10,13 @@ const esc = (value) =>
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
   );
 const images = {
+  batch: [['batch.png', 'Sammelprüfung mit ausdrücklich vorbereiteten öffentlichen Prüfeingaben']],
+  tools: [['tools.png', 'Werkzeuge mit Rückwärtsrouting für einen bekannten Zustellpunkt']],
+  inventory: [
+    ['inventory.png', 'Zertifikatsinventar mit fiktiven öffentlichen Zertifikatszuordnungen'],
+  ],
+  server: [['server.png', 'Serverdiagnose mit importiertem fiktivem Linux-Ergebnis']],
+  updates: [['updates.png', 'Info und ausdrücklich gestartete integrierte Aktualisierung']],
   start: [['start.png', 'FBForge Inspect mit Endpunktabfragen und lokaler Dateiprüfung']],
   destination: [
     [
@@ -86,11 +93,11 @@ const sections = topics
   })
   .join('');
 const html = `<!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#fafafa"><title>FBForge Inspect · Hilfe 0.1</title><link rel="canonical" href="https://fbforge.de/inspect/hilfe/0.1/"><link rel="icon" href="/assets/fbforge-favicon-v1.svg" type="image/svg+xml"><script src="/theme-v8.js"></script><link rel="preload" href="/assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/fbforge-v8.css"><link rel="stylesheet" href="/brand-v1.css"><link rel="stylesheet" href="/guide-v1.css"><link rel="stylesheet" href="/inspect/guide-flows-v1.css"><script src="/fbforge-v7.js" defer></script></head>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#fafafa"><title>FBForge Inspect · Hilfe 0.2</title><link rel="canonical" href="https://fbforge.de/inspect/hilfe/0.2/"><link rel="icon" href="/assets/fbforge-favicon-v1.svg" type="image/svg+xml"><script src="/theme-v8.js"></script><link rel="preload" href="/assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/fbforge-v8.css"><link rel="stylesheet" href="/brand-v1.css"><link rel="stylesheet" href="/guide-v1.css"><link rel="stylesheet" href="/inspect/guide-flows-v1.css"><script src="/fbforge-v7.js" defer></script></head>
 <body class="guide-page"><a class="skip-link" href="#inhalt">Zum Inhalt springen</a>${header}
 <div class="guide-layout"><nav aria-label="Hilfethemen"><h2>In dieser Anleitung</h2><ul>${topics.map((t) => `<li><a href="#${esc(t.id)}">${esc(t.title)}</a></li>`).join('')}</ul></nav>
-<main id="inhalt" tabindex="-1"><p class="edition">VERSION 0.1.0</p><h1>FBForge Inspect verstehen und verwenden</h1><p class="intro">Anleitung zu FBForge Inspect 0.1.0. Die Hilfe der Desktop-App öffnet diese Website. Lokale Schlüssel- und Schemainspektion funktionieren ohne Internet.</p>${sections}</main></div>${footer}</body></html>`;
-const output = 'dist-help/inspect/hilfe/0.1';
+<main id="inhalt" tabindex="-1"><p class="edition">VERSION 0.2.0</p><h1>FBForge Inspect verstehen und verwenden</h1><p class="intro">Anleitung zu FBForge Inspect 0.2.0. Die App enthält zusätzlich eine durchsuchbare Offline-Anleitung. Diese Website erläutert die Abläufe mit Bildern. Lokale Schlüssel- und Schemainspektion funktionieren ohne Internet.</p>${sections}</main></div>${footer}</body></html>`;
+const output = 'dist-help/inspect/hilfe/0.2';
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 await writeFile(`${output}/index.html`, html);

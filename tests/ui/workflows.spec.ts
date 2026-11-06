@@ -371,7 +371,9 @@ test('PVOG retains roles, source contexts and parameter languages without assign
   await page.screenshot({ path: 'test-results/pvog-contexts-700-dark.png', fullPage: true });
   await page.getByText('Alle Kontextfelder und Feldpfad', { exact: true }).first().click();
   await expect(
-    page.getByText('$.pvogRelations[0].zustaendigkeit[0]', { exact: true }),
+    page
+      .getByRole('region', { name: 'PVOG-Zuständigkeitskontexte', exact: true })
+      .getByText('$.pvogRelations[0].zustaendigkeit[0]', { exact: true }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Bericht exportieren' }).click();
   await page
@@ -463,7 +465,8 @@ test('both themes have no horizontal overflow and navigation is keyboard reachab
     .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('button', { name: 'Hilfe', exact: true })
     .click();
-  await expect(page.getByRole('heading', { name: 'Was möchten Sie prüfen?' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Anleitung auf diesem Gerät' })).toBeVisible();
+  await page.getByRole('button', { name: 'Bebilderte Anleitung im Browser' }).click();
   expect(await page.evaluate(() => (window as any).inspectTest.calls.at(-1).command)).toBe(
     'open_reference',
   );

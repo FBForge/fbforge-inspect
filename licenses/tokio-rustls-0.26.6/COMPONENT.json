@@ -1,0 +1,9 @@
+{
+  "name": "tokio-rustls",
+  "version": "0.26.6",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

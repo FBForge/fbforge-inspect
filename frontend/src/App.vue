@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, nextTick, reactive, ref, watch } from 'vue';
-import { invoke, isTauri } from '@tauri-apps/api/core';
 import { pages, type Page } from './contracts';
 import DiagnosisForm from './DiagnosisForm.vue';
 import Results from './Results.vue';
@@ -13,6 +12,14 @@ import ExportDialog from './ExportDialog.vue';
 import StartView from './StartView.vue';
 import InfoView from './InfoView.vue';
 import NetworkView from './NetworkView.vue';
+import BatchView from './BatchView.vue';
+import ToolsView from './ToolsView.vue';
+import ServerView from './ServerView.vue';
+import InventoryView from './InventoryView.vue';
+import UpdatePanel from './UpdatePanel.vue';
+import OfflineHelp from './OfflineHelp.vue';
+import { useBatch } from './useBatch';
+import type { PasteContext, PortableResult } from './portable';
 import { createNetworkSettings, networkRequest } from './network';
 const { appearance, systemDark } = useTheme();
 const page = ref<Page>('start'),
@@ -33,21 +40,12 @@ const {
 const preview = ref(false);
 const helpError = ref('');
 async function navigate(target: Page) {
-  if (target !== 'help') {
-    page.value = target;
-    return;
-  }
-  helpError.value = '';
-  try {
-    if (isTauri()) await invoke('open_reference', { reference: 'help' });
-    else window.open('https://fbforge.de/inspect/hilfe/0.1/', '_blank', 'noopener,noreferrer');
-  } catch {
-    helpError.value = 'Hilfe im Browser öffnen: https://fbforge.de/inspect/hilfe/0.1/';
-  }
+  page.value = target;
 }
 const mainContent = ref<HTMLElement>();
 const exportTrigger = ref<HTMLButtonElement>();
 const form = ref<InstanceType<typeof DiagnosisForm>>();
+const tools = ref<InstanceType<typeof ToolsView>>();
 const active = computed(() => pages.find((item) => item.id === page.value)!);
 const network = reactive(createNetworkSettings());
 const networkCertificates = computed(() => {
@@ -63,7 +61,12 @@ const networkCertificates = computed(() => {
     ),
   ).slice(0, 12);
 });
-const { busy, clear, run, cancel } = useDiagnosis(
+const {
+  busy: diagnosisBusy,
+  clear,
+  run,
+  cancel,
+} = useDiagnosis(
   session,
   environment,
   apiVersion,
@@ -72,6 +75,36 @@ const { busy, clear, run, cancel } = useDiagnosis(
   },
   () => networkRequest(network),
 );
+const batch = reactive(useBatch(() => networkRequest(network)));
+const imported = ref<PortableResult | null>(null);
+const busy = computed(() => diagnosisBusy.value || batch.busy);
+const allReports = computed(() => [
+  ...Object.values(sessions).flatMap((entry) => (entry.report ? [entry.report] : [])),
+  ...batch.reports(),
+  ...(imported.value?.checks.flatMap((check) => (check.report ? [check.report] : [])) || []),
+]);
+async function openContext(context: PasteContext) {
+  if (busy.value) return;
+  if (context.environment) environment.value = context.environment;
+  if (context.apiVersion) apiVersion.value = context.apiVersion;
+  page.value = context.operation;
+  await nextTick();
+  Object.assign(session.value.form, context.input);
+}
+async function openKeys(text: string) {
+  if (busy.value) return;
+  page.value = 'keys';
+  await nextTick();
+  session.value.form.text = text;
+  session.value.form.url = '';
+  session.value.view.inputMode = 'text';
+}
+async function openReverse(id: string) {
+  if (busy.value) return;
+  page.value = 'tools';
+  await nextTick();
+  tools.value?.prepareReverse(id);
+}
 watch(preview, async (open) => {
   if (!open) {
     await nextTick();
@@ -97,7 +130,13 @@ watch(sessionKey, async (key, previous) => {
   if (mainContent.value) mainContent.value.scrollTop = session.value.scrollTop;
   document.querySelector<HTMLElement>('#page-title')?.focus({ preventScroll: true });
 });
-async function openDestination(id: string) {
+async function openDestination(
+  id: string,
+  env = report.value?.environment || environment.value,
+  api = report.value?.apiVersion || apiVersion.value,
+) {
+  environment.value = env;
+  apiVersion.value = api;
   page.value = 'destination';
   await nextTick();
   form.value?.setDestination(id);
@@ -125,7 +164,7 @@ async function openSchema(url: string) {
           aria-hidden="true"
           >{{ environment }}</span
         >
-        <span class="build-tag">0.1.0</span>
+        <span class="build-tag">0.2.0</span>
       </div>
       <div class="toolbar">
         <label
@@ -166,7 +205,7 @@ async function openSchema(url: string) {
       </nav>
       <p v-if="helpError" class="hint" role="alert">{{ helpError }}</p>
       <div class="sidebar-bottom">
-        <span class="local-dot"></span>Lokal auf Ihrem Gerät<span class="version">0.1.0</span>
+        <span class="local-dot"></span>Lokal auf Ihrem Gerät<span class="version">0.2.0</span>
       </div>
     </aside>
     <div class="workspace">
@@ -205,7 +244,8 @@ async function openSchema(url: string) {
           </div>
           <p v-if="error" class="notice error-notice" role="alert">{{ error }}</p>
         </template>
-        <template v-else-if="!['help', 'about'].includes(page)"
+        <template
+          v-else-if="!['help', 'about', 'batch', 'tools', 'inventory', 'server'].includes(page)"
           ><div v-if="environment === 'STAGE' && page === 'routing'" class="notice">
             STAGE hat keine eigene Routing-API. Für diese Ansicht wird ausdrücklich PROD-Routing
             verwendet.
@@ -282,13 +322,58 @@ async function openSchema(url: string) {
             <p>Ergebnis, Befunde und Quellen erscheinen hier nach dem Start.</p>
           </div></template
         >
-        <InfoView v-else @network="openNetworkHelp" />
+        <InfoView v-else-if="page === 'about'" @network="openNetworkHelp" />
+        <OfflineHelp v-else-if="page === 'help'" />
+        <KeepAlive>
+          <BatchView
+            v-if="page === 'batch'"
+            :batch="batch"
+            :environment="environment"
+            :api-version="apiVersion"
+            :settings="network"
+            @context="
+              (env, api) => {
+                environment = env;
+                apiVersion = api;
+              }
+            "
+          />
+        </KeepAlive>
+        <KeepAlive>
+          <ToolsView
+            v-if="page === 'tools'"
+            ref="tools"
+            :busy="busy"
+            :environment="environment"
+            @run="run"
+            @context="openContext"
+            @changed="clear"
+          />
+        </KeepAlive>
+        <InventoryView
+          v-if="page === 'inventory'"
+          :reports="allReports"
+          @destination="openDestination"
+        />
+        <ServerView
+          v-if="page === 'server'"
+          :result="imported"
+          @imported="imported = $event"
+          @batch="navigate('batch')"
+        />
+        <UpdatePanel v-if="page === 'about'" :busy="busy" />
         <KeepAlive>
           <Results
-            v-if="report && !['start', 'help', 'about'].includes(page)"
+            v-if="
+              report && !['start', 'help', 'about', 'batch', 'inventory', 'server'].includes(page)
+            "
             :key="sessionKey"
             :report="report"
             @destination="openDestination"
+            @keys="openKeys"
+            @reverse="openReverse"
+            @follow-up="run"
+            @context="openContext"
             @schema="openSchema"
             @pvog="inspectPvog"
             @area="
@@ -305,7 +390,7 @@ async function openSchema(url: string) {
       <span role="status" aria-live="polite"><i class="local-dot"></i>{{ status }}</span
       ><span
         >{{ environment }} · {{ apiVersion }}<span class="status-divider">|</span>FBForge Inspect
-        0.1.0</span
+        0.2.0</span
       >
     </footer>
   </div>

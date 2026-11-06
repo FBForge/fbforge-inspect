@@ -36,7 +36,13 @@ $application = Assert-WindowsSignature -Path (Join-Path $root 'fbforge-inspect.e
 $installer = Assert-WindowsSignature -Path $setup -Thumbprint $Thumbprint -SignTool $tool
 & node.exe (Join-Path $PSScriptRoot '../runtime-metadata.mjs') --verify (Join-Path $root 'engine')
 if ($LASTEXITCODE -ne 0) { throw 'signed_runtime_provenance_invalid' }
-[IO.File]::WriteAllText((Join-Path $root 'signature-info.json'), (@{ application = $application; installer = $installer; commit = $env:GITHUB_SHA; runId = $env:GITHUB_RUN_ID; validationRunId = $env:VALIDATION_RUN } | ConvertTo-Json -Depth 6), (New-Object Text.UTF8Encoding($false)))
+& cargo.exe run --locked --manifest-path (Join-Path $PSScriptRoot '../../desktop/native-contracts/Cargo.toml') --example verify-update -- $root (Join-Path $PSScriptRoot '../../desktop/update-public-key.txt')
+if ($LASTEXITCODE -ne 0) { throw 'signed_update_signature_invalid' }
+$updateKey = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '../../desktop/update-public-key.txt')).Trim()
+$updateHash = [Security.Cryptography.SHA256]::Create()
+try { $updateKeyHash = ([BitConverter]::ToString($updateHash.ComputeHash([Text.Encoding]::UTF8.GetBytes($updateKey)))).Replace('-', '').ToLowerInvariant() } finally { $updateHash.Dispose() }
+if ($manifest.updatePublicKeySha256 -ne $updateKeyHash) { throw 'signed_update_key_provenance_invalid' }
+[IO.File]::WriteAllText((Join-Path $root 'signature-info.json'), (@{ application = $application; installer = $installer; update = @{ verified = $true; publicKeySha256 = $updateKeyHash; version = $version; product = 'FBForge Inspect' }; commit = $env:GITHUB_SHA; runId = $env:GITHUB_RUN_ID; validationRunId = $env:VALIDATION_RUN } | ConvertTo-Json -Depth 6), (New-Object Text.UTF8Encoding($false)))
 Write-WindowsPackageHashes -Directory $root
 Write-Output 'Signed package identity, file inventory, signatures, timestamps and runtime provenance verified.'
 $global:LASTEXITCODE = 0

@@ -11,12 +11,19 @@ import ServiceResults from './results/ServiceResults.vue';
 import SchemaResults from './results/SchemaResults.vue';
 import RequestLog from './results/RequestLog.vue';
 import NetworkResults from './results/NetworkResults.vue';
+import AnalysisResults from './results/AnalysisResults.vue';
+import SupportPanel from './SupportPanel.vue';
+import type { PasteContext } from './portable';
 defineProps<{ report: Report }>();
 const emit = defineEmits<{
   destination: [id: string];
   schema: [url: string];
   area: [id: string];
   pvog: [id: string];
+  keys: [text: string];
+  reverse: [id: string];
+  context: [context: PasteContext];
+  'follow-up': [operation: string, input: Record<string, unknown>];
 }>();
 </script>
 <template>
@@ -34,7 +41,13 @@ const emit = defineEmits<{
       @area="emit('area', $event)"
     />
     <Findings :report="report" />
-    <NetworkResults :report="report" />
+    <NetworkResults :report="report" @retry="emit('follow-up', 'network', $event)" />
+    <AnalysisResults
+      :report="report"
+      @context="emit('context', $event)"
+      @reverse="emit('reverse', $event)"
+      @keys="emit('keys', $event)"
+    />
     <PvogCandidates :report="report" @pvog="emit('pvog', $event)" />
     <DestinationSummary :report="report" />
     <LimitsResults :report="report" />
@@ -47,5 +60,6 @@ const emit = defineEmits<{
       <pre tabindex="0">{{ JSON.stringify(report.data, null, 2) }}</pre>
     </details>
     <RequestLog :report="report" />
+    <SupportPanel :report="report" />
   </section>
 </template>

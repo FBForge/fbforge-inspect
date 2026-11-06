@@ -13,9 +13,9 @@ Desktop-Werkzeug für FIT-Connect-Zustellpunkte, Routing und PVOG-Adressierung. 
 
 Für **Windows x64 und FIT-Connect TEST, STAGE und PROD**. Java wird mitgeliefert. Lokale Schlüssel- und Schemainspektion funktionieren offline. Für FIT-Connect werden keine Zugangsdaten benötigt. Ein manueller Proxy kann eigene Zugangsdaten erfordern. Die Anwendung führt keine Verwaltungsoperationen oder Zustellungen aus.
 
-## Version 0.1.0
+## Version 0.2.0
 
-Windows-Pakete und Prüfsummen finden Sie im [Release 0.1.0](https://github.com/FBForge/fbforge-inspect/releases/tag/0.1.0). Verwenden Sie den Installer aus dem veröffentlichten Release. Die EXE allein ist kein portables Paket und benötigt die mitgelieferte Laufzeit und Ressourcen.
+Windows-Pakete und Prüfsummen finden Sie im [Release 0.2.0](https://github.com/FBForge/fbforge-inspect/releases/tag/0.2.0). Verwenden Sie den Installer aus dem veröffentlichten Release. Die EXE allein ist kein portables Paket und benötigt die mitgelieferte Laufzeit und Ressourcen.
 
 Die [CI-Prüfung](https://github.com/FBForge/fbforge-inspect/actions/workflows/verify.yml) baut den Windows-Kandidaten und prüft den nativen WebView2-/Java-Durchlauf, die Berichtsdateien über den Windows-Speicherdialog sowie NVDA-Sprachsequenzen. Der manuelle Signierlauf prüft anschließend die Signaturen und die Installation desselben Pakets auf einem unabhängigen Windows-Runner. Diese Einzelprüfungen bestätigen keine vollständige Barrierefreiheit oder Gesamtintegration.
 
@@ -23,12 +23,12 @@ Für lokale Authenticode-Builds und den manuellen CI-Signierweg siehe [Signierun
 
 ## Einstieg
 
-1. Den Windows-Installer aus dem [Release 0.1.0](https://github.com/FBForge/fbforge-inspect/releases/tag/0.1.0) installieren oder mit der [Bauanleitung](BUILDING.md) lokal bauen.
+1. Den Windows-Installer aus dem [Release 0.2.0](https://github.com/FBForge/fbforge-inspect/releases/tag/0.2.0) installieren oder mit der [Bauanleitung](BUILDING.md) lokal bauen.
 2. FBForge Inspect starten und Umgebung sowie API-Version wählen.
 3. Einen Zustellpunkt prüfen oder eine lokale Schlüssel- beziehungsweise Schemadatei einlesen.
 4. Befunde und Quellen prüfen und bei Bedarf einen Bericht lokal speichern.
 
-Die [Anleitung mit Bildern und Beispielen](https://fbforge.de/inspect/hilfe/0.1/) beschreibt die Abläufe. Die Hilfe öffnet sich aus der App auf der Website. Helle, dunkle und automatische Darstellung sind verfügbar.
+Die [Anleitung mit Bildern und Beispielen](https://fbforge.de/inspect/hilfe/0.2/) beschreibt die Abläufe. Eine durchsuchbare Anleitung ist offline in der App verfügbar. Die bebilderte Websitehilfe wird ausdrücklich im Browser geöffnet. Helle, dunkle und automatische Darstellung sind verfügbar.
 
 ## Quellen und Grenzen
 
@@ -41,3 +41,15 @@ STAGE besitzt keine eigene Routing-API. Die Anwendung kennzeichnet dort die verw
 ## Lizenz
 
 [EUPL-1.2](LICENSE). Siehe auch [Drittanbieter-Lizenzen](https://github.com/FBForge/fbforge-inspect/blob/main/THIRD_PARTY_NOTICES.md).
+
+## Analysefunktionen in 0.2.0
+
+- Sammelprüfung mit bis zu 32 Einträgen, Pause, Abbruch und gezielter Wiederholung.
+- Netzwerkphasen, konkrete TLS-Ursachen und ausdrücklich ergänzbare HTTPS-Unternehmens-CAs.
+- Rückwärtsrouting vom bekannten Zustellpunkt und nachvollziehbare öffentliche Adressierungskontexte.
+- Direkte öffentliche Zertifikats- und Adressierungssignaturprüfung sowie öffentliche Schlüsselwechselvorbereitung.
+- Zertifikatsinventar mit betroffenen untersuchten Zustellpunkten und Kalenderexport.
+- Portables Java-CLI für Windows und Linux mit versionierten Aufträgen, Ergebnisimport und stabilen Exitcodes.
+- Kontextübernahme, Vorschau erkannter Kennungen, Supporttexte und integrierte Windows-Aktualisierung.
+
+Das [CLI-Handbuch](docs/CLI.md) erläutert Serverbetrieb und Austauschformate. Die Desktop-App bleibt für Windows x64 vorgesehen. Das plattformneutrale CLI benötigt Java 25 oder neuer und enthält im eigenen Archiv keine Java-Laufzeit. Es prüft öffentliche Konfiguration und Erreichbarkeit. Authentifizierte Zustellproben und Fachdatenprüfung gehören zu FBForge Connect.

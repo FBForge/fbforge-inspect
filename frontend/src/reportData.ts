@@ -57,6 +57,7 @@ export interface PvogParent {
 export interface AddressingSignature {
   context?: string;
   verified?: boolean;
+  contextMatches?: boolean;
   claims?: { destinationId?: string };
 }
 export interface OnlineParameter {

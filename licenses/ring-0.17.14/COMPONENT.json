@@ -1,0 +1,10 @@
+{
+  "name": "ring",
+  "version": "0.17.14",
+  "license": "Apache-2.0 AND ISC",
+  "licenseFiles": [
+    "LICENSE",
+    "LICENSE-BoringSSL",
+    "LICENSE-other-bits"
+  ]
+}

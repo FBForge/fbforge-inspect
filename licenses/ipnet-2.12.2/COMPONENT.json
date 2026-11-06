@@ -1,0 +1,9 @@
+{
+  "name": "ipnet",
+  "version": "2.12.2",
+  "license": "MIT OR Apache-2.0",
+  "licenseFiles": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ]
+}

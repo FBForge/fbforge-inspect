@@ -103,6 +103,30 @@ export const pages = [
     description: 'JSON Schema und XSD strukturiert lesen.',
   },
   {
+    id: 'batch',
+    label: 'Sammelprüfung',
+    icon: 'process',
+    description: 'Mehrere öffentliche Prüfungen vorbereiten und gezielt ausführen.',
+  },
+  {
+    id: 'tools',
+    label: 'Werkzeuge',
+    icon: 'key',
+    description: 'Rückwärtsrouting, Signaturen und Zertifikate gezielt analysieren.',
+  },
+  {
+    id: 'inventory',
+    label: 'Zertifikatsinventar',
+    icon: 'key',
+    description: 'Gültigkeit und betroffene Zustellpunkte überblicken.',
+  },
+  {
+    id: 'server',
+    label: 'Serverdiagnose',
+    icon: 'network',
+    description: 'Auf Windows und Linux prüfen und Ergebnisse hier auswerten.',
+  },
+  {
     id: 'network',
     label: 'Netzwerk',
     icon: 'network',
@@ -114,6 +138,6 @@ export const pages = [
     icon: 'help',
     description: 'Abläufe, Quellen und Grenzen der Diagnose.',
   },
-  { id: 'about', label: 'Info', icon: 'info', description: 'FBForge Inspect 0.1.0 · EUPL-1.2' },
+  { id: 'about', label: 'Info', icon: 'info', description: 'FBForge Inspect 0.2.0 · EUPL-1.2' },
 ] as const;
 export type Page = (typeof pages)[number]['id'];

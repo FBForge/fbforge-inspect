@@ -1,4 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+mod application_updates;
+mod cli_export;
+mod update_policy;
+mod update_transport;
 use std::{
     path::PathBuf,
     process::Stdio,
@@ -20,7 +24,27 @@ use tokio::{
 struct Session(
     Mutex<Option<(u64, Option<oneshot::Sender<()>>)>>,
     AtomicBool,
+    std::sync::Arc<std::sync::atomic::AtomicUsize>,
 );
+
+struct FileActivity(std::sync::Arc<std::sync::atomic::AtomicUsize>);
+impl Drop for FileActivity {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, Ordering::AcqRel);
+    }
+}
+fn file_activity(app: &tauri::AppHandle) -> Result<FileActivity, String> {
+    let state = app.state::<Session>();
+    let _active = state
+        .0
+        .lock()
+        .map_err(|_| "Sitzungsstatus nicht verfügbar.")?;
+    if state.1.load(Ordering::Acquire) {
+        return Err("App wird geschlossen oder aktualisiert.".into());
+    }
+    state.2.fetch_add(1, Ordering::AcqRel);
+    Ok(FileActivity(state.2.clone()))
+}
 
 #[tauri::command]
 async fn diagnose(
@@ -170,7 +194,10 @@ async fn save_report(
     content: String,
     format: String,
 ) -> Result<bool, String> {
-    if !["json", "html"].contains(&format.as_str()) || content.len() > 32 * 1024 * 1024 {
+    let _activity = file_activity(&app)?;
+    if !["json", "html", "txt", "ics"].contains(&format.as_str())
+        || content.len() > 32 * 1024 * 1024
+    {
         return Err("Berichtsformat oder Größe unzulässig.".into());
     }
     tauri::async_runtime::spawn_blocking(move || {
@@ -199,9 +226,66 @@ fn reference_url(reference: &str) -> Result<&'static str, String> {
         "repository" => Ok("https://github.com/FBForge/fbforge-inspect"),
         "fitko" => Ok("https://docs.fitko.de/fit-connect/"),
         "pvog" => Ok("https://pvog.fitko.net/"),
+        "status" => Ok("https://uptime.fit-connect.dev/status/fit-connect"),
         "help" => Ok("https://fbforge.de/inspect/hilfe/0.1/"),
         _ => Err("Unbekannte Referenz.".into()),
     }
+}
+
+#[tauri::command]
+async fn export_cli(app: tauri::AppHandle) -> Result<bool, String> {
+    let _activity = file_activity(&app)?;
+    let engine = if cfg!(debug_assertions) {
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("resources/engine/inspect-engine.jar")
+    } else {
+        app.path()
+            .resource_dir()
+            .map_err(|_| "Ressourcenpfad fehlt.")?
+            .join("engine/inspect-engine.jar")
+    };
+    tauri::async_runtime::spawn_blocking(move || {
+        let Some(selected) = app.dialog().file().blocking_pick_folder() else {
+            return Ok(false);
+        };
+        let parent = selected.into_path().map_err(|_| "Lokalen Ordner wählen.")?;
+        let target = parent.join("fbforge-inspect-cli-0.2.0");
+        std::fs::create_dir(&target)
+            .map_err(|_| "CLI-Zielordner existiert bereits oder ist nicht beschreibbar.")?;
+        let result = (|| -> std::io::Result<()> {
+            std::fs::copy(&engine, target.join("inspect-engine.jar"))?;
+            cli_export::licenses(
+                &engine
+                    .parent()
+                    .ok_or_else(|| std::io::Error::other("engine_root_missing"))?
+                    .join("licenses"),
+                &target.join("licenses"),
+            )?;
+            std::fs::write(
+                target.join("inspect.sh"),
+                include_str!("../../cli/inspect.sh"),
+            )?;
+            std::fs::write(
+                target.join("inspect.ps1"),
+                include_str!("../../cli/inspect.ps1"),
+            )?;
+            std::fs::write(
+                target.join("README.txt"),
+                include_str!("../../cli/README.txt"),
+            )?;
+            std::fs::write(target.join("LICENSE"), include_str!("../../LICENSE"))?;
+            std::fs::write(
+                target.join("THIRD_PARTY_NOTICES.md"),
+                include_str!("../../THIRD_PARTY_NOTICES.md"),
+            )?;
+            Ok(())
+        })();
+        result.map_err(|_| {
+            "CLI-Paket konnte nicht vollständig exportiert werden. Zielordner prüfen."
+        })?;
+        Ok(true)
+    })
+    .await
+    .map_err(|_| "CLI-Export fehlgeschlagen.".to_string())?
 }
 
 #[tauri::command]
@@ -240,6 +324,12 @@ fn open_reference(reference: String) -> Result<(), String> {
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(
+            tauri_plugin_updater::Builder::new()
+                .pubkey(application_updates::PUBLIC_KEY.trim())
+                .build(),
+        )
+        .manage(application_updates::ApplicationUpdates::default())
         .manage(Session::default())
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
@@ -275,6 +365,12 @@ fn main() {
             diagnose,
             cancel,
             save_report,
+            export_cli,
+            application_updates::application_update_status,
+            application_updates::check_application_update,
+            application_updates::download_application_update,
+            application_updates::cancel_application_update,
+            application_updates::install_application_update,
             open_reference
         ])
         .run(tauri::generate_context!())

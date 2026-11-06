@@ -30,7 +30,7 @@ for (const [scenario, expected] of [
         const manifest = {
           application: 'FBForge Inspect',
           platform: 'windows-x64',
-          version: '0.1.0',
+          version: '0.2.0',
           repository: 'FBForge/fbforge-inspect',
           commit: 'a'.repeat(40),
           runId: '123',

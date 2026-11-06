@@ -5,7 +5,7 @@
     "paragraphs": [
       "Umgebung und API-Version oben auswählen. V3 ist die Voreinstellung. V2 wird ausdrücklich gewählt, ein automatischer Rückfall findet nicht statt.",
       "Für eine Destination genügt ihre UUID. Ohne Zugangsdaten ruft FBForge Inspect ausschließlich veröffentlichte Konfiguration und öffentliche Schlüssel ab. Prüfungen starten erst mit Ihrem Klick.",
-      "Für öffentliche Abfragen benötigt die App Internetzugang. Unter Netzwerk können Sie einen manuellen Proxy einrichten und Verbindungen testen. Prüfstände und Proxy-Zugangsdaten bleiben nur im Arbeitsspeicher dieser Sitzung. Nur die Darstellungspräferenz wird lokal gespeichert. Hilfe öffnet die Website im Browser."
+      "Für öffentliche Abfragen benötigt die App Internetzugang. Unter Netzwerk können Sie einen manuellen Proxy einrichten und Verbindungen testen. Prüfstände und Proxy-Zugangsdaten bleiben nur im Arbeitsspeicher dieser Sitzung. Nur die Darstellungspräferenz wird lokal gespeichert. Die Hilfe ist auch offline in der App verfügbar. Die bebilderte Online-Anleitung lässt sich ausdrücklich im Browser öffnen."
     ],
     "steps": [
       "Wählen Sie Umgebung und bei Bedarf API-Version.",
@@ -234,7 +234,9 @@
       "Befunde haben die Zustände Bestätigt, Fehler, Hinweis, Nicht nachgewiesen oder Nicht anwendbar. Der Beleg enthält Feldpfad, Quelle, Umgebung, Version und Abfragezeit. Bestätigt gilt jeweils nur für die beschriebene Einzelprüfung.",
       "Bei Destination- und Schlüsselprüfungen fasst die Ergebnisübersicht die geprüften Bereiche in Worten zusammen: Zustellpunkt, öffentliche Schlüssel, Zertifikatskette und Sperrstatus. Offene Online-Nachweise und zulässige TEST-Ausnahmen bleiben sichtbar. Die Anzahl bestätigter Einzelprüfungen dient zusätzlich als Filter. Der HTML-Bericht enthält dieselbe Zusammenfassung.",
       "JSON und eigenständiges HTML werden lokal gespeichert. Vor dem Speichern zeigt die App den vollständigen Exportumfang an. Rohantworten sind standardmäßig ausgeschlossen und müssen ausdrücklich hinzugefügt werden.",
-      "Auch öffentliche Behördenkontakte und technische Konfiguration können Informationen enthalten, die Sie nicht weitergeben möchten. Prüfen Sie die Exportvorschau vor dem Teilen. Die App sendet keine Telemetrie und betreibt keinen Server."
+      "Auch öffentliche Behördenkontakte und technische Konfiguration können Informationen enthalten, die Sie nicht weitergeben möchten. Prüfen Sie die Exportvorschau vor dem Teilen. Die App sendet keine Telemetrie und betreibt keinen Server.",
+      "Supportanfrage vorbereiten erstellt einen Text für lokale IT, Zustellpunktbetreiber, Datenpflege oder FITKO. Quelladressen und Feldpfade sind zunächst ausgeschaltet. Auch Befundtexte können öffentliche Kennungen und Organisationsnamen enthalten. Prüfen Sie die Vorschau vor dem Speichern und der Weitergabe. Inspect versendet nichts automatisch.",
+      "Ein importiertes Serverergebnis ist ein übertragener Prüfbeleg. Sein Inhalt und seine Herkunft sind nicht durch die Dateiendung oder einen SHA-256-Fingerabdruck beglaubigt. Der Auftragsfingerabdruck kann mit dem ursprünglich übertragenen Auftrag abgeglichen werden."
     ],
     "steps": [
       "Öffnen Sie nach einer Prüfung Bericht exportieren.",
@@ -250,9 +252,12 @@
     "paragraphs": [
       "Grenzen: 2 MiB IPC-Eingabe, 1,5 MB lokale Datei, 4 MiB pro HTTP-Antwort, 40 HTTP-Abrufe, 20 MiB Antwortbudget und 120 Sekunden Netzbudget pro Lauf. Der Host beendet einen Lauf spätestens nach 150 Sekunden. Ergebnisse außerhalb der Budgets bleiben unvollständig.",
       "Öffentliche HTTP-Ziele dürfen keine Zugangsdaten, privaten IP-Adressen oder Sonderports enthalten. Umleitungen werden erneut geprüft und TLS-Downgrades blockiert. Der Transport verbindet sich mit der bereits geprüften IP und behält TLS-Hostnamenprüfung bei.",
-      "Der Transport nutzt System-DNS und den TLS-Truststore der gebündelten Java-Laufzeit. Unter Netzwerk wählen Sie einen manuellen HTTP(S)-Proxy mit optionaler Basic-Anmeldung. Systemproxy/PAC, Windows-Anmeldung und eigene TLS-Unternehmens-CAs werden nicht eingerichtet. Ein Netzwerkfehler beweist keine fehlerhafte Destination.",
+      "Der Transport nutzt System-DNS und den TLS-Truststore der gebündelten Java-Laufzeit. Unter Netzwerk wählen Sie einen manuellen HTTP(S)-Proxy mit optionaler Basic-Anmeldung. Systemproxy/PAC und automatische Windows-Anmeldung werden nicht eingerichtet. Zusätzliche öffentliche Unternehmens-CAs können ausdrücklich für HTTPS geladen werden. Ein Netzwerkfehler beweist keine fehlerhafte Destination.",
       "Die Basis-Verbindungsprüfung umfasst den öffentlichen FIT-Connect-Schlüsselabruf und die Routing-Gebietssuche. PVOG und XRepository werden dabei nicht abgefragt. Für STAGE wird die verwendete PROD-Routingquelle ausdrücklich benannt. Die Prüfung benötigt weder OAuth-Anmeldung noch Zugriff auf das Self-Service-Portal. Konkrete OCSP- und CRL-Endpunkte können nach einer Destination- oder Schlüsselprüfung zusätzlich geprüft werden.",
-      "Bei TLS_FAILED ist die TLS-Verbindung oder die Serverzertifikatsprüfung fehlgeschlagen. Der Sammelcode allein nennt keine genaue Ursache. Ein erfolgreicher Browserabruf ist kein Nachweis für denselben Java-Verbindungsweg. Der V-PKI-Truststore prüft x5c-Zertifikatsketten und erweitert nicht den HTTPS-CA-Speicher der Java-Laufzeit. Eigene CA-Anker unter Zertifikate und Sperrstatus ändern daran nichts."
+      "Bei TLS_FAILED ist die TLS-Verbindung oder die Serverzertifikatsprüfung fehlgeschlagen. Der Sammelcode allein nennt keine genaue Ursache. Ein erfolgreicher Browserabruf ist kein Nachweis für denselben Java-Verbindungsweg. Der V-PKI-Truststore prüft x5c-Zertifikatsketten und erweitert nicht den HTTPS-CA-Speicher der Java-Laufzeit. Eigene CA-Anker unter Zertifikate und Sperrstatus ändern daran nichts.",
+      "Verbindungsphasen unterscheiden DNS, TCP beziehungsweise Proxy-Tunnel, TLS und HTTP. Nicht erreichte Folgeschritte sind ungeprüft. TLS_HOSTNAME bezeichnet einen nicht passenden Servernamen. TLS_EXPIRED bezeichnet ein abgelaufenes HTTPS-Zertifikat. TLS_TRUST_UNKNOWN bezeichnet eine nicht aufbaubare HTTPS-Vertrauenskette. Unklare TLS-Abbrüche bleiben ausdrücklich unklar.",
+      "Unter Zusätzliche Unternehmens-CA für HTTPS können freigegebene öffentliche CA-Zertifikate als PEM geladen werden. Sie ergänzen nur das HTTPS-Vertrauen dieser Sitzung. Der getrennte V-PKI-Truststore und die Anker der Schlüsselprüfung werden dadurch nicht verändert. Die Hostnamenprüfung bleibt aktiv. Private Schlüssel werden nicht benötigt.",
+      "Eine erfolgreiche HTTP-Antwort mit unerwartetem HTML wird als Hinweis angezeigt. Eine Sperr- oder Anmeldeseite ist möglich, aber damit nicht bewiesen. Einzelne Netzwerkziele können gezielt erneut geprüft werden. Für abgeleitete OCSP-Ziele bleibt die passende POST-Anfrage erhalten."
     ],
     "steps": [
       "Lesen Sie den konkreten Befund und öffnen Sie dessen Quelle und Feldpfad.",
@@ -263,5 +268,97 @@
     ],
     "example": null,
     "summary": "Ein Netzwerkfehler beweist keine fehlerhafte Destination. Prüfen Sie zuerst die konkrete Meldung und die betroffene Quelle."
+  },
+  {
+    "id": "batch",
+    "title": "Sammelprüfung und Prüfaufträge",
+    "summary": "Bis zu 32 öffentliche Einzelprüfungen vorbereiten, kontrolliert ausführen und gezielt wiederholen.",
+    "steps": [
+      "Öffnen Sie Sammelprüfung und geben Sie pro Zeile eine Destination-ID, eine unterstützte FIT-Connect-URL oder network ein.",
+      "Routing-Zeilen verwenden routing,LeiKa,ARS. Wählen Sie Umgebung und API-Version vor dem Vorbereiten.",
+      "Prüfungen vorbereiten zeigt die Warteschlange ohne Verbindungsaufbau. Sammelprüfung starten führt die Einträge nacheinander aus.",
+      "Eine Pause wirkt nach dem aktuellen Eintrag. Abbrechen beendet die aktive Prüfung. Bereits abgeschlossene Ergebnisse bleiben sichtbar.",
+      "Speichern Sie den Auftrag für ein anderes System oder die Ergebnisse zur Auswertung. Einzelne beziehungsweise offene und fehlgeschlagene Prüfungen lassen sich ausdrücklich wiederholen."
+    ],
+    "paragraphs": [
+      "Jede Einzelprüfung verwendet das bestehende begrenzte Abfragebudget. Es gibt keine automatische Endlosschleife oder automatische Wiederholung bei Ratenlimits. Die App führt höchstens eine Diagnose gleichzeitig aus. Nicht ausgeführte Einträge bleiben als solche erkennbar.",
+      "Prüfaufträge verwenden fbforge-inspect-job mit formatVersion 1. Umgebung, API-Version, öffentliche Eingaben und optional ein ausdrücklicher Proxy sowie öffentliche HTTPS-CAs sind enthalten. Proxy-Benutzername, Passwort und private Schlüssel gehören nicht in die Datei.",
+      "Importierte Aufträge starten keine Verbindung. Der verwendete Netzwerkweg muss vor dem Start bewusst geprüft werden. Die Eingaben bleiben in der Sitzung oder werden durch einen ausdrücklichen Speicherdialog exportiert. Eine Bibliothek benannter Projekte wird nicht automatisch angelegt."
+    ],
+    "example": "00000000-0000-4000-8000-000000000001\nrouting,99008001014002,020000000000\nnetwork"
+  },
+  {
+    "id": "tools",
+    "title": "Rückwärtsrouting und öffentliche Analysewerkzeuge",
+    "summary": "Bekannte Kennungen, öffentliche Zertifikate und Adressierungsinformationen gezielt untersuchen.",
+    "steps": [
+      "Öffnen Sie Werkzeuge und wählen Sie die gewünschte Aufgabe.",
+      "Kennung oder URL übernehmen zeigt erkannte Angaben und Umgebung vor der Übernahme. Die Übernahme startet keine Prüfung.",
+      "Rückwärtsrouting lädt zunächst die veröffentlichten Leistungen und Gebiete einer bekannten Destination. Mit ausgewählter Leistung und vollständigem ARS folgt der gezielte Routingabruf.",
+      "Öffentliche Zertifikate lassen sich als PEM, DER oder PKCS#7 öffnen. Die Adressierungssignatur lässt sich separat einfügen und mit den offiziellen Schlüsseln der gewählten Umgebung untersuchen.",
+      "Für einen Schlüsselwechsel geben Sie den Zustellpunkt und die neue veröffentlichte Schlüsselkennung an. Inspect prüft beide öffentlichen Schlüssel und deren Zertifikate."
+    ],
+    "paragraphs": [
+      "Rückwärtsrouting ist für TEST und PROD vorgesehen. STAGE besitzt keine eigene Routing-API. Es wird keine automatische Gebietsumrechnung geraten. Mehrere gültige Zuständigkeitskontexte bleiben nebeneinander sichtbar. Ein unvollständiger Seitenabruf erlaubt keinen vollständigen Negativnachweis.",
+      "Eine gültige Adressierungssignatur, vorhandene PVOG-Zuständigkeit und tatsächlicher Routing-Treffer sind verschiedene Nachweise. Die Zusammenhänge werden mit ihren ursprünglichen Kontextpfaden gezeigt. Die interne Ursache eines fehlenden Routing-Treffers kann anhand öffentlicher Daten offenbleiben.",
+      "Die direkte Zertifikatsprüfung bestätigt keine JWK-Bindung und keine aktive Verwendung an einem Zustellpunkt. Ein JWK wird dafür nicht künstlich erzeugt. Private Zertifikatscontainer und private Schlüssel werden nicht unterstützt.",
+      "Adressierungssignaturen sind öffentliche destinationSignature-Werte. OAuth-Zugangstoken gehören nicht in das Werkzeug. Schlüsselquellen werden unabhängig von eingefügten Claims fest ausgewählt. Zusätzliche Leistung und ARS müssen im gleichen signierten Kontext passen.",
+      "HTTP-Fehler erklären steht ohne Internet zur Verfügung. Der Statuscode allein beweist keine konkrete Ursache. Quelle, Methode und Verbindungsweg gehören zur Einordnung."
+    ],
+    "example": null
+  },
+  {
+    "id": "inventory",
+    "title": "Zertifikatsinventar und Schlüsselwechsel",
+    "summary": "Gemeinsam verwendete Teilnehmerzertifikate und die davon betroffenen untersuchten Zustellpunkte überblicken.",
+    "steps": [
+      "Prüfen Sie einen oder mehrere Zustellpunkte beziehungsweise öffentliche Schlüssel. Serverergebnisse lassen sich zusätzlich öffnen.",
+      "Öffnen Sie Zertifikatsinventar. Identische Teilnehmerzertifikate werden anhand ihres SHA-256-Fingerabdrucks zusammengefasst.",
+      "Prüfen Sie Ablaufdatum, verbleibende Zeit, Schlüsselkennungen und die betroffenen Umgebungen und Zustellpunkte.",
+      "Wählen Sie 30, 60 oder 90 Tage Vorlauf und exportieren Sie bei Bedarf Erneuerungstermine als ICS-Datei."
+    ],
+    "paragraphs": [
+      "Das Inventar umfasst nur tatsächlich untersuchte öffentliche Schlüssel dieser Sitzung. Nicht abgerufene Schlüssel, unveröffentlichte Ersatzschlüssel und private Schlüsselbestände sind nicht nachgewiesen. Mehrere unterschiedliche Zustellpunkte bleiben einer gemeinsamen Zertifikatsgruppe zugeordnet.",
+      "Ein aktiver Verschlüsselungsschlüssel wird anhand der veröffentlichten encryptionKid zugeordnet. Weitere untersuchte Schlüssel sind dadurch nicht automatisch geeignete Ersatzschlüssel. Die gezielte Wechselprüfung ruft den ausdrücklich benannten Ersatzschlüssel separat ab.",
+      "Inspect ändert keine Schlüssel und führt keine Entschlüsselung aus. Vor einem Wechsel müssen Betreiber die privaten Schlüssel und den Umgang mit noch laufenden Nachrichten im Empfangssystem prüfen. Kalendereinträge sind lokale Planungshilfen und kein Hintergrundmonitoring."
+    ],
+    "example": null
+  },
+  {
+    "id": "server",
+    "title": "CLI auf Windows und Linux",
+    "summary": "Den öffentlichen Prüfauftrag im Netzwerk des tatsächlichen Anwendungssystems ausführen und die Ergebnisdatei in Inspect auswerten.",
+    "steps": [
+      "Erstellen und speichern Sie den Auftrag unter Sammelprüfung.",
+      "Exportieren Sie unter Serverdiagnose das portable CLI oder verwenden Sie das Java-CLI-Archiv des veröffentlichten Releases.",
+      "Übertragen Sie CLI und Auftrag auf das Zielsystem. Das plattformneutrale CLI benötigt Java 25 oder neuer und keine grafische Oberfläche.",
+      "Führen Sie das CLI mit dem Benutzerkonto und Netzwerkweg der Anwendung aus. Wählen Sie für jeden Lauf einen neuen Ergebnisdateinamen.",
+      "Öffnen Sie die Ergebnisdatei unter Serverdiagnose. Prüfen Sie Betriebssystem, Architektur, Java-Version, Exitcode und die einzelnen Befunde."
+    ],
+    "paragraphs": [
+      "Unter Windows dient inspect.ps1 als Startskript, unter Linux inspect.sh. Alternativ kann das JAR direkt gestartet werden. Der plattformneutrale Export enthält keine Java-Laufzeit. Eine separat entpackte passende Laufzeit kann direkt verwendet werden, ohne das Java der Fachanwendung auszutauschen.",
+      "Optionen: --job und --output sind erforderlich. --proxy-url legt den Proxy ausdrücklich fest. --proxy-user-env und --proxy-password-env nennen Umgebungsvariablen, deren Werte nur für diesen Lauf gelesen werden. --ca-file lädt öffentliche zusätzliche HTTPS-CAs. Passwörter gehören nicht in Argumentwerte oder Auftragsdateien.",
+      "Exitcode 0 bedeutet abgeschlossen ohne Fehlerbefund oder ungeklärten Punkt. Hinweise können vorhanden sein. Exitcode 2 bedeutet mindestens einen Fehlerbefund. Exitcode 3 bedeutet einen nicht vollständig nachgewiesenen oder fehlgeschlagenen Prüfpunkt. 64 bezeichnet ungültige Eingaben, 70 einen internen Fehler und 74 einen Dateifehler oder ein Größenlimit.",
+      "Aufträge sind auf 2 MiB und 32 Einträge begrenzt. Ergebnisdateien sind auf 16 MiB begrenzt. Der CLI-Lauf hat ein Gesamtzeitbudget von zehn Minuten und ein Zeitlimit pro Einzelprüfung. Bei einem Zeitlimit bleiben übrige Einträge ausdrücklich nicht nachgewiesen. Vorhandene Ergebnisdateien werden nicht überschrieben.",
+      "Ergebnisdateien verwenden fbforge-inspect-result mit formatVersion 1. Rohantworten werden nicht aufgenommen. Betriebssystem, Architektur und Java-Version werden erfasst. Rechnername und Benutzername gehören nicht zum Laufzeitkontext. Eine Datei beweist ihre Herkunft nicht und startet beim Import keine Programme oder Folgeabrufe."
+    ],
+    "example": "# Windows PowerShell\n.\\inspect.ps1 --job auftrag.json --output ergebnis.inspect.json\n$LASTEXITCODE\n\n# Linux\nsh ./inspect.sh --job auftrag.json --output ergebnis.inspect.json\necho $?\n\n# Direkt mit Java\njava -jar inspect-engine.jar --job auftrag.json --output ergebnis.inspect.json"
+  },
+  {
+    "id": "updates",
+    "title": "Inspect aktualisieren",
+    "summary": "Stabile Windows-Versionen ausdrücklich suchen, herunterladen und nach Signaturprüfung installieren.",
+    "steps": [
+      "Öffnen Sie Info und wählen Sie Nach Updates suchen.",
+      "Lesen Sie die Versionshinweise und starten Sie den Download der gewünschten neueren stabilen Version.",
+      "Exportieren Sie benötigte Prüfaufträge und Ergebnisse. Beenden Sie laufende Prüfungen und schließen Sie Speicherdialoge.",
+      "Geprüftes Update installieren zeigt eine eigene abschließende Bestätigung. Danach wird Inspect beendet und der Installer gestartet."
+    ],
+    "paragraphs": [
+      "Die integrierte Installation unterstützt Windows x64. Der Updater verwendet die festgelegte Inspect-Releasequelle auf GitHub. Er übernimmt keine FIT-Connect- oder Proxy-Zugangsdaten aus Diagnosen. Sein Netzwerkweg kann deshalb von einem manuell konfigurierten Diagnoseproxy abweichen.",
+      "Paketbytes, signierter Inspect-Produktdateiname und signierte Version werden mit dem eingebetteten öffentlichen Schlüssel geprüft. Ein älteres Paket wird nicht durch eine manipulierte Versionsangabe zu einem neueren Update. Der private Update-Schlüssel verbleibt auf dem Signierrechner.",
+      "Keine Diagnose und kein Update werden beim Start automatisch aus dem Internet geladen. Sitzungsinhalte werden vor einer Installation nicht automatisch gespeichert. Bei Problemen bleibt der manuelle Installer aus dem offiziellen Release verfügbar."
+    ],
+    "example": null
   }
 ]

@@ -53,16 +53,28 @@ final class Certificates {
         "SPKI des ersten x5c-Zertifikats muss zum JWK passen.",
         path + ".x5c[0]",
         KeyDiagnostics.SOURCE);
+    inspectChain(chain, r, http, options, path, key.getKeyID());
+  }
+
+  static void inspectChain(
+      List<X509Certificate> chain,
+      Report r,
+      PkiFetch http,
+      JsonObject options,
+      String path,
+      String kid)
+      throws Exception {
+    X509Certificate leaf = chain.getFirst();
     JsonArray certificates = new JsonArray();
     for (int i = 0; i < chain.size(); i++) {
       X509Certificate c = chain.get(i);
       String p = path + ".x5c[" + i + "]";
       JsonObject info = new JsonObject();
       info.addProperty("keyPath", path);
-      info.addProperty("kid", key.getKeyID());
+      info.addProperty("kid", kid);
       info.addProperty("chainIndex", i);
       info.addProperty("role", i == 0 ? "Teilnehmerzertifikat" : "Ausstellerzertifikat");
-      info.addProperty("x5c", x5c.get(i).toString());
+      info.addProperty("x5c", Base64.getEncoder().encodeToString(c.getEncoded()));
       info.addProperty(
           "pem",
           "-----BEGIN CERTIFICATE-----\n"

@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 test('exported guide uses the product website shell and preserves every help topic', async () => {
   await import('../scripts/build-help.mjs');
   const product = readFileSync('website/inspect/index.html', 'utf8');
-  const guide = readFileSync('dist-help/inspect/hilfe/0.1/index.html', 'utf8');
+  const guide = readFileSync('dist-help/inspect/hilfe/0.2/index.html', 'utf8');
   for (const expression of [
     /<header class="site-header">[\s\S]*?<\/header>/,
     /<footer class="footer">[\s\S]*?<\/footer>/,
@@ -37,13 +37,15 @@ test('exported guide uses the product website shell and preserves every help top
   }
   for (const file of ['start.png', 'destination.png', 'schema.png'])
     assert.ok(guide.includes(file));
-  assert.ok(guide.includes('VERSION 0.1.0'));
+  assert.ok(guide.includes('VERSION 0.2.0'));
   assert.ok(!guide.includes('Noch kein freigegebener Installer'));
-  assert.ok(product.includes('/releases/tag/0.1.0'));
+  assert.ok(product.includes('/releases/tag/0.2.0'));
   assert.ok(!readFileSync('README.md', 'utf8').includes('/blob/release/0.1.0/'));
   assert.ok(guide.includes('<ol>'));
   assert.ok(guide.includes('<pre><code>'));
-  assert.ok(!product.includes('releases/download/'));
+  assert.ok(
+    product.includes('/releases/download/0.2.0/FBForge-Inspect-0.2.0-windows-x64-setup.exe'),
+  );
   const introduction = product
     .match(/<p class="inspect-lead">([\s\S]*?)<\/p>/)[1]
     .replace(/\s+/g, ' ');
@@ -108,7 +110,7 @@ test('website export inventories only public files with matching checksums', asy
     'inspect/index.html',
     'inspect/images/start.png',
     'inspect/images/schema.png',
-    'inspect/hilfe/0.1/index.html',
+    'inspect/hilfe/0.2/index.html',
     'inspect/guide-flows-v1.css',
   ]) {
     assert.ok(

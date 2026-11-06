@@ -56,6 +56,28 @@ function check() {
         <p class="hint">
           Der Verbindungsweg gilt auch für Destinationen, Routing sowie OCSP und CRL.
         </p>
+        <p class="hint">
+          Windows-Systemproxy, PAC und Proxy-Umgebungsvariablen werden nicht automatisch übernommen.
+          Ein Browser kann einen anderen Netzwerkweg und Vertrauensspeicher verwenden.
+        </p>
+        <details>
+          <summary>Zusätzliche Unternehmens-CA für HTTPS</summary>
+          <label
+            >Öffentliche HTTPS-CA-Zertifikate (PEM)<textarea
+              v-model="settings.httpsCaPem"
+              rows="4"
+              spellcheck="false"
+              placeholder="-----BEGIN CERTIFICATE-----"
+              maxlength="262144"
+            />
+          </label>
+          <p class="hint">
+            Nur ausdrücklich freigegebene öffentliche CA-Zertifikate laden. Diese Ergänzung gilt nur
+            für HTTPS-Verbindungen in dieser Sitzung. Hostnamen- und Zertifikatsprüfung bleiben
+            aktiv. Die V-PKI-Prüfung der Zustellpunktschlüssel verwendet einen eigenen
+            Vertrauensspeicher.
+          </p>
+        </details>
       </fieldset>
     </section>
     <section class="panel">

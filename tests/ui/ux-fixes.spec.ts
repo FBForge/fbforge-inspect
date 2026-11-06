@@ -411,16 +411,19 @@ test('F11 unknown findings do not repeat generic next steps and confirmed labels
   ).toHaveCount(0);
 });
 
-test('F12 help opens the versioned public website and preserves the current task', async ({
+test('offline help links to the versioned website and retains the previous task', async ({
   page,
 }) => {
   await go(page, 'Routing prüfen');
   await page.getByLabel('LeiKa-Schlüssel', { exact: true }).fill('99008001014002');
   await go(page, 'Hilfe');
+  await expect(page.getByRole('heading', { name: 'Anleitung auf diesem Gerät' })).toBeVisible();
+  await page.getByRole('button', { name: 'Bebilderte Anleitung im Browser' }).click();
   expect(await page.evaluate(() => (window as any).inspectUx.calls.at(-1))).toMatchObject({
     command: 'open_reference',
     reference: 'help',
   });
+  await go(page, 'Routing prüfen');
   await expect(page.getByRole('heading', { name: 'Routing prüfen', exact: true })).toBeVisible();
   await expect(page.getByLabel('LeiKa-Schlüssel', { exact: true })).toHaveValue('99008001014002');
   await expect(page.getByRole('combobox', { name: 'Hilfethema' })).toHaveCount(0);

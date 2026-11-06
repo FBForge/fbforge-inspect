@@ -202,7 +202,7 @@ class ProxyNetworkTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"target-hostname", "proxy-hostname", "proxy-untrusted"})
+  @ValueSource(strings = {"target-hostname", "custom-ca-target-hostname", "proxy-hostname", "proxy-untrusted"})
   void rejectsWrongTlsHostsAndUntrustedProxyCertificates(String scenario) throws Exception {
     try (ServerSocket listener = new ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {
       listener.setSoTimeout(5000);
@@ -211,7 +211,7 @@ class ProxyNetworkTest {
               () -> {
                 try (Socket raw = listener.accept()) {
                   raw.setSoTimeout(5000);
-                  if (scenario.equals("target-hostname")) {
+                  if (scenario.endsWith("target-hostname")) {
                     head(raw.getInputStream());
                     raw.getOutputStream()
                         .write(
@@ -228,7 +228,7 @@ class ProxyNetworkTest {
               });
       Thread.ofVirtual().start(peer);
       NetworkOptions proxy =
-          options(listener.getLocalPort(), scenario.equals("target-hostname") ? "http" : "https");
+          options(listener.getLocalPort(), scenario.endsWith("target-hostname") ? "http" : "https");
       if (scenario.equals("proxy-hostname")) {
         JsonObject json = new JsonObject();
         json.addProperty("mode", "manual");
@@ -237,11 +237,11 @@ class ProxyNetworkTest {
       }
       final NetworkOptions selected = proxy;
       SSLSocketFactory factory =
-          scenario.equals("proxy-untrusted")
+          scenario.equals("custom-ca-target-hostname") ? HttpsTrust.factory(CryptoTest.pem(CryptoTest.issuer)) : scenario.equals("proxy-untrusted")
               ? (SSLSocketFactory) SSLSocketFactory.getDefault()
               : clientTls.getSocketFactory();
       URI target =
-          scenario.equals("target-hostname")
+          scenario.endsWith("target-hostname")
               ? URI.create("https://wrong-host.example/data")
               : TARGET;
       NetworkFailure failure =
@@ -256,8 +256,68 @@ class ProxyNetworkTest {
                       selected,
                       factory));
       assertEquals(
-          scenario.equals("target-hostname") ? "TLS_FAILED" : "PROXY_TLS_FAILED", failure.code());
+          scenario.endsWith("target-hostname")
+              ? "TLS_HOSTNAME"
+              : scenario.equals("proxy-hostname")
+                  ? "PROXY_TLS_HOSTNAME"
+                  : "PROXY_TLS_TRUST_UNKNOWN",
+          failure.code());
       assertTrue(peer.get(8, TimeUnit.SECONDS));
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"http", "https"})
+  void explicitHttpsCaSupportsBothTlsPeersAndRecordsPublicPhasesWithoutCredentials(String scheme)
+      throws Exception {
+    try (ServerSocket listener = new ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {
+      listener.setSoTimeout(5000);
+      FutureTask<String> peer =
+          new FutureTask<>(
+              () -> {
+                try (Socket raw = listener.accept()) {
+                  raw.setSoTimeout(5000);
+                  Socket proxy = scheme.equals("https") ? server(raw) : raw;
+                  head(proxy.getInputStream());
+                  proxy
+                      .getOutputStream()
+                      .write("HTTP/1.1 200 Connected\r\n\r\n".getBytes(StandardCharsets.US_ASCII));
+                  proxy.getOutputStream().flush();
+                  try (SSLSocket target = server(proxy)) {
+                    String request = head(target.getInputStream());
+                    response(target.getOutputStream());
+                    return request;
+                  }
+                }
+              });
+      Thread.ofVirtual().start(peer);
+      JsonObject settings = new JsonObject();
+      settings.addProperty("mode", "manual");
+      settings.addProperty("proxyUrl", scheme + "://127.0.0.1:" + listener.getLocalPort());
+      settings.addProperty("username", USER);
+      settings.addProperty("password", PASSWORD);
+      settings.addProperty("httpsCaPem", CryptoTest.pem(CryptoTest.issuer));
+      Report report = new Report("network", "TEST", "v3");
+      PublicHttp http =
+          new PublicHttp(
+              report,
+              host -> new InetAddress[] {publicIpUnchecked()},
+              NetworkOptions.read(settings),
+              System::nanoTime);
+      assertEquals("ok", http.get(TARGET.toString()).text());
+      assertFalse(
+          peer.get(8, TimeUnit.SECONDS).toLowerCase(Locale.ROOT).contains("proxy-authorization"));
+      JsonObject trace = report.data.getAsJsonArray("networkTraces").get(0).getAsJsonObject();
+      assertTrue(trace.has("tls"));
+      assertEquals(scheme.equals("https"), trace.has("proxyTls"));
+      assertTrue(trace.getAsJsonObject("tls").getAsJsonArray("certificates").size() > 0);
+      String encoded = Main.JSON.toJson(report);
+      assertFalse(encoded.contains(USER));
+      assertFalse(encoded.contains(PASSWORD));
+      assertFalse(
+          encoded.contains(
+              Base64.getEncoder()
+                  .encodeToString((USER + ":" + PASSWORD).getBytes(StandardCharsets.UTF_8))));
     }
   }
 

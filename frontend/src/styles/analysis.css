@@ -1,0 +1,38 @@
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+}
+.action-row label {
+  margin: 0;
+}
+.check-queue {
+  padding-left: 24px;
+}
+.check-queue > li,
+.imported-finding {
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+}
+.phase-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-left: 20px;
+}
+.phase-list li {
+  padding: 8px 12px;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+.analysis-context {
+  overflow-wrap: anywhere;
+}
+.analysis-context .button,
+.action-row .button {
+  max-width: 100%;
+  white-space: normal;
+}

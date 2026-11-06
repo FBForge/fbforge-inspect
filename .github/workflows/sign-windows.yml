@@ -77,6 +77,11 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version: '24'
+      - name: Rust toolchain for independent update-signature verification
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          rustup default 1.96.0
       - run: npm ci --ignore-scripts
       - name: Download the candidate from this signing run
         env:
@@ -91,10 +96,15 @@ jobs:
           VALIDATION_RUN: ${{ inputs.validation_run }}
           SIGNING_THUMBPRINT: ${{ vars.WINDOWS_SIGNING_THUMBPRINT }}
         run: ./scripts/ci/check-signed-package.ps1 -Directory $env:SIGNED_CANDIDATE -Thumbprint $env:SIGNING_THUMBPRINT
+      - name: Check portable CLI against the independently verified package
+        run: python scripts/ci/cli-smoke.py (Join-Path $env:SIGNED_CANDIDATE 'engine/inspect-engine.jar') --java (Join-Path $env:SIGNED_CANDIDATE 'engine/runtime/bin/java.exe')
       - name: Prepare official NVDA
         run: ./scripts/ci/prepare-nvda.ps1
       - name: Install exact signed candidate and check WebView, exports, keyboard and NVDA
         run: |
+          python scripts/ci/load-upgrade-baseline.py
+          if ($LASTEXITCODE -ne 0) { throw 'upgrade_baseline_download_failed' }
+          $env:INSPECT_UPGRADE_BASELINE = (Get-Content -LiteralPath $env:GITHUB_ENV | Where-Object { $_ -like 'INSPECT_UPGRADE_BASELINE=*' } | Select-Object -Last 1).Substring('INSPECT_UPGRADE_BASELINE='.Length)
           $setup = @(Get-ChildItem -LiteralPath $env:SIGNED_CANDIDATE -Filter '*-setup.exe' -File)
           if ($setup.Count -ne 1) { throw 'signed_installer_ambiguous' }
           ./scripts/windows-accessibility-smoke.ps1 -InstallerPath $setup[0].FullName -ExpectedBinaryPath (Join-Path $env:SIGNED_CANDIDATE 'fbforge-inspect.exe') -NvdaPath $env:INSPECT_NVDA_PATH

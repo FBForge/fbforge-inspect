@@ -2,6 +2,7 @@
 param(
     [Parameter(Mandatory)][string]$InstallerPath,
     [string]$ExpectedBinaryPath,
+    [string]$UpgradeBaselinePath = $env:INSPECT_UPGRADE_BASELINE,
     [string]$CandidateSourceCommit = $env:GITHUB_SHA,
     [ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedInstallerSha256,
     [Parameter(Mandatory)][string]$NvdaPath
@@ -175,6 +176,17 @@ askedAllowUsageStats = True
 automaticUpdates = disabled
 '@
     [IO.File]::WriteAllText((Join-Path $taskConfig 'nvda.ini'), $config, [Text.UTF8Encoding]::new($false))
+    if ($UpgradeBaselinePath) {
+        $baselineHash = (Get-FileHash -LiteralPath $UpgradeBaselinePath -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($baselineHash -ne '7709169ee04a6e557dd6a2e2bd79457299019ef1a9a9a4539b877b9f0857a664') { throw 'a11y_upgrade_baseline_hash_invalid' }
+        $baselineSignature = Get-AuthenticodeSignature -LiteralPath $UpgradeBaselinePath
+        if ($baselineSignature.Status -ne 'Valid' -or $baselineSignature.SignerCertificate.Thumbprint -ne 'B3477D8A158AF7D599C2C17689CF541B1731D522') { throw 'a11y_upgrade_baseline_signature_invalid' }
+        $baseline = Start-Process -FilePath ([IO.Path]::GetFullPath($UpgradeBaselinePath)) -ArgumentList ('/S /D=' + $taskInstall) -PassThru
+        try { if (-not $baseline.WaitForExit(120000) -or $baseline.ExitCode -ne 0) { throw 'a11y_upgrade_baseline_install_failed' } } finally { $baseline.Dispose() }
+        $oldBinary = Join-Path $taskInstall 'fbforge-inspect.exe'
+        if (-not (Test-Path -LiteralPath $oldBinary -PathType Leaf)) { throw 'a11y_upgrade_baseline_binary_missing' }
+        $checks.Add([ordered]@{ name = 'Upgrade baseline 0.1.0'; role = 'Installer'; sha256 = $baselineHash })
+    }
     $setup = Start-Process -FilePath ([IO.Path]::GetFullPath($InstallerPath)) -ArgumentList ('/S /D=' + $taskInstall) -PassThru
     if (-not $setup.WaitForExit(120000) -or $setup.ExitCode -ne 0) { throw 'a11y_install_failed' }
     $binary = Join-Path $taskInstall 'fbforge-inspect.exe'
@@ -242,7 +254,23 @@ automaticUpdates = disabled
     }
     $null = Check-Spoken 'JSON Schema / XSD' $editType
     $help = Check-Spoken 'Hilfe' $buttonType
-    # Help opens the public website. Its label is checked without moving focus to an external browser.
+    Invoke-Control $help
+    $null = Check-Spoken 'Hilfe durchsuchen' $editType
+    $batch = Check-Spoken 'Sammelprüfung' $buttonType
+    Invoke-Control $batch
+    $null = Check-Spoken 'Prüfeingaben' $editType
+    $null = Check-Spoken 'Prüfungen vorbereiten' $buttonType
+    $tools = Check-Spoken 'Werkzeuge' $buttonType
+    Invoke-Control $tools
+    $null = Check-Spoken 'Aufgabe' ([System.Windows.Automation.ControlType]::ComboBox)
+    $inventory = Check-Spoken 'Zertifikatsinventar' $buttonType
+    Invoke-Control $inventory
+    $server = Check-Spoken 'Serverdiagnose' $buttonType
+    Invoke-Control $server
+    $null = Check-Spoken 'Portables CLI exportieren' $buttonType
+    $about = Check-Spoken 'Info' $buttonType
+    Invoke-Control $about
+    $null = Check-Spoken 'Nach Updates suchen' $buttonType
     # Repeat the proven native engine/export flow against the installed resources,
     # after stopping the screen reader and its app so they cannot intercept input.
     if ($taskNvda -and -not $taskNvda.HasExited) { $taskNvda.Kill(); $taskNvda.WaitForExit() }
@@ -266,7 +294,7 @@ automaticUpdates = disabled
     [IO.File]::WriteAllText((Join-Path $env:RUNNER_TEMP 'fbforge-accessibility-result.json'), ($report | ConvertTo-Json -Depth 5), [Text.UTF8Encoding]::new($false))
 } catch {
     # The test never enters credentials. Log only known synthetic control names.
-    $knownNames = @('Umgebung','API','Darstellung wählen','Destination prüfen','Destination-ID','Routing prüfen','Prozessnachricht prüfen','Schlüssel prüfen','Fachdatenschemata','JSON Schema / XSD','Hilfe')
+    $knownNames = @('Umgebung','API','Darstellung wählen','Destination prüfen','Destination-ID','Routing prüfen','Prozessnachricht prüfen','Schlüssel prüfen','Fachdatenschemata','JSON Schema / XSD','Hilfe','Hilfe durchsuchen','Sammelprüfung','Prüfeingaben','Prüfungen vorbereiten','Werkzeuge','Aufgabe','Zertifikatsinventar','Serverdiagnose','Portables CLI exportieren','Info','Nach Updates suchen')
     $focused = [System.Windows.Automation.AutomationElement]::FocusedElement
     if ($focused) {
         $label = if ($knownNames -contains $focused.Current.Name) { $focused.Current.Name } else { '(other control)' }
