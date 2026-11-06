@@ -47,7 +47,7 @@ class PortableWorkflowTest {
         result.getAsJsonArray("checks").get(0).getAsJsonObject().getAsJsonObject("report");
     assertEquals("schema", report.get("operation").getAsString());
     assertFalse(report.getAsJsonObject("data").getAsJsonArray("structure").isEmpty());
-    assertEquals(0, report.getAsJsonObject("rawResponses").size());
+    assertFalse(report.has("rawResponses"));
     assertFalse(result.getAsJsonObject("runtime").has("hostname"));
   }
 
@@ -128,7 +128,9 @@ class PortableWorkflowTest {
     JsonObject privateJob = job();
     JsonObject check = privateJob.getAsJsonArray("checks").get(0).getAsJsonObject();
     check.addProperty("operation", "keys");
-    check.getAsJsonObject("input").addProperty("text", "{\"kty\":\"RSA\",\"d\":\"synthetic-private-marker\"}");
+    check
+        .getAsJsonObject("input")
+        .addProperty("text", "{\"kty\":\"RSA\",\"d\":\"synthetic-private-marker\"}");
     assertThrows(IllegalArgumentException.class, () -> PortableJob.requests(privateJob));
     JsonObject root = new JsonObject(), cursor = root;
     for (int index = 0; index < 100; index++) {

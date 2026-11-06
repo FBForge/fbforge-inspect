@@ -615,3 +615,37 @@ test('addressing context exploration keeps authorities separate and follow-up ac
   await expect(page.getByLabel('Destination-ID', { exact: true })).toHaveValue(destination);
   expect(await page.evaluate(() => (window as any).__inspectCalls.length)).toBe(1);
 });
+
+test('imported check identifiers never inherit completed result state from object properties', async ({
+  page,
+}) => {
+  await nativeBridge(page);
+  await page.goto('/');
+  await navigate(page, 'Sammelprüfung');
+  const job = {
+    format: 'fbforge-inspect-job',
+    formatVersion: 1,
+    environment: 'TEST',
+    apiVersion: 'v3',
+    checks: ['constructor', '__proto__'].map((id) => ({ id, operation: 'network', input: {} })),
+  };
+  await page.getByLabel('Prüfauftrag öffnen', { exact: true }).setInputFiles({
+    name: 'reserved-identifiers.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(job)),
+  });
+  await expect(
+    page.getByRole('button', { name: 'Diese Prüfung wiederholen', exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByText('Noch nicht ausgeführt', { exact: true })).toHaveCount(2);
+  await page.getByRole('button', { name: 'Sammelprüfung starten', exact: true }).click();
+  await expect(page.getByText('Sammelprüfung abgeschlossen.', { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Diese Prüfung wiederholen', exact: true }),
+  ).toHaveCount(2);
+  await page.getByRole('button', { name: 'Ergebnisse speichern', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => (window as any).__saved.length)).toBe(1);
+  const results = await page.evaluate(() => JSON.parse((window as any).__saved[0].content));
+  expect(results.checks.map((check: any) => check.id)).toEqual(['constructor', '__proto__']);
+  expect(results.checks.every((check: any) => !!check.report && !check.error)).toBe(true);
+});

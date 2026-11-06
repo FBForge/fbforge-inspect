@@ -129,7 +129,9 @@ final class Cli {
           Report report =
               future.get(Math.min(TimeUnit.SECONDS.toNanos(130), remaining), TimeUnit.NANOSECONDS);
           report.rawResponses.clear();
-          entry.add("report", Main.JSON.toJsonTree(report));
+          JsonObject exported = Main.JSON.toJsonTree(report).getAsJsonObject();
+          exported.remove("rawResponses");
+          entry.add("report", exported);
           if (report.findings.stream().anyMatch(f -> f.status().equals("error")))
             exit = Math.max(exit, 2);
           if (report.findings.stream().anyMatch(f -> f.status().equals("unknown"))) exit = 3;
