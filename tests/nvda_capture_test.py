@@ -38,7 +38,7 @@ class CaptureTests(unittest.TestCase):
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
                 observer = module.GlobalPlugin()
-                labels = ['Hilfe durchsuchen', 'Sammelprüfung', 'Prüfeingaben',
+                labels = ['Hilfe durchsuchen', 'Sammelprüfung', 'Prüfung auswählen', 'Kennung oder öffentliche URL', 'Prüfung hinzufügen', 'Prüfeingaben',
                           'Prüfungen vorbereiten', 'Werkzeuge', 'Aufgabe',
                           'Zertifikatsinventar', 'Serverdiagnose', 'Portables CLI exportieren',
                           'Info', 'Nach Updates suchen']

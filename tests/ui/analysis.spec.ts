@@ -35,6 +35,9 @@ async function navigate(page: import('@playwright/test').Page, name: string) {
     .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('button', { name, exact: true })
     .click();
+  // Existing batch scenarios exercise the bulk text-entry path explicitly.
+  if (name === 'Sammelprüfung')
+    await page.getByText('Mehrere Kennungen einfügen und Aufträge öffnen', { exact: true }).click();
 }
 
 test('smart paste previews the environment and transfers context without starting a diagnosis', async ({
@@ -445,7 +448,9 @@ test('batch pause waits for the active check and cancellation retains completed 
   await expect.poll(() => page.evaluate(() => (window as any).__started)).toBe(1);
   await page.getByRole('button', { name: 'Nach aktueller Prüfung pausieren' }).click();
   await page.evaluate(() => (window as any).__pending());
-  await expect(page.getByText('Abgeschlossen', { exact: true })).toHaveCount(1);
+  await expect(
+    page.locator('.check-queue').getByText('Nicht nachgewiesen', { exact: true }),
+  ).toHaveCount(1);
   expect(await page.evaluate(() => (window as any).__started)).toBe(1);
   await page.getByRole('button', { name: 'Fortsetzen', exact: true }).click();
   await expect.poll(() => page.evaluate(() => (window as any).__started)).toBe(2);
@@ -455,7 +460,9 @@ test('batch pause waits for the active check and cancellation retains completed 
       exact: true,
     }),
   ).toBeVisible();
-  await expect(page.getByText('Abgeschlossen', { exact: true })).toHaveCount(1);
+  await expect(
+    page.locator('.check-queue').getByText('Nicht nachgewiesen', { exact: true }),
+  ).toHaveCount(1);
   await expect(page.getByText('Noch nicht ausgeführt', { exact: true })).toHaveCount(1);
 });
 
@@ -649,3 +656,261 @@ test('imported check identifiers never inherit completed result state from objec
   expect(results.checks.map((check: any) => check.id)).toEqual(['constructor', '__proto__']);
   expect(results.checks.every((check: any) => !!check.report && !check.error)).toBe(true);
 });
+
+test('guided batch entry keeps completed results and exposes errors without opening details', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.assign(window, {
+      isTauri: true,
+      __TAURI_INTERNALS__: {
+        invoke: async (_: string, args: any) => {
+          const bad = args.request.input.destinationId?.endsWith('2');
+          return {
+            ok: true,
+            report: {
+              protocolVersion: 1,
+              appVersion: '0.2.0',
+              createdAt: '2026-11-06T00:00:00Z',
+              operation: args.request.operation,
+              environment: 'TEST',
+              apiVersion: 'v3',
+              requests: [],
+              data: {},
+              findings: [
+                {
+                  status: bad ? 'error' : 'confirmed',
+                  title: bad ? 'Fiktiver Zertifikatsfehler' : 'Fiktiver Nachweis',
+                  detail: 'Testbeleg',
+                  path: '$',
+                  source: '',
+                  nextStep: bad ? 'Ersatzschlüssel prüfen.' : '',
+                  limitation: '',
+                },
+              ],
+            },
+          };
+        },
+      },
+    });
+  });
+  await page.goto('/');
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Sammelprüfung', exact: true })
+    .click();
+  for (const suffix of ['1', '2']) {
+    await page
+      .getByLabel('Kennung oder öffentliche URL', { exact: true })
+      .fill('00000000-0000-4000-8000-00000000000' + suffix);
+    await page.getByRole('button', { name: 'Prüfung hinzufügen', exact: true }).click();
+  }
+  await page.getByRole('button', { name: 'Sammelprüfung starten', exact: true }).click();
+  await expect(page.getByText('Sammelprüfung abgeschlossen.', { exact: true })).toBeVisible();
+  await expect(
+    page.locator('.check-queue').getByText('Handlungsbedarf', { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.locator('.check-queue').getByText('Ersatzschlüssel prüfen.', { exact: false }),
+  ).toBeVisible();
+  await page
+    .getByRole('combobox', { name: 'Prüfung auswählen', exact: true })
+    .selectOption('network');
+  await page.getByRole('button', { name: 'Prüfung hinzufügen', exact: true }).click();
+  await expect(page.locator('.check-queue > li')).toHaveCount(3);
+  await expect(
+    page.locator('.check-queue').getByText('Handlungsbedarf', { exact: true }),
+  ).toBeVisible();
+  await page.getByLabel('Prüfwarteschlange filtern').selectOption('error');
+  await expect(page.locator('.check-queue > li')).toHaveCount(1);
+  await page
+    .locator('.check-queue')
+    .screenshot({ path: '.local/quality/screenshots/integrator-batch-error.png' });
+});
+
+test('server package contains public job and associates imported result with exact exported bytes', async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    Object.assign(window, {
+      isTauri: true,
+      __TAURI_INTERNALS__: {
+        invoke: async (command: string, args: any) => {
+          if (command === 'export_cli') {
+            (window as any).__package = args.jobContent;
+            return true;
+          }
+          return false;
+        },
+      },
+    }),
+  );
+  await page.goto('/');
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Sammelprüfung', exact: true })
+    .click();
+  await page.getByLabel('Prüfung auswählen').selectOption('network');
+  await page.getByRole('button', { name: 'Prüfung hinzufügen', exact: true }).click();
+  await navigate(page, 'Serverdiagnose');
+  await page.getByRole('button', { name: 'Portables CLI exportieren', exact: true }).click();
+  await expect(
+    page.getByText('CLI und auftrag.json gemeinsam exportiert.', { exact: false }),
+  ).toBeVisible();
+  const content = await page.evaluate(() => (window as any).__package);
+  expect(JSON.parse(content)).toMatchObject({
+    environment: 'TEST',
+    checks: [{ operation: 'network' }],
+  });
+  const hash = (await import('node:crypto')).createHash('sha256').update(content).digest('hex');
+  const result = {
+    format: 'fbforge-inspect-result',
+    formatVersion: 1,
+    appVersion: '0.2.0',
+    createdAt: '2026-11-06T00:00:00Z',
+    runtime: { os: 'Linux', architecture: 'amd64', javaVersion: '25' },
+    checks: [],
+    exitCode: 0,
+    jobSha256: hash,
+  };
+  const load = async (value: object) =>
+    page.getByLabel('Serverergebnis öffnen', { exact: true }).setInputFiles({
+      name: 'result.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(value)),
+    });
+  await load(result);
+  await expect(
+    page.getByText('Ergebnis passt zu den Bytes der ausgewählten Auftragsdatei.', { exact: true }),
+  ).toBeVisible();
+  await load({ ...result, jobSha256: '0'.repeat(64) });
+  await expect(
+    page.getByText('Das Ergebnis passt nicht zur ausgewählten Auftragsdatei.', { exact: false }),
+  ).toBeVisible();
+  const reference = page.getByLabel('Auftragsdatei zur Zuordnung öffnen', { exact: true });
+  await reference.setInputFiles({
+    name: 'job.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(content),
+  });
+  await load(result);
+  await expect(
+    page.getByText('Ergebnis passt zu den Bytes der ausgewählten Auftragsdatei.', { exact: true }),
+  ).toBeVisible();
+  await reference.setInputFiles({
+    name: 'invalid.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from('null'),
+  });
+  await expect(
+    page.getByText('Auftragsdatei ungültig. Zuordnung nicht nachgewiesen.', { exact: true }),
+  ).toBeVisible();
+  await reference.setInputFiles({
+    name: 'reformatted.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(content + '\n'),
+  });
+  await expect(
+    page.getByText('Das Ergebnis passt nicht zur ausgewählten Auftragsdatei.', { exact: false }),
+  ).toBeVisible();
+  await load({ ...result, jobSha256: undefined });
+  await expect(
+    page.getByText('Dieses Ergebnis enthält keinen Auftragsfingerabdruck.', { exact: false }),
+  ).toBeVisible();
+});
+
+test('failed proxy phase explains unreached checks without asserting a certificate defect', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await navigate(page, 'Serverdiagnose');
+  const report = {
+    protocolVersion: 1,
+    appVersion: '0.2.0',
+    createdAt: '2026-11-06T00:00:00Z',
+    operation: 'network',
+    environment: 'TEST',
+    apiVersion: 'v3',
+    requests: [],
+    findings: [],
+    data: {
+      networkTraces: [
+        {
+          url: 'https://example.org/',
+          route: 'manualProxy',
+          phases: [{ stage: 'proxyConnect', outcome: 'PROXY_AUTH_REQUIRED', durationMs: 1 }],
+        },
+      ],
+    },
+  };
+  await page.getByLabel('Serverergebnis öffnen', { exact: true }).setInputFiles({
+    name: 'result.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(
+      JSON.stringify({
+        format: 'fbforge-inspect-result',
+        formatVersion: 1,
+        appVersion: '0.2.0',
+        createdAt: report.createdAt,
+        runtime: { os: 'Linux', architecture: 'amd64', javaVersion: '25' },
+        checks: [{ id: 'network', report }],
+        exitCode: 3,
+      }),
+    ),
+  });
+  const guidance = page.getByRole('region', { name: 'Fehlgeschlagene Verbindungsphasen' });
+  await expect(guidance.getByText('Proxy-Tunnel und Anmeldung', { exact: true })).toBeVisible();
+  await expect(
+    guidance.getByText('Nachfolgende Schritte dieser Verbindung sind nicht nachgewiesen.', {
+      exact: false,
+    }),
+  ).toBeVisible();
+});
+
+for (const status of [200, 404]) {
+  test(`received HTTP ${status} is not presented as an interrupted connection`, async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await navigate(page, 'Serverdiagnose');
+    const response = {
+      ...result,
+      checks: [
+        {
+          id: 'http-response',
+          report: {
+            ...report,
+            findings: [],
+            data: {
+              networkTraces: [
+                {
+                  url: 'https://example.org/',
+                  route: 'direct',
+                  phases: [
+                    { stage: 'dns', outcome: 'confirmed', durationMs: 1 },
+                    { stage: 'tcp', outcome: 'confirmed', durationMs: 1 },
+                    { stage: 'tls', outcome: 'confirmed', durationMs: 1 },
+                    { stage: 'http', outcome: `HTTP_${status}`, durationMs: 1 },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      ],
+    };
+    await page.getByLabel('Serverergebnis öffnen', { exact: true }).setInputFiles({
+      name: 'http-response.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(response)),
+    });
+    await expect(page.getByRole('heading', { name: 'Übertragenes Serverergebnis' })).toBeVisible();
+    await expect(
+      page.getByRole('region', { name: 'Fehlgeschlagene Verbindungsphasen' }),
+    ).toHaveCount(0);
+    await page.getByText('Verbindungsphasen und HTTPS-Vertrauen', { exact: true }).click();
+    await expect(
+      page.getByText(`HTTP-Antwort · 1 ms · HTTP_${status}`, { exact: true }),
+    ).toBeVisible();
+  });
+}

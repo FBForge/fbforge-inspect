@@ -9,5 +9,9 @@ export default defineConfig({
     headless: true,
     launchOptions: { executablePath: process.env.INSPECT_CHROMIUM_EXECUTABLE },
   },
-  webServer: { command: 'npm run dev', url: 'http://127.0.0.1:1421', reuseExistingServer: true },
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://127.0.0.1:1421',
+    reuseExistingServer: process.env.INSPECT_REUSE_SERVER === '1',
+  },
 });

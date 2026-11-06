@@ -233,7 +233,10 @@ fn reference_url(reference: &str) -> Result<&'static str, String> {
 }
 
 #[tauri::command]
-async fn export_cli(app: tauri::AppHandle) -> Result<bool, String> {
+async fn export_cli(app: tauri::AppHandle, job_content: Option<String>) -> Result<bool, String> {
+    if let Some(content) = &job_content {
+        cli_export::validate_job(content).map_err(|_| "Auftragsformat oder Größe ungültig.")?;
+    }
     let _activity = file_activity(&app)?;
     let engine = if cfg!(debug_assertions) {
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("resources/engine/inspect-engine.jar")
@@ -272,6 +275,9 @@ async fn export_cli(app: tauri::AppHandle) -> Result<bool, String> {
                 target.join("README.txt"),
                 include_str!("../../cli/README.txt"),
             )?;
+            if let Some(content) = &job_content {
+                cli_export::write_job(content, &target.join("auftrag.json"))?;
+            }
             std::fs::write(target.join("LICENSE"), include_str!("../../LICENSE"))?;
             std::fs::write(
                 target.join("THIRD_PARTY_NOTICES.md"),

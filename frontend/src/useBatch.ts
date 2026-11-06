@@ -33,6 +33,24 @@ export function useBatch(network: () => Record<string, unknown>) {
     for (const key of Object.keys(results)) delete results[key];
     message.value = 'Prüfauftrag übernommen. Noch keine Verbindung gestartet.';
   }
+  function append(check: CheckInput, env: string, api: string) {
+    if (busy.value) return;
+    if (checks.value.length && (environment.value !== env || apiVersion.value !== api))
+      throw new Error('Vorhandener Auftrag gehört zu einer anderen Umgebung oder API-Version.');
+    const checked = parseJob(
+      JSON.stringify({
+        format: 'fbforge-inspect-job',
+        formatVersion: 1,
+        environment: env,
+        apiVersion: api,
+        checks: [...checks.value, check],
+      }),
+    );
+    checks.value = checked.checks;
+    environment.value = env;
+    apiVersion.value = api;
+    message.value = 'Prüfung hinzugefügt. Vorhandene Ergebnisse bleiben erhalten.';
+  }
   function job(): PortableJob {
     const settings = network();
     return parseJob(
@@ -166,6 +184,7 @@ export function useBatch(network: () => Record<string, unknown>) {
     apiVersion,
     activeId,
     setJob,
+    append,
     job,
     start,
     resume,

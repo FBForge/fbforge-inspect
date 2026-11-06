@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { labels } from './contracts';
+import { resultState, outcomeNames, operationNames, attention } from './workflow';
+import FailureGuidance from './FailureGuidance.vue';
 import { checksFromText, parseJob, recognizeInput, type PortableJob } from './portable';
 import type { NetworkSettings } from './network';
 import { saveFile } from './saveFile';
@@ -11,10 +14,76 @@ const props = defineProps<{
   apiVersion: string;
   settings: NetworkSettings;
 }>();
-const emit = defineEmits<{ context: [environment: string, apiVersion: string] }>();
+const emit = defineEmits<{ context: [environment: string, apiVersion: string]; network: [] }>();
 const source = ref(''),
   error = ref('');
 const pending = ref<PortableJob | null>(null);
+const kind = ref('destination'),
+  target = ref(''),
+  service = ref(''),
+  region = ref('');
+const filter = ref('all');
+const counts = computed(() => ({
+  error: props.batch.checks.filter((c) => resultState(props.batch.results[c.id]) === 'error')
+    .length,
+  unknown: props.batch.checks.filter((c) => resultState(props.batch.results[c.id]) === 'unknown')
+    .length,
+  warning: props.batch.checks.filter((c) => resultState(props.batch.results[c.id]) === 'warning')
+    .length,
+  pending: props.batch.checks.filter((c) => resultState(props.batch.results[c.id]) === 'pending')
+    .length,
+  notApplicable: props.batch.checks.filter(
+    (c) => resultState(props.batch.results[c.id]) === 'notApplicable',
+  ).length,
+  confirmed: props.batch.checks.filter(
+    (c) => resultState(props.batch.results[c.id]) === 'confirmed',
+  ).length,
+}));
+const visibleChecks = computed(() =>
+  props.batch.checks.filter(
+    (c) =>
+      filter.value === 'all' ||
+      (filter.value === 'attention'
+        ? ['error', 'unknown', 'warning'].includes(resultState(props.batch.results[c.id]))
+        : resultState(props.batch.results[c.id]) === filter.value),
+  ),
+);
+function addCheck() {
+  try {
+    const line =
+      kind.value === 'network'
+        ? 'network'
+        : kind.value === 'routing'
+          ? `routing,${service.value.trim()},${region.value.trim()}`
+          : target.value.trim();
+    const context = recognizeInput(line);
+    if (context?.environment && context.environment !== props.environment)
+      throw new Error(`Die URL gehört zu ${context.environment}. Zuerst diese Umgebung auswählen.`);
+    if (context?.apiVersion && context.apiVersion !== props.apiVersion)
+      throw new Error(
+        `Die URL verwendet ${context.apiVersion}. Zuerst diese API-Version auswählen.`,
+      );
+    const added = checksFromText(line);
+    if (added.length !== 1) throw new Error('Genau eine Prüfung angeben.');
+    if (added[0]!.operation !== kind.value)
+      throw new Error(
+        'Die Eingabe passt nicht zur ausgewählten Prüfung. Prüfung und Eingabe abgleichen.',
+      );
+    let number = 1;
+    while (props.batch.checks.some((c) => c.id === `check-${number}`)) number++;
+    props.batch.append(
+      { ...added[0]!, id: `check-${number}` },
+      props.environment,
+      props.apiVersion,
+    );
+    error.value = '';
+    target.value = '';
+    service.value = '';
+    region.value = '';
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Eingabe ungültig.';
+  }
+}
 function prepare() {
   try {
     for (const line of source.value.split(/\r?\n/)) {
@@ -91,10 +160,7 @@ async function save(kind: 'job' | 'result') {
 function retryIds() {
   return props.batch.checks
     .filter((c) => {
-      const r = props.batch.results[c.id];
-      return (
-        !r || r.error || r.report?.findings.some((f) => ['error', 'unknown'].includes(f.status))
-      );
+      return ['pending', 'error', 'unknown'].includes(resultState(props.batch.results[c.id]));
     })
     .map((c) => c.id);
 }
@@ -102,30 +168,54 @@ function retryIds() {
 <template>
   <section class="panel analysis-context">
     <h2>Mehrere öffentliche Prüfungen vorbereiten</h2>
-    <p>
-      Pro Zeile eine Destination-ID, eine unterstützte FIT-Connect-URL oder <code>network</code>.
-      Für Routing: <code>routing,LeiKa,ARS</code>. Höchstens 32 Prüfungen.
-    </p>
-    <fieldset :disabled="batch.busy">
-      <label
-        >Prüfeingaben<textarea
-          v-model="source"
-          rows="5"
-          spellcheck="false"
-          placeholder="00000000-0000-4000-8000-000000000001"
-        />
-      </label>
-      <div class="action-row">
-        <button class="button secondary" @click="prepare">Prüfungen vorbereiten</button>
-        <label class="file-label"
-          >Prüfauftrag öffnen<input type="file" accept=".json" @change="file"
+    <form @submit.prevent="addCheck">
+      <fieldset :disabled="batch.busy">
+        <label
+          >Prüfung auswählen<select v-model="kind">
+            <option value="destination">Zustellpunkt</option>
+            <option value="routing">Routing</option>
+            <option value="network">Netzwerk</option>
+          </select></label
+        >
+        <label v-if="kind === 'destination'"
+          >Kennung oder öffentliche URL<input v-model="target" required spellcheck="false"
         /></label>
-      </div>
-    </fieldset>
-    <p class="hint">
-      Importierte Aufträge starten keine Verbindung. Es gilt der unter Netzwerk eingerichtete
-      Verbindungsweg. Zugangsdaten werden nie exportiert.
-    </p>
+        <template v-if="kind === 'routing'">
+          <label>LeiKa-Schlüssel<input v-model="service" required pattern="[0-9]{14}" /></label>
+          <label
+            >Vollständiger ARS<input v-model="region" required pattern="(DE)?[0-9]{12}"
+          /></label>
+        </template>
+        <button class="button secondary" type="submit">Prüfung hinzufügen</button>
+      </fieldset>
+    </form>
+    <details>
+      <summary>Mehrere Kennungen einfügen und Aufträge öffnen</summary>
+      <p>
+        Pro Zeile eine Destination-ID, eine unterstützte FIT-Connect-URL oder <code>network</code>.
+        Für Routing: <code>routing,LeiKa,ARS</code>. Höchstens 32 Prüfungen.
+      </p>
+      <fieldset :disabled="batch.busy">
+        <label
+          >Prüfeingaben<textarea
+            v-model="source"
+            rows="5"
+            spellcheck="false"
+            placeholder="00000000-0000-4000-8000-000000000001"
+          />
+        </label>
+        <div class="action-row">
+          <button class="button secondary" @click="prepare">Prüfungen vorbereiten</button>
+          <label class="file-label"
+            >Prüfauftrag öffnen<input type="file" accept=".json" @change="file"
+          /></label>
+        </div>
+      </fieldset>
+      <p class="hint">
+        Importierte Aufträge starten keine Verbindung. Es gilt der unter Netzwerk eingerichtete
+        Verbindungsweg. Zugangsdaten werden nie exportiert.
+      </p>
+    </details>
     <p v-if="error" role="alert" class="error-text">{{ error }}</p>
     <div v-if="pending" class="notice">
       <h3>Verbindungsweg aus dem Auftrag</h3>
@@ -192,24 +282,66 @@ function retryIds() {
       </button>
     </div>
     <p role="status">{{ batch.message }}</p>
+    <p role="status">
+      {{ counts.error }} mit Handlungsbedarf · {{ counts.unknown }} nicht nachgewiesen ·
+      {{ counts.warning }} mit Hinweisen · {{ counts.confirmed }} bestätigt ·
+      {{ counts.pending }} noch nicht ausgeführt · {{ counts.notApplicable }} nicht anwendbar
+    </p>
+    <p class="hint">
+      Die Übersicht bewertet die ausgewählten Einzelprüfungen. Sie ist keine Gesamtfreigabe der
+      Anbindung.
+    </p>
+    <label
+      >Prüfwarteschlange filtern<select v-model="filter">
+        <option value="all">Alle Prüfungen</option>
+        <option value="attention">Offene Befunde und Hinweise</option>
+        <option value="error">Handlungsbedarf</option>
+        <option value="unknown">Nicht nachgewiesen</option>
+      </select></label
+    >
+    <p v-if="!visibleChecks.length">Keine Prüfungen für diesen Filter.</p>
     <ol class="check-queue">
-      <li v-for="check in batch.checks" :key="check.id">
-        <strong>{{ check.id }} · {{ check.operation }}</strong>
+      <li v-for="check in visibleChecks" :key="check.id">
+        <strong>{{ check.id }} · {{ operationNames[check.operation] || check.operation }}</strong>
         <p class="mono">
           {{ check.input.destinationId || check.input.service || 'Öffentliche Prüfung' }}
         </p>
-        <p>
+        <p :class="resultState(batch.results[check.id])" class="badge">
           {{
             batch.activeId === check.id
               ? 'Wird geprüft'
-              : batch.results[check.id]?.error ||
-                (batch.results[check.id]?.report ? 'Abgeschlossen' : 'Noch nicht ausgeführt')
+              : outcomeNames[resultState(batch.results[check.id])]
           }}
+        </p>
+        <p v-if="batch.results[check.id]?.error">
+          {{
+            batch.results[check.id]?.error === 'RESULT_SIZE_LIMIT'
+              ? 'Das Ergebnis überschreitet das Speicherbudget. Weniger Prüfungen in einem Auftrag ausführen.'
+              : 'Die Prüfung konnte nicht abgeschlossen werden. Eingaben und Verbindungsweg prüfen und diesen Eintrag erneut ausführen.'
+          }}
+        </p>
+        <details v-if="batch.results[check.id]?.error">
+          <summary>Technischen Fehlercode anzeigen</summary>
+          <code>{{ batch.results[check.id]?.error }}</code>
+        </details>
+        <p v-if="attention(batch.results[check.id]?.report)">
+          <strong>{{ attention(batch.results[check.id]?.report)!.title }}</strong> ·
+          {{ attention(batch.results[check.id]?.report)!.detail }}
+        </p>
+        <p v-if="attention(batch.results[check.id]?.report)?.nextStep">
+          <strong>Nächster Schritt:</strong>
+          {{ attention(batch.results[check.id]?.report)!.nextStep }}
         </p>
         <details v-if="batch.results[check.id]?.report">
           <summary>Befunde anzeigen</summary>
+          <FailureGuidance
+            :report="batch.results[check.id]!.report!"
+            can-configure
+            @network="emit('network')"
+          />
           <p v-for="(finding, i) in batch.results[check.id]!.report!.findings" :key="i">
-            <strong>{{ finding.title }}</strong> · {{ finding.detail }}
+            <strong>{{ labels[finding.status] }} · {{ finding.title }}</strong> ·
+            {{ finding.detail }}
           </p>
         </details>
         <button

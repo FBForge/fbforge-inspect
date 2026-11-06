@@ -121,3 +121,5 @@ Ein SHA-256-Fingerabdruck erlaubt den Abgleich mit einer bekannten Originaldatei
 - Rechnername, Benutzername und private Schlüsselbestände gehören nicht zum Laufzeitkontext.
 
 Öffentliche Kennungen, Organisationsnamen und ausdrücklich gewählte Proxyziele können vorkommen. Vor Weitergabe den Inhalt prüfen. Authentifizierung, Einreichungen, Empfang und Fachdatenprüfung erfolgen in Connect oder der angebundenen Anwendung.
+
+Der Desktopexport unter Serverdiagnose nimmt einen vorbereiteten öffentlichen Auftrag als `auftrag.json` in den neuen CLI-Ordner auf. Zugangsdaten bleiben ausgeschlossen. Beim Import ordnet der SHA-256-Fingerabdruck das Ergebnis den genauen Auftragsbytes zu. Er ist kein Nachweis der Serveridentität. Vor der Ausführung `java -version` prüfen. Java 25 oder neuer kann separat portabel entpackt werden.
