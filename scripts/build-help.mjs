@@ -15,7 +15,12 @@ const images = {
   inventory: [
     ['inventory.png', 'Zertifikatsinventar mit fiktiven öffentlichen Zertifikatszuordnungen'],
   ],
-  server: [['server.png', 'Serverdiagnose mit vorbereitetem Prüfauftrag, gemeinsamem CLI-Export und Dateiimport']],
+  server: [
+    [
+      'server.png',
+      'Serverdiagnose mit vorbereitetem Prüfauftrag, gemeinsamem CLI-Export und Dateiimport',
+    ],
+  ],
   updates: [['updates.png', 'Info und ausdrücklich gestartete integrierte Aktualisierung']],
   start: [['start.png', 'FBForge Inspect mit Endpunktabfragen und lokaler Dateiprüfung']],
   destination: [
