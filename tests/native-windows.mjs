@@ -393,9 +393,10 @@ try {
   );
   await navigate('Hilfe');
   await page.getByRole('searchbox', { name: 'Hilfe durchsuchen', exact: true }).fill('CLI');
-  await expect(
-    page.getByRole('heading', { name: 'CLI auf Windows und Linux', exact: true }),
-  ).toBeVisible();
+  const cliHelp = page.locator('summary').filter({ hasText: /^CLI auf Windows und Linux$/ });
+  await expect(cliHelp).toBeVisible();
+  await cliHelp.click();
+  await expect(page.getByText(/^Unter Windows dient inspect\.ps1 als Startskript/)).toBeVisible();
   results.push('Native offline help covers server CLI workflow');
   await navigate('Info');
   await expect(
