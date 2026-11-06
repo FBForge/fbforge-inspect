@@ -357,7 +357,9 @@ try {
     timeout: 15000,
   });
   await page.getByText('Befunde anzeigen', { exact: true }).click();
-  await expect(page.getByText('Schema eingelesen', { exact: true })).toBeVisible();
+  await expect(
+    page.locator('.check-queue').getByText('Bestätigt · Schema eingelesen', { exact: true }),
+  ).toBeVisible();
   await page.screenshot({ path: join(output, 'windows-batch.png') });
   results.push('Native batch import and sequential bundled engine execution passed');
   const jobPath = join(profile, 'native-job.json');
