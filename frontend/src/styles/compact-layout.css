@@ -62,6 +62,9 @@
 }
 
 @media (min-width: 641px) {
+  .nav-item {
+    justify-content: flex-start;
+  }
   .nav-label {
     display: block;
   }

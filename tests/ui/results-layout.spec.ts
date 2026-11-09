@@ -136,6 +136,10 @@ test('batch presents full diagnosis through buttons without a wall of confirmed 
   ).toBeHidden();
   await selectAppearance(page, 'dark');
   await queue.getByRole('button', { name: 'Befunde anzeigen', exact: true }).click();
+  await queue
+    .locator('> li')
+    .first()
+    .evaluate((el) => el.scrollIntoView({ block: 'start' }));
   await page.screenshot({ path: '.local/quality/screenshots/ui-review/batch-diagnosis-dark.png' });
 });
 
@@ -186,4 +190,26 @@ test('server diagnosis starts with a guided workflow and groups imported finding
   await expect(details).toHaveAttribute('aria-expanded', 'false');
   await selectAppearance(page, 'dark');
   await page.screenshot({ path: '.local/quality/screenshots/ui-review/server-diagnosis-dark.png' });
+  await page.setViewportSize({ width: 700, height: 650 });
+  await details.click();
+  await page.evaluate(() => {
+    const sizes = [...document.querySelectorAll<HTMLElement>('body *')].map((el) => ({
+      el,
+      size: getComputedStyle(el).fontSize,
+    }));
+    for (const { el, size } of sizes) el.style.fontSize = `${parseFloat(size) * 2}px`;
+  });
+  expect(
+    await page.locator('main').evaluate((el) => el.scrollWidth <= el.clientWidth + 1),
+  ).toBeTruthy();
+  expect(
+    await page.locator('.page-heading').evaluate((el) => el.scrollWidth <= el.clientWidth + 1),
+  ).toBeTruthy();
+  expect(
+    await page.locator('.sidebar').evaluate((el) => el.scrollWidth <= el.clientWidth + 1),
+  ).toBeTruthy();
+  await page.getByRole('button', { name: 'Beleg und Feldpfad', exact: true }).first().click();
+  await page.screenshot({
+    path: '.local/quality/screenshots/ui-review/server-diagnosis-text-200.png',
+  });
 });
