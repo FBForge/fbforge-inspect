@@ -60,8 +60,9 @@
 .result-summary .badge {
   cursor: pointer;
   padding: 7px 10px;
-  min-height: 32px;
-  border: 1px solid transparent;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
   font: inherit;
   font-size: 12px;
 }
@@ -147,7 +148,8 @@
 }
 .sidebar .nav-item span {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 .page-heading h1 {
   overflow-wrap: normal;

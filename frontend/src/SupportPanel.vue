@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import DisclosurePanel from './DisclosurePanel.vue';
 import type { Report } from './contracts';
 import { supportText, type SupportAudience } from './support';
 import { saveFile } from './saveFile';
@@ -20,8 +21,7 @@ async function save() {
 }
 </script>
 <template>
-  <details class="panel">
-    <summary>Supportanfrage vorbereiten</summary>
+  <DisclosurePanel class="support-panel" label="Supportanfrage vorbereiten">
     <label
       >Ansprechstelle<select v-model="audience">
         <option value="it">Lokale IT</option>
@@ -40,5 +40,5 @@ async function save() {
     <pre tabindex="0">{{ preview }}</pre>
     <button class="button secondary" @click="save">Supporttext speichern</button>
     <p v-if="message" role="status">{{ message }}</p>
-  </details>
+  </DisclosurePanel>
 </template>

@@ -120,7 +120,7 @@ test('Linux server result import is local and malformed findings are rejected', 
   });
   await expect(page.getByText('Linux · aarch64 · Java 25', { exact: true })).toBeVisible();
   await expect(
-    page.getByRole('heading', { name: 'Synthetischer Serverbefund · Nicht nachgewiesen' }),
+    page.getByRole('heading', { name: 'Synthetischer Serverbefund', exact: true }),
   ).toBeVisible();
   await expect(
     page.getByText('Serverergebnis geöffnet. Es wurde keine Verbindung gestartet.'),
@@ -333,9 +333,7 @@ test('inventory groups affected destinations and exports a calendar, support sta
     buffer: Buffer.from(JSON.stringify(evidence)),
   });
   await page.getByText('Supportanfrage vorbereiten', { exact: true }).click();
-  const preview = page
-    .locator('details')
-    .filter({ has: page.getByText('Supportanfrage vorbereiten', { exact: true }) });
+  const preview = page.locator('.support-panel');
   await expect(preview.locator('pre')).not.toContainText('https://example.org/');
   await page.getByLabel('Quelladressen und Feldpfade aufnehmen').check();
   await expect(preview.locator('pre')).toContainText('https://example.org/');
@@ -723,15 +721,25 @@ test('guided batch entry keeps completed results and exposes errors without open
   await expect(
     page.locator('.check-queue').getByText('Handlungsbedarf', { exact: true }),
   ).toBeVisible();
-  await page.getByLabel('Prüfwarteschlange filtern').selectOption('error');
+  await page
+    .getByRole('group', { name: 'Prüfwarteschlange filtern' })
+    .getByRole('button', { name: /^Handlungsbedarf/ })
+    .click();
   await expect(page.locator('.check-queue > li')).toHaveCount(1);
   await page
     .locator('.check-queue')
     .screenshot({ path: '.local/quality/screenshots/integrator-batch-error.png' });
   await page.getByRole('button', { name: 'Prüfung entfernen: check-2', exact: true }).click();
-  await expect(page.getByLabel('Prüfwarteschlange filtern')).toBeFocused();
+  await expect(
+    page
+      .getByRole('group', { name: 'Prüfwarteschlange filtern' })
+      .getByRole('button', { name: /^Alle Prüfungen/ }),
+  ).toBeFocused();
   await expect(page.getByText('Keine Prüfungen für diesen Filter.', { exact: true })).toBeVisible();
-  await page.getByLabel('Prüfwarteschlange filtern').selectOption('all');
+  await page
+    .getByRole('group', { name: 'Prüfwarteschlange filtern' })
+    .getByRole('button', { name: /^Alle Prüfungen/ })
+    .click();
   await expect(page.locator('.check-queue > li')).toHaveCount(2);
   await expect(
     page.locator('.check-queue').getByText('Geprüfte Einzelpunkte bestätigt', { exact: true }),

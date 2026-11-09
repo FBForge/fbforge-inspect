@@ -2,6 +2,10 @@
 
 ## 0.2.0
 
+- Navigation mit ausreichender Breite, ganzen Wörtern und kompakteren Zeilen.
+- Gemeinsame Diagnosezusammenfassung für Einzel-, Sammel- und Serverprüfungen. Bestätigte Punkte und technische Belege werden gezielt über Buttons geöffnet.
+- Sammelprüfung mit Filterbuttons und zusammengehörigen Aktionen pro Eintrag. Serverdiagnose mit drei geführten Schritten und einheitlicher Dateiauswahl.
+
 - Einzelne Checks samt zugehörigem Ergebnis aus Sammelprüfungen entfernen. Übrige Einträge bleiben erhalten und der Tastaturfokus bleibt im Ablauf.
 - Laufende Werkzeugprüfungen zeigen Fortschritt, Abbrechen und Fehlermeldungen. Nach dem Abbruch ist die Rückkehr zur Startseite wieder möglich.
 

@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue';
-import { labels } from './contracts';
+import { computed, nextTick, ref, useId } from 'vue';
+import Findings from './Findings.vue';
+import DisclosurePanel from './DisclosurePanel.vue';
+import FileButton from './FileButton.vue';
 import { resultState, outcomeNames, operationNames, attention } from './workflow';
 import FailureGuidance from './FailureGuidance.vue';
 import { checksFromText, parseJob, recognizeInput, type PortableJob } from './portable';
@@ -25,7 +27,9 @@ const kind = ref('destination'),
 const filter = ref('all');
 const queue = ref<HTMLOListElement | null>(null);
 const addButton = ref<HTMLButtonElement | null>(null);
-const filterSelect = ref<HTMLSelectElement | null>(null);
+const filterButton = ref<HTMLButtonElement | null>(null);
+const expanded = ref<Record<string, boolean>>(Object.create(null));
+const resultId = useId();
 const counts = computed(() => ({
   error: props.batch.checks.filter((c) => resultState(props.batch.results[c.id]) === 'error')
     .length,
@@ -42,6 +46,19 @@ const counts = computed(() => ({
     (c) => resultState(props.batch.results[c.id]) === 'confirmed',
   ).length,
 }));
+const countSummary = computed(() => {
+  const names = {
+    error: 'mit Handlungsbedarf',
+    unknown: 'nicht nachgewiesen',
+    warning: 'mit Hinweisen',
+    confirmed: 'bestätigt',
+    pending: 'noch nicht ausgeführt',
+    notApplicable: 'nicht anwendbar',
+  };
+  return Object.entries(counts.value)
+    .filter(([, count]) => count > 0)
+    .map(([status, count]) => ({ status, count, label: names[status as keyof typeof names] }));
+});
 const visibleChecks = computed(() =>
   props.batch.checks.filter(
     (c) =>
@@ -54,10 +71,11 @@ const visibleChecks = computed(() =>
 async function removeCheck(id: string) {
   const index = visibleChecks.value.findIndex((check) => check.id === id);
   if (!props.batch.remove(id)) return;
+  delete expanded.value[id];
   await nextTick();
   const buttons = queue.value?.querySelectorAll<HTMLButtonElement>('button[data-remove-check]');
   const next = buttons?.[Math.min(index, buttons.length - 1)];
-  (next || (props.batch.checks.length ? filterSelect.value : addButton.value))?.focus();
+  (next || (props.batch.checks.length ? filterButton.value : addButton.value))?.focus();
 }
 function addCheck() {
   try {
@@ -200,8 +218,7 @@ function retryIds() {
         <button ref="addButton" class="button secondary" type="submit">Prüfung hinzufügen</button>
       </fieldset>
     </form>
-    <details>
-      <summary>Mehrere Kennungen einfügen und Aufträge öffnen</summary>
+    <DisclosurePanel label="Mehrere Kennungen einfügen und Aufträge öffnen">
       <p>
         Pro Zeile eine Destination-ID, eine unterstützte FIT-Connect-URL oder <code>network</code>.
         Für Routing: <code>routing,LeiKa,ARS</code>. Höchstens 32 Prüfungen.
@@ -217,16 +234,19 @@ function retryIds() {
         </label>
         <div class="action-row">
           <button class="button secondary" @click="prepare">Prüfungen vorbereiten</button>
-          <label class="file-label"
-            >Prüfauftrag öffnen<input type="file" accept=".json" @change="file"
-          /></label>
+          <FileButton
+            label="Prüfauftrag öffnen"
+            accept=".json"
+            :disabled="batch.busy"
+            @change="file"
+          />
         </div>
       </fieldset>
       <p class="hint">
         Importierte Aufträge starten keine Verbindung. Es gilt der unter Netzwerk eingerichtete
         Verbindungsweg. Zugangsdaten werden nie exportiert.
       </p>
-    </details>
+    </DisclosurePanel>
     <p v-if="error" role="alert" class="error-text">{{ error }}</p>
     <p v-if="!batch.checks.length" role="status">{{ batch.message }}</p>
     <div v-if="pending" class="notice">
@@ -294,36 +314,60 @@ function retryIds() {
       </button>
     </div>
     <p role="status">{{ batch.message }}</p>
-    <p role="status">
-      {{ counts.error }} mit Handlungsbedarf · {{ counts.unknown }} nicht nachgewiesen ·
-      {{ counts.warning }} mit Hinweisen · {{ counts.confirmed }} bestätigt ·
-      {{ counts.pending }} noch nicht ausgeführt · {{ counts.notApplicable }} nicht anwendbar
-    </p>
+    <div class="queue-summary" role="status">
+      <span v-for="item in countSummary" :key="item.status"
+        ><strong>{{ item.count }}</strong> {{ item.label }}</span
+      >
+    </div>
     <p class="hint">
       Die Übersicht bewertet die ausgewählten Einzelprüfungen. Sie ist keine Gesamtfreigabe der
       Anbindung.
     </p>
-    <label
-      >Prüfwarteschlange filtern<select ref="filterSelect" v-model="filter">
-        <option value="all">Alle Prüfungen</option>
-        <option value="attention">Offene Befunde und Hinweise</option>
-        <option value="error">Handlungsbedarf</option>
-        <option value="unknown">Nicht nachgewiesen</option>
-      </select></label
-    >
+    <div class="queue-filters" role="group" aria-label="Prüfwarteschlange filtern">
+      <button
+        ref="filterButton"
+        class="button secondary"
+        :aria-pressed="filter === 'all'"
+        @click="filter = 'all'"
+      >
+        Alle Prüfungen · {{ batch.checks.length }}
+      </button>
+      <button
+        class="button secondary"
+        :aria-pressed="filter === 'attention'"
+        @click="filter = 'attention'"
+      >
+        Offene Befunde und Hinweise · {{ counts.error + counts.unknown + counts.warning }}
+      </button>
+      <button class="button secondary" :aria-pressed="filter === 'error'" @click="filter = 'error'">
+        Handlungsbedarf · {{ counts.error }}
+      </button>
+      <button
+        class="button secondary"
+        :aria-pressed="filter === 'unknown'"
+        @click="filter = 'unknown'"
+      >
+        Nicht nachgewiesen · {{ counts.unknown }}
+      </button>
+    </div>
     <p v-if="!visibleChecks.length">Keine Prüfungen für diesen Filter.</p>
-    <ol ref="queue" class="check-queue">
+    <ol ref="queue" class="check-queue" role="list">
       <li v-for="check in visibleChecks" :key="check.id">
-        <strong>{{ check.id }} · {{ operationNames[check.operation] || check.operation }}</strong>
+        <div class="check-heading">
+          <h3>
+            {{ operationNames[check.operation] || check.operation }}
+            <span class="hint">· {{ check.id }}</span>
+          </h3>
+          <span :class="resultState(batch.results[check.id])" class="badge">
+            {{
+              batch.activeId === check.id
+                ? 'Wird geprüft'
+                : outcomeNames[resultState(batch.results[check.id])]
+            }}
+          </span>
+        </div>
         <p class="mono">
           {{ check.input.destinationId || check.input.service || 'Öffentliche Prüfung' }}
-        </p>
-        <p :class="resultState(batch.results[check.id])" class="badge">
-          {{
-            batch.activeId === check.id
-              ? 'Wird geprüft'
-              : outcomeNames[resultState(batch.results[check.id])]
-          }}
         </p>
         <p v-if="batch.results[check.id]?.error">
           {{
@@ -332,10 +376,12 @@ function retryIds() {
               : 'Die Prüfung konnte nicht abgeschlossen werden. Eingaben und Verbindungsweg prüfen und diesen Eintrag erneut ausführen.'
           }}
         </p>
-        <details v-if="batch.results[check.id]?.error">
-          <summary>Technischen Fehlercode anzeigen</summary>
+        <DisclosurePanel
+          v-if="batch.results[check.id]?.error"
+          label="Technischen Fehlercode anzeigen"
+        >
           <code>{{ batch.results[check.id]?.error }}</code>
-        </details>
+        </DisclosurePanel>
         <p v-if="attention(batch.results[check.id]?.report)">
           <strong>{{ attention(batch.results[check.id]?.report)!.title }}</strong> ·
           {{ attention(batch.results[check.id]?.report)!.detail }}
@@ -344,19 +390,16 @@ function retryIds() {
           <strong>Nächster Schritt:</strong>
           {{ attention(batch.results[check.id]?.report)!.nextStep }}
         </p>
-        <details v-if="batch.results[check.id]?.report">
-          <summary>Befunde anzeigen</summary>
-          <FailureGuidance
-            :report="batch.results[check.id]!.report!"
-            can-configure
-            @network="emit('network')"
-          />
-          <p v-for="(finding, i) in batch.results[check.id]!.report!.findings" :key="i">
-            <strong>{{ labels[finding.status] }} · {{ finding.title }}</strong> ·
-            {{ finding.detail }}
-          </p>
-        </details>
         <div class="action-row">
+          <button
+            v-if="batch.results[check.id]?.report"
+            class="button secondary"
+            :aria-expanded="!!expanded[check.id]"
+            :aria-controls="`${resultId}-${check.id}`"
+            @click="expanded[check.id] = !expanded[check.id]"
+          >
+            {{ expanded[check.id] ? 'Befunde ausblenden' : 'Befunde anzeigen' }}
+          </button>
           <button
             v-if="batch.results[check.id] && !batch.busy"
             class="button secondary"
@@ -373,6 +416,21 @@ function retryIds() {
           >
             Prüfung entfernen
           </button>
+        </div>
+        <div
+          v-if="batch.results[check.id]?.report"
+          :id="`${resultId}-${check.id}`"
+          :hidden="!expanded[check.id]"
+          class="check-findings"
+        >
+          <template v-if="expanded[check.id]">
+            <FailureGuidance
+              :report="batch.results[check.id]!.report!"
+              can-configure
+              @network="emit('network')"
+            />
+            <Findings :report="batch.results[check.id]!.report!" />
+          </template>
         </div>
       </li>
     </ol>

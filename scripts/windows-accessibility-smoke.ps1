@@ -265,6 +265,7 @@ automaticUpdates = disabled
     $valuePattern.SetValue('00000000-0000-4000-8000-000000000001')
     $addCheck = Check-Spoken 'Prüfung hinzufügen' $buttonType
     Invoke-Control $addCheck
+    $null = Check-Spoken 'Alle Prüfungen · 1' $buttonType
     $removeCheck = Check-Spoken 'Prüfung entfernen: check-1' $buttonType
     Invoke-Control $removeCheck
     $tools = Check-Spoken 'Werkzeuge' $buttonType
@@ -275,6 +276,10 @@ automaticUpdates = disabled
     $server = Check-Spoken 'Serverdiagnose' $buttonType
     Invoke-Control $server
     $null = Check-Spoken 'Portables CLI exportieren' $buttonType
+    $null = Check-Spoken 'Serverergebnis öffnen' $buttonType
+    $commands = Check-Spoken 'Aufrufe und Rückgabecodes' $buttonType
+    Invoke-Control $commands
+    Invoke-Control $commands
     $about = Check-Spoken 'Info' $buttonType
     Invoke-Control $about
     $null = Check-Spoken 'Nach Updates suchen' $buttonType

@@ -358,7 +358,7 @@ try {
   });
   await page.getByText('Befunde anzeigen', { exact: true }).click();
   await expect(
-    page.locator('.check-queue').getByText('Bestätigt · Schema eingelesen', { exact: true }),
+    page.locator('.check-queue').getByRole('heading', { name: 'Schema eingelesen', exact: true }),
   ).toBeVisible();
   await page.screenshot({ path: join(output, 'windows-batch.png') });
   results.push('Native batch import and sequential bundled engine execution passed');
@@ -388,7 +388,14 @@ try {
   await navigate('Serverdiagnose');
   await page.getByLabel('Serverergebnis öffnen', { exact: true }).setInputFiles(resultPath);
   await expect(page.getByRole('heading', { name: 'Übertragenes Serverergebnis' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Schema eingelesen · Bestätigt' })).toBeVisible();
+  await page.screenshot({ path: join(output, 'windows-server-overview.png') });
+  await expect(page.getByRole('heading', { name: 'Schema eingelesen', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: '1 bestätigte Einzelprüfung', exact: true }).click();
+  await expect(page.locator('.compact-finding')).toContainText('Schema eingelesen');
+  await page.getByRole('button', { name: 'Beleg und Feldpfad', exact: true }).click();
+  await expect(
+    page.getByRole('button', { name: 'Beleg und Feldpfad', exact: true }),
+  ).toHaveAttribute('aria-expanded', 'true');
   await expect(
     page.getByText('Auftrag SHA-256: ' + serverResult.jobSha256, { exact: true }),
   ).toBeVisible();

@@ -16,6 +16,10 @@ const images = {
       'batch-results.png',
       'Fiktive Sammelprüfung mit Ergebniszählern, Filter Handlungsbedarf und sichtbarem nächsten Schritt',
     ],
+    [
+      'batch-diagnosis.png',
+      'Fiktive Sammelprüfung mit kompakter Diagnosezusammenfassung und Buttons für Einzelbefunde, Wiederholung und Entfernen',
+    ],
   ],
   tools: [
     ['tools.png', 'Werkzeuge mit Rückwärtsrouting für einen bekannten Zustellpunkt'],
@@ -35,6 +39,10 @@ const images = {
     [
       'server-association.png',
       'Fiktives Serverergebnis mit passendem Auftragsfingerabdruck und ausdrücklich begrenzter Herkunftsaussage',
+    ],
+    [
+      'server-diagnosis.png',
+      'Fiktives Serverergebnis mit gemeinsamer Diagnosezusammenfassung und gezielt aufklappbaren bestätigten Einzelprüfungen',
     ],
   ],
   updates: [['updates.png', 'Info und ausdrücklich gestartete integrierte Aktualisierung']],

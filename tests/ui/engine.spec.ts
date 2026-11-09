@@ -145,7 +145,10 @@ test('public RSA key is diagnosed by the real engine without inventing certifica
   await expect(conclusion).toContainText(
     'TEST-Ausnahme: keine vollständige öffentliche Sperrauskunft verfügbar.',
   );
-  await page.locator('.compact-findings > summary').click();
+  await page
+    .locator('.compact-findings')
+    .getByRole('button', { name: /Einzelprüfungen/ })
+    .click();
   await expect(page.getByText('RSA-Schlüssellänge', { exact: true })).toBeVisible();
   await expect(page.getByText('3072 Bit (Mindestvorgabe 3072)', { exact: true })).toBeVisible();
   await expect(page.getByText('Schlüssel nicht auswertbar', { exact: true })).toHaveCount(0);

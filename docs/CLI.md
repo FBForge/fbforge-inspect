@@ -8,7 +8,8 @@ Das portable CLI führt denselben öffentlichen Java-Diagnosekern wie die Deskto
 2. Unter **Serverdiagnose** das portable CLI exportieren oder das Java-CLI-Archiv des Releases herunterladen.
 3. Auftrag und CLI auf das tatsächliche Anwendungssystem übertragen.
 4. Den Auftrag dort unter dem passenden Benutzerkonto und mit dem passenden Netzwerkweg ausführen.
-5. Die Ergebnisdatei zurückübertragen und unter **Serverdiagnose** öffnen.
+5. Die Ergebnisdatei zurückübertragen und unter **Serverdiagnose → Ergebnis auswerten → Serverergebnis öffnen** importieren.
+6. Die Zusammenfassung lesen. Bestätigte Einzelprüfungen und **Beleg und Feldpfad** über die jeweiligen Buttons öffnen. Offene Befunde bleiben direkt sichtbar. **Aufrufe und Rückgabecodes** zeigt die Startbefehle für den Serverlauf.
 
 Inspect zeigt Betriebssystem, Architektur, Java-Version, Exitcode und die Einzelbefunde. Teilnehmerzertifikate aus diesem Ergebnis stehen auch im Zertifikatsinventar zur Verfügung. Der Import startet keine Verbindung und führt keine Programme aus.
 

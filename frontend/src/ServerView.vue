@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { parseJob, type PortableJob } from './portable';
-import { jobDigest } from './workflow';
+import { jobDigest, operationNames, outcomeNames, resultState } from './workflow';
 import FailureGuidance from './FailureGuidance.vue';
 import { invoke, isTauri } from '@tauri-apps/api/core';
-import { labels } from './contracts';
+import Findings from './Findings.vue';
+import DisclosurePanel from './DisclosurePanel.vue';
+import FileButton from './FileButton.vue';
 import { parseResult, type PortableResult } from './portable';
 import SupportPanel from './SupportPanel.vue';
 import NetworkResults from './results/NetworkResults.vue';
@@ -109,32 +111,33 @@ async function exportCli() {
     </p>
     <p v-if="jobError" role="alert">{{ jobError }}</p>
     <p v-if="job">
-      <strong>Auftrag bereit:</strong> {{ job.checks.length }} Prüfungen · {{ job.environment }} ·
+      <strong>Auftrag bereit:</strong> {{ job.checks.length }}
+      {{ job.checks.length === 1 ? 'Prüfung' : 'Prüfungen' }} · {{ job.environment }} ·
       {{ job.apiVersion }}. Der CLI-Export nimmt auftrag.json mit.
     </p>
     <p v-else>
       Bereiten Sie zunächst einen Auftrag vor. Das CLI lässt sich auch ohne Auftrag exportieren.
     </p>
-    <ol>
-      <li>Unter Sammelprüfung die gewünschten Prüfungen vorbereiten.</li>
+    <ol class="server-steps" role="list">
       <li>
-        Das CLI gemeinsam mit dem vorbereiteten Auftrag exportieren und den Ordner auf das
-        Zielsystem übertragen.
+        <h3>Auftrag vorbereiten</h3>
+        <p>Zustellpunkte, Routing oder Netzwerk in der Sammelprüfung auswählen.</p>
+        <button class="button secondary" @click="emit('batch')">Prüfauftrag vorbereiten</button>
       </li>
       <li>
-        Auf Windows oder Linux mit Java 25 oder neuer ausführen. Verwenden Sie das Benutzerkonto und
-        den Netzwerkweg Ihrer Anwendung.
+        <h3>Auf dem Server ausführen</h3>
+        <p>CLI und Auftrag auf das Zielsystem übertragen. Dort mit Java 25 oder neuer starten.</p>
+        <button class="button secondary" @click="exportCli" :disabled="!!jobError">
+          Portables CLI exportieren
+        </button>
       </li>
-      <li>Die Ergebnisdatei hier öffnen und Befunde sowie Zertifikatsinventar auswerten.</li>
+      <li>
+        <h3>Ergebnis auswerten</h3>
+        <p>Die Ergebnisdatei vom Server hier öffnen. Der Import startet keine Verbindung.</p>
+        <FileButton label="Serverergebnis öffnen" accept=".json" @change="open" />
+      </li>
     </ol>
-    <div class="action-row">
-      <button class="button secondary" @click="emit('batch')">Prüfauftrag vorbereiten</button
-      ><button class="button secondary" @click="exportCli" :disabled="!!jobError">
-        Portables CLI exportieren
-      </button>
-    </div>
-    <details>
-      <summary>Aufrufe und Rückgabecodes</summary>
+    <DisclosurePanel label="Aufrufe und Rückgabecodes">
       <p>
         Voraussetzung: Java 25 oder neuer. Prüfen Sie auf dem Zielsystem zuerst
         <code>java -version</code>. Bei einer älteren Laufzeit eine passende portable Java-Laufzeit
@@ -178,11 +181,10 @@ java -jar inspect-engine.jar --job auftrag.json --output ergebnis.inspect.json</
         Proxy und zusätzliche HTTPS-CA lassen sich ausdrücklich konfigurieren. Proxy-Zugangsdaten
         werden über benannte Umgebungsvariablen eingelesen. <code>--help</code> zeigt die Optionen.
       </p>
-    </details>
-    <label
-      >Auftragsdatei zur Zuordnung öffnen<input type="file" accept=".json" @change="reference"
-    /></label>
-    <label>Serverergebnis öffnen<input type="file" accept=".json" @change="open" /></label>
+    </DisclosurePanel>
+    <div class="action-row">
+      <FileButton label="Auftragsdatei zur Zuordnung öffnen" accept=".json" @change="reference" />
+    </div>
     <p class="hint">
       Die Datei ist ein übertragener Prüfbeleg und kein Herkunftsnachweis des Servers. Inspect führt
       daraus keine Programme aus und startet keine automatischen Folgeabrufe.
@@ -210,32 +212,31 @@ java -jar inspect-engine.jar --job auftrag.json --output ergebnis.inspect.json</
       </p>
     </section>
     <section v-for="check in props.result.checks" :key="check.id" class="panel analysis-context">
-      <h3>
-        {{ check.id
-        }}<template v-if="check.report">
-          · {{ check.report.operation }} · {{ check.report.environment }}</template
-        >
-      </h3>
+      <div class="check-heading">
+        <h3>
+          {{
+            check.report
+              ? operationNames[check.report.operation] || check.report.operation
+              : 'Prüfung'
+          }}
+          <span class="hint">· {{ check.id }}</span>
+        </h3>
+        <span class="badge" :class="resultState(check)">{{
+          outcomeNames[resultState(check)]
+        }}</span>
+      </div>
+      <p v-if="check.report" class="hint">
+        {{ check.report.environment }} · {{ check.report.apiVersion }}
+      </p>
       <p v-if="check.error" class="error-text">{{ check.error }}</p>
       <template v-if="check.report">
         <FailureGuidance :report="check.report" />
         <NetworkResults :report="serverNetworkEvidence(check.report)" read-only />
-        <article v-for="(finding, i) in check.report.findings" :key="i" class="imported-finding">
-          <h4>{{ finding.title }} · {{ labels[finding.status] }}</h4>
-          <p>{{ finding.detail }}</p>
-          <p v-if="finding.nextStep">Nächster Schritt: {{ finding.nextStep }}</p>
-          <details>
-            <summary>Beleg und Grenze</summary>
-            <p>{{ finding.path }}</p>
-            <p>{{ finding.source }}</p>
-            <p>{{ finding.limitation }}</p>
-          </details>
-        </article>
+        <Findings :report="check.report" />
         <SupportPanel :report="check.report" :runtime="props.result.runtime" />
-        <details>
-          <summary>Übertragene Daten anzeigen</summary>
+        <DisclosurePanel label="Übertragene Daten anzeigen">
           <pre tabindex="0">{{ JSON.stringify(check.report.data, null, 2) }}</pre>
-        </details>
+        </DisclosurePanel>
       </template>
     </section>
   </template>

@@ -97,7 +97,10 @@ test('illustrated batch guide exposes the failed entry and its next step', async
   await page.getByRole('button', { name: 'Sammelprüfung starten', exact: true }).click();
   await expect(page.getByText('Sammelprüfung abgeschlossen.', { exact: true })).toBeVisible();
   await expect(page.getByText('1 mit Handlungsbedarf', { exact: false })).toBeVisible();
-  await page.getByLabel('Prüfwarteschlange filtern').selectOption('error');
+  await page
+    .getByRole('group', { name: 'Prüfwarteschlange filtern' })
+    .getByRole('button', { name: /^Handlungsbedarf/ })
+    .click();
   await expect(page.locator('.check-queue > li')).toHaveCount(1);
   await expect(page.locator('.check-queue')).toContainText('Zertifikat abgelaufen');
   await expect(page.locator('.check-queue')).toContainText(
