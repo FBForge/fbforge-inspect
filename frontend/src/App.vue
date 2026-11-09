@@ -364,6 +364,17 @@ async function openSchema(url: string) {
             @changed="clear"
           />
         </KeepAlive>
+        <template v-if="page === 'tools'">
+          <div v-if="diagnosisBusy" class="busy-panel panel" role="status">
+            <span class="spinner" aria-hidden="true"></span>
+            <div>
+              <strong>Prüfung läuft</strong>
+              <p>Öffentliche Antworten werden abgerufen und ausgewertet.</p>
+            </div>
+            <button class="button secondary" @click="cancel">Abbrechen</button>
+          </div>
+          <p v-if="error" class="notice error-notice" role="alert">{{ error }}</p>
+        </template>
         <InventoryView
           v-if="page === 'inventory'"
           :reports="allReports"

@@ -259,8 +259,14 @@ automaticUpdates = disabled
     $batch = Check-Spoken 'Sammelprüfung' $buttonType
     Invoke-Control $batch
     $null = Check-Spoken 'Prüfung auswählen' ([System.Windows.Automation.ControlType]::ComboBox)
-    $null = Check-Spoken 'Kennung oder öffentliche URL' $editType
-    $null = Check-Spoken 'Prüfung hinzufügen' $buttonType
+    $identifier = Check-Spoken 'Kennung oder öffentliche URL' $editType
+    $valuePattern = $null
+    if (-not $identifier.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern, [ref]$valuePattern)) { throw 'a11y_batch_value_pattern_missing' }
+    $valuePattern.SetValue('00000000-0000-4000-8000-000000000001')
+    $addCheck = Check-Spoken 'Prüfung hinzufügen' $buttonType
+    Invoke-Control $addCheck
+    $removeCheck = Check-Spoken 'Prüfung entfernen: check-1' $buttonType
+    Invoke-Control $removeCheck
     $tools = Check-Spoken 'Werkzeuge' $buttonType
     Invoke-Control $tools
     $null = Check-Spoken 'Aufgabe' ([System.Windows.Automation.ControlType]::ComboBox)
@@ -295,7 +301,7 @@ automaticUpdates = disabled
     [IO.File]::WriteAllText((Join-Path $env:RUNNER_TEMP 'fbforge-accessibility-result.json'), ($report | ConvertTo-Json -Depth 5), [Text.UTF8Encoding]::new($false))
 } catch {
     # The test never enters credentials. Log only known synthetic control names.
-    $knownNames = @('Umgebung','API','Darstellung wählen','Destination prüfen','Destination-ID','Routing prüfen','Prozessnachricht prüfen','Schlüssel prüfen','Fachdatenschemata','JSON Schema / XSD','Hilfe','Hilfe durchsuchen','Sammelprüfung','Prüfung auswählen','Kennung oder öffentliche URL','Prüfung hinzufügen','Prüfeingaben','Prüfungen vorbereiten','Werkzeuge','Aufgabe','Zertifikatsinventar','Serverdiagnose','Portables CLI exportieren','Info','Nach Updates suchen')
+    $knownNames = @('Umgebung','API','Darstellung wählen','Destination prüfen','Destination-ID','Routing prüfen','Prozessnachricht prüfen','Schlüssel prüfen','Fachdatenschemata','JSON Schema / XSD','Hilfe','Hilfe durchsuchen','Sammelprüfung','Prüfung auswählen','Kennung oder öffentliche URL','Prüfung hinzufügen','Prüfung entfernen: check-1','Prüfeingaben','Prüfungen vorbereiten','Werkzeuge','Aufgabe','Zertifikatsinventar','Serverdiagnose','Portables CLI exportieren','Info','Nach Updates suchen')
     $focused = [System.Windows.Automation.AutomationElement]::FocusedElement
     if ($focused) {
         $label = if ($knownNames -contains $focused.Current.Name) { $focused.Current.Name } else { '(other control)' }

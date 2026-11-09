@@ -17,7 +17,13 @@ const images = {
       'Fiktive Sammelprüfung mit Ergebniszählern, Filter Handlungsbedarf und sichtbarem nächsten Schritt',
     ],
   ],
-  tools: [['tools.png', 'Werkzeuge mit Rückwärtsrouting für einen bekannten Zustellpunkt']],
+  tools: [
+    ['tools.png', 'Werkzeuge mit Rückwärtsrouting für einen bekannten Zustellpunkt'],
+    [
+      'tools-busy.png',
+      'Laufende fiktive Rückwärtsprüfung mit Fortschrittsanzeige und erreichbarem Abbrechen',
+    ],
+  ],
   inventory: [
     ['inventory.png', 'Zertifikatsinventar mit fiktiven öffentlichen Zertifikatszuordnungen'],
   ],

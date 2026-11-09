@@ -446,6 +446,8 @@ test('batch pause waits for the active check and cancellation retains completed 
   await page.getByRole('button', { name: 'Prüfungen vorbereiten' }).click();
   await page.getByRole('button', { name: 'Sammelprüfung starten', exact: true }).click();
   await expect.poll(() => page.evaluate(() => (window as any).__started)).toBe(1);
+  for (const button of await page.getByRole('button', { name: /^Prüfung entfernen:/ }).all())
+    await expect(button).toBeDisabled();
   await page.getByRole('button', { name: 'Nach aktueller Prüfung pausieren' }).click();
   await page.evaluate(() => (window as any).__pending());
   await expect(
@@ -726,6 +728,14 @@ test('guided batch entry keeps completed results and exposes errors without open
   await page
     .locator('.check-queue')
     .screenshot({ path: '.local/quality/screenshots/integrator-batch-error.png' });
+  await page.getByRole('button', { name: 'Prüfung entfernen: check-2', exact: true }).click();
+  await expect(page.getByLabel('Prüfwarteschlange filtern')).toBeFocused();
+  await expect(page.getByText('Keine Prüfungen für diesen Filter.', { exact: true })).toBeVisible();
+  await page.getByLabel('Prüfwarteschlange filtern').selectOption('all');
+  await expect(page.locator('.check-queue > li')).toHaveCount(2);
+  await expect(
+    page.locator('.check-queue').getByText('Geprüfte Einzelpunkte bestätigt', { exact: true }),
+  ).toBeVisible();
 });
 
 test('server package contains public job and associates imported result with exact exported bytes', async ({
@@ -914,3 +924,156 @@ for (const status of [200, 404]) {
     ).toBeVisible();
   });
 }
+
+test('removing a batch check preserves other results and excludes deleted checks from exports', async ({
+  page,
+}) => {
+  await nativeBridge(page);
+  await page.goto('/');
+  await navigate(page, 'Sammelprüfung');
+  await page
+    .getByLabel('Prüfeingaben', { exact: true })
+    .fill(`${destination}\nnetwork\n${destination.replace(/1$/, '2')}`);
+  await page.getByRole('button', { name: 'Prüfungen vorbereiten', exact: true }).click();
+  await page.getByRole('button', { name: 'Prüfung entfernen: check-2', exact: true }).click();
+  await expect(page.locator('.check-queue > li')).toHaveCount(2);
+  await expect(
+    page.getByRole('button', { name: 'Prüfung entfernen: check-3', exact: true }),
+  ).toBeFocused();
+  await page.getByRole('button', { name: 'Auftrag für Server speichern', exact: true }).click();
+  expect(
+    await page.evaluate(() =>
+      JSON.parse((window as any).__saved[0].content).checks.map((c: any) => c.id),
+    ),
+  ).toEqual(['check-1', 'check-3']);
+  expect(await page.evaluate(() => (window as any).__inspectCalls.length)).toBe(0);
+  await page.getByRole('button', { name: 'Sammelprüfung starten', exact: true }).click();
+  await expect(page.getByText('Sammelprüfung abgeschlossen.', { exact: true })).toBeVisible();
+  const first = page.getByRole('button', { name: 'Prüfung entfernen: check-1', exact: true });
+  await first.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.check-queue > li')).toHaveCount(1);
+  await expect(
+    page.locator('.check-queue').getByText('Nicht nachgewiesen', { exact: true }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Ergebnisse speichern', exact: true }).click();
+  expect(
+    await page.evaluate(() =>
+      JSON.parse((window as any).__saved[1].content).checks.map((c: any) => c.id),
+    ),
+  ).toEqual(['check-3']);
+  await page
+    .getByRole('combobox', { name: 'Prüfung auswählen', exact: true })
+    .selectOption('network');
+  await page.getByRole('button', { name: 'Prüfung hinzufügen', exact: true }).click();
+  await expect(
+    page.locator('.check-queue').getByText('Noch nicht ausgeführt', { exact: true }),
+  ).toHaveCount(1);
+  await expect(
+    page.locator('.check-queue').getByText('Nicht nachgewiesen', { exact: true }),
+  ).toHaveCount(1);
+  await page.getByRole('button', { name: 'Prüfung entfernen: check-3', exact: true }).click();
+  await page.getByRole('button', { name: 'Prüfung entfernen: check-1', exact: true }).click();
+  await expect(page.locator('.check-queue')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Prüfung hinzufügen', exact: true })).toBeFocused();
+  await expect(
+    page.getByText('Prüfung check-1 entfernt. Der Auftrag ist leer.', { exact: true }),
+  ).toBeVisible();
+});
+
+test('a running reverse-routing tool can be cancelled before returning to Start', async ({
+  page,
+}) => {
+  await page.addInitScript((fixture) => {
+    const w = window as any;
+    Object.assign(w, {
+      isTauri: true,
+      __cancelled: false,
+      __finish: null,
+      __TAURI_INTERNALS__: {
+        invoke: (command: string) => {
+          if (command === 'diagnose')
+            return new Promise((resolve) => {
+              w.__finish = () =>
+                resolve({ ok: true, report: { ...fixture, operation: 'reverse' } });
+            });
+          if (command === 'cancel') {
+            w.__cancelled = true;
+            w.__finish();
+            return Promise.resolve(true);
+          }
+          return Promise.resolve(false);
+        },
+      },
+    });
+  }, report);
+  await page.goto('/');
+  await navigate(page, 'Werkzeuge');
+  await page.getByRole('combobox', { name: 'Aufgabe', exact: true }).selectOption('reverse');
+  await page.getByRole('textbox', { name: 'Destination-ID', exact: true }).fill(destination);
+  await page.getByRole('button', { name: 'Rückwärtsprüfung starten', exact: true }).click();
+  const home = page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('button', { name: 'Start', exact: true });
+  await expect(home).toBeDisabled();
+  await page.screenshot({
+    path:
+      process.env.INSPECT_UPDATE_DOC_IMAGES === '1'
+        ? 'docs/images/tools-busy.png'
+        : '.local/quality/screenshots/tools-busy.png',
+  });
+  await page.getByRole('button', { name: 'Abbrechen', exact: true }).click();
+  await expect(home).toBeEnabled();
+  expect(await page.evaluate(() => (window as any).__cancelled)).toBe(true);
+  await home.click();
+  await expect(page.getByRole('heading', { name: 'Was möchten Sie prüfen?' })).toBeVisible();
+  await navigate(page, 'Werkzeuge');
+  await expect(page.getByRole('combobox', { name: 'Aufgabe', exact: true })).toHaveValue('reverse');
+  await expect(page.getByRole('textbox', { name: 'Destination-ID', exact: true })).toHaveValue(
+    destination,
+  );
+  await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toHaveCount(0);
+});
+
+test('completed reverse-routing tools return to Start without losing their inputs', async ({
+  page,
+}) => {
+  await nativeBridge(page);
+  await page.goto('/');
+  await navigate(page, 'Werkzeuge');
+  await page.getByRole('combobox', { name: 'Aufgabe', exact: true }).selectOption('reverse');
+  await page.getByRole('textbox', { name: 'Destination-ID', exact: true }).fill(destination);
+  await page.getByRole('button', { name: 'Rückwärtsprüfung starten', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
+  await navigate(page, 'Start');
+  await expect(page.getByRole('heading', { name: 'Was möchten Sie prüfen?' })).toBeVisible();
+  await navigate(page, 'Werkzeuge');
+  await expect(page.getByRole('textbox', { name: 'Destination-ID', exact: true })).toHaveValue(
+    destination,
+  );
+  await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
+});
+
+test('a failed tool request displays its error and leaves Start available', async ({ page }) => {
+  await page.addInitScript(() =>
+    Object.assign(window, {
+      isTauri: true,
+      __TAURI_INTERNALS__: {
+        invoke: async (command: string) =>
+          command === 'diagnose'
+            ? { ok: false, error: 'Fiktiver Abruf konnte nicht abgeschlossen werden.' }
+            : false,
+      },
+    }),
+  );
+  await page.goto('/');
+  await navigate(page, 'Werkzeuge');
+  await page.getByRole('combobox', { name: 'Aufgabe', exact: true }).selectOption('reverse');
+  await page.getByRole('textbox', { name: 'Destination-ID', exact: true }).fill(destination);
+  await page.getByRole('button', { name: 'Rückwärtsprüfung starten', exact: true }).click();
+  await expect(page.getByRole('alert')).toHaveText(
+    'Fiktiver Abruf konnte nicht abgeschlossen werden.',
+  );
+  await navigate(page, 'Start');
+  await expect(page.getByRole('heading', { name: 'Was möchten Sie prüfen?' })).toBeVisible();
+});

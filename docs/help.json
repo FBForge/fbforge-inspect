@@ -279,6 +279,7 @@
       "Öffnen Sie Sammelprüfung und wählen Sie Umgebung sowie API-Version. Unter Prüfung auswählen stehen Zustellpunkt, Routing und Netzwerk bereit.",
       "Für einen Zustellpunkt geben Sie die Kennung oder eine unterstützte öffentliche URL ein. Für Routing tragen Sie den LeiKa-Schlüssel und den vollständigen ARS ein. Wählen Sie Prüfung hinzufügen. Dabei startet noch keine Verbindung.",
       "Ergänzen Sie bei Bedarf weitere Einträge. Vorhandene Ergebnisse bleiben erhalten. Alle Einträge eines Auftrags verwenden dieselbe Umgebung und API-Version. Ein Auftrag enthält höchstens 32 Prüfungen.",
+      "Zum Entfernen eines Eintrags wählen Sie Prüfung entfernen am betreffenden Check. Das zugehörige Ergebnis wird ebenfalls aus diesem Auftrag entfernt. Übrige Einträge und Ergebnisse bleiben erhalten. Während eines laufenden oder pausierten Sammellaufs ist Entfernen gesperrt.",
       "Wählen Sie Sammelprüfung starten. Die Einträge laufen nacheinander. Eine Pause wirkt nach dem aktuellen Eintrag. Beim Abbrechen bleiben abgeschlossene Ergebnisse sichtbar.",
       "Lesen Sie die Ergebnisübersicht und wählen Sie bei Bedarf den Filter Handlungsbedarf oder Nicht nachgewiesen. Der wichtigste offene Befund und sein nächster Schritt stehen direkt am Eintrag. Befunde anzeigen öffnet die Einzelpunkte.",
       "Wiederholen Sie gezielt einen Eintrag oder offene und fehlgeschlagene Prüfungen. Speichern Sie den Auftrag für ein anderes System oder die Ergebnisse zur Weitergabe."
@@ -290,7 +291,8 @@
       "Jeder fertige Eintrag zeigt das Ergebnis der Einzelpunkte und den wichtigsten offenen Befund. Der Filter grenzt Handlungsbedarf, ungeklärte Ergebnisse und Hinweise ein. Das Hinzufügen einer Prüfung erhält bereits vorhandene Ergebnisse.",
       "Für mehrere Kennungen auf einmal öffnen Sie Mehrere Kennungen einfügen und Aufträge öffnen. Dort können Sie eine Kennung pro Zeile einfügen oder eine gespeicherte Auftragsdatei öffnen. Die Texteingabe unterstützt außerdem network und routing,LeiKa,ARS. Prüfungen vorbereiten ersetzt die aktuelle Warteschlange und deren Ergebnisse. Prüfung hinzufügen ergänzt dagegen den vorhandenen Auftrag.",
       "Abgeschlossen beschreibt nur das Ende des Laufs. Handlungsbedarf bezeichnet einen Fehlerbefund. Nicht nachgewiesen bedeutet, dass ein Nachweis fehlt oder eine Prüfung nicht abgeschlossen wurde. Hinweise beachten verweist auf zusätzliche Hinweise. Bestätigte Einzelpunkte sind keine Gesamtfreigabe der Anbindung.",
-      "Das folgende fiktive Beispiel enthält einen bestätigten Eintrag, ein abgelaufenes Zertifikat und eine nicht erreichbare Sperrauskunft. Der Filter Handlungsbedarf zeigt gezielt den Zertifikatsfehler. Eine nicht erreichbare Sperrauskunft beweist keine Sperrung."
+      "Das folgende fiktive Beispiel enthält einen bestätigten Eintrag, ein abgelaufenes Zertifikat und eine nicht erreichbare Sperrauskunft. Der Filter Handlungsbedarf zeigt gezielt den Zertifikatsfehler. Eine nicht erreichbare Sperrauskunft beweist keine Sperrung.",
+      "Nach dem Entfernen bleiben die Kennungen der übrigen Prüfungen unverändert. Auftrags- und Ergebnisexport enthalten entfernte Checks nicht mehr. Deren Ergebnisse stehen dem Inventar nicht mehr als Quelle zur Verfügung. Andere Einzelprüfungen, separat geöffnete Serverergebnisse und vorher gespeicherte Dateien bleiben erhalten. Auch der letzte Check lässt sich entfernen. Danach ist der Auftrag leer und kann neu zusammengestellt werden."
     ],
     "example": "00000000-0000-4000-8000-000000000001\nrouting,99008001014002,020000000000\nnetwork"
   },
@@ -310,7 +312,8 @@
       "Eine gültige Adressierungssignatur, vorhandene PVOG-Zuständigkeit und tatsächlicher Routing-Treffer sind verschiedene Nachweise. Die Zusammenhänge werden mit ihren ursprünglichen Kontextpfaden gezeigt. Die interne Ursache eines fehlenden Routing-Treffers kann anhand öffentlicher Daten offenbleiben.",
       "Die direkte Zertifikatsprüfung bestätigt keine JWK-Bindung und keine aktive Verwendung an einem Zustellpunkt. Ein JWK wird dafür nicht künstlich erzeugt. Private Zertifikatscontainer und private Schlüssel werden nicht unterstützt.",
       "Adressierungssignaturen sind öffentliche destinationSignature-Werte. OAuth-Zugangstoken gehören nicht in das Werkzeug. Schlüsselquellen werden unabhängig von eingefügten Claims fest ausgewählt. Zusätzliche Leistung und ARS müssen im gleichen signierten Kontext passen.",
-      "HTTP-Fehler erklären steht ohne Internet zur Verfügung. Der Statuscode allein beweist keine konkrete Ursache. Quelle, Methode und Verbindungsweg gehören zur Einordnung."
+      "HTTP-Fehler erklären steht ohne Internet zur Verfügung. Der Statuscode allein beweist keine konkrete Ursache. Quelle, Methode und Verbindungsweg gehören zur Einordnung.",
+      "Während einer Werkzeugprüfung zeigt Prüfung läuft den aktiven Abruf. Mit Abbrechen beenden Sie ihn ausdrücklich. Sobald die Prüfung beendet oder der Abbruch abgeschlossen ist, steht Start in der linken Navigation wieder bereit. Die eingegebenen Werkzeugwerte bleiben beim Seitenwechsel erhalten. Ein fehlgeschlagener Abruf zeigt seine Fehlermeldung im Werkzeugbereich."
     ],
     "example": null
   },

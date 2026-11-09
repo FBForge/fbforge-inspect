@@ -2,6 +2,9 @@
 
 ## 0.2.0
 
+- Einzelne Checks samt zugehörigem Ergebnis aus Sammelprüfungen entfernen. Übrige Einträge bleiben erhalten und der Tastaturfokus bleibt im Ablauf.
+- Laufende Werkzeugprüfungen zeigen Fortschritt, Abbrechen und Fehlermeldungen. Nach dem Abbruch ist die Rückkehr zur Startseite wieder möglich.
+
 - Geführte Prüfaufträge, sichtbare Sammelergebnisse mit Handlungsbedarf und Filter. Bereits abgeschlossene Ergebnisse bleiben beim Ergänzen erhalten.
 - CLI und vorbereiteter öffentlicher Auftrag werden gemeinsam exportiert. Serverergebnisse lassen sich anhand der exakten Auftragsbytes zuordnen.
 - Fehlgeschlagene Verbindungsphasen erklären nachfolgende ungeprüfte Schritte und führen bei lokalen Prüfungen direkt zu den Netzwerkeinstellungen.

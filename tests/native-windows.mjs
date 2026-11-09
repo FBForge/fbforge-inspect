@@ -402,6 +402,16 @@ try {
   results.push(
     'Real packaged Java CLI result reopens in native Inspect with matching job digest and findings',
   );
+  await navigate('Sammelprüfung');
+  await page
+    .getByRole('button', { name: 'Prüfung entfernen: native-local-schema', exact: true })
+    .click();
+  await expect(page.locator('.check-queue')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Prüfung hinzufügen', exact: true })).toBeFocused();
+  await expect(
+    page.getByText('Prüfung native-local-schema entfernt. Der Auftrag ist leer.', { exact: true }),
+  ).toBeVisible();
+  results.push('Native removal deletes a completed batch check and restores keyboard focus');
   await navigate('Hilfe');
   await page.getByRole('searchbox', { name: 'Hilfe durchsuchen', exact: true }).fill('CLI');
   const cliHelp = page.locator('summary').filter({ hasText: /^CLI auf Windows und Linux$/ });

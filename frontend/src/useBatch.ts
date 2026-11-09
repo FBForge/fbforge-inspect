@@ -51,6 +51,15 @@ export function useBatch(network: () => Record<string, unknown>) {
     apiVersion.value = api;
     message.value = 'Prüfung hinzugefügt. Vorhandene Ergebnisse bleiben erhalten.';
   }
+  function remove(id: string) {
+    if (busy.value || !checks.value.some((check) => check.id === id)) return false;
+    checks.value = checks.value.filter((check) => check.id !== id);
+    delete results[id];
+    message.value = checks.value.length
+      ? `Prüfung ${id} entfernt. Übrige Prüfungen und Ergebnisse bleiben erhalten.`
+      : `Prüfung ${id} entfernt. Der Auftrag ist leer.`;
+    return true;
+  }
   function job(): PortableJob {
     const settings = network();
     return parseJob(
@@ -185,6 +194,7 @@ export function useBatch(network: () => Record<string, unknown>) {
     activeId,
     setJob,
     append,
+    remove,
     job,
     start,
     resume,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { labels } from './contracts';
 import { resultState, outcomeNames, operationNames, attention } from './workflow';
 import FailureGuidance from './FailureGuidance.vue';
@@ -23,6 +23,9 @@ const kind = ref('destination'),
   service = ref(''),
   region = ref('');
 const filter = ref('all');
+const queue = ref<HTMLOListElement | null>(null);
+const addButton = ref<HTMLButtonElement | null>(null);
+const filterSelect = ref<HTMLSelectElement | null>(null);
 const counts = computed(() => ({
   error: props.batch.checks.filter((c) => resultState(props.batch.results[c.id]) === 'error')
     .length,
@@ -48,6 +51,14 @@ const visibleChecks = computed(() =>
         : resultState(props.batch.results[c.id]) === filter.value),
   ),
 );
+async function removeCheck(id: string) {
+  const index = visibleChecks.value.findIndex((check) => check.id === id);
+  if (!props.batch.remove(id)) return;
+  await nextTick();
+  const buttons = queue.value?.querySelectorAll<HTMLButtonElement>('button[data-remove-check]');
+  const next = buttons?.[Math.min(index, buttons.length - 1)];
+  (next || (props.batch.checks.length ? filterSelect.value : addButton.value))?.focus();
+}
 function addCheck() {
   try {
     const line =
@@ -186,7 +197,7 @@ function retryIds() {
             >Vollständiger ARS<input v-model="region" required pattern="(DE)?[0-9]{12}"
           /></label>
         </template>
-        <button class="button secondary" type="submit">Prüfung hinzufügen</button>
+        <button ref="addButton" class="button secondary" type="submit">Prüfung hinzufügen</button>
       </fieldset>
     </form>
     <details>
@@ -217,6 +228,7 @@ function retryIds() {
       </p>
     </details>
     <p v-if="error" role="alert" class="error-text">{{ error }}</p>
+    <p v-if="!batch.checks.length" role="status">{{ batch.message }}</p>
     <div v-if="pending" class="notice">
       <h3>Verbindungsweg aus dem Auftrag</h3>
       <pre tabindex="0">{{ JSON.stringify(pending.network, null, 2) }}</pre>
@@ -292,7 +304,7 @@ function retryIds() {
       Anbindung.
     </p>
     <label
-      >Prüfwarteschlange filtern<select v-model="filter">
+      >Prüfwarteschlange filtern<select ref="filterSelect" v-model="filter">
         <option value="all">Alle Prüfungen</option>
         <option value="attention">Offene Befunde und Hinweise</option>
         <option value="error">Handlungsbedarf</option>
@@ -300,7 +312,7 @@ function retryIds() {
       </select></label
     >
     <p v-if="!visibleChecks.length">Keine Prüfungen für diesen Filter.</p>
-    <ol class="check-queue">
+    <ol ref="queue" class="check-queue">
       <li v-for="check in visibleChecks" :key="check.id">
         <strong>{{ check.id }} · {{ operationNames[check.operation] || check.operation }}</strong>
         <p class="mono">
@@ -344,13 +356,24 @@ function retryIds() {
             {{ finding.detail }}
           </p>
         </details>
-        <button
-          v-if="batch.results[check.id] && !batch.busy"
-          class="button secondary"
-          @click="batch.start([check.id])"
-        >
-          Diese Prüfung wiederholen
-        </button>
+        <div class="action-row">
+          <button
+            v-if="batch.results[check.id] && !batch.busy"
+            class="button secondary"
+            @click="batch.start([check.id])"
+          >
+            Diese Prüfung wiederholen
+          </button>
+          <button
+            class="button secondary"
+            data-remove-check
+            :aria-label="`Prüfung entfernen: ${check.id}`"
+            :disabled="batch.busy"
+            @click="removeCheck(check.id)"
+          >
+            Prüfung entfernen
+          </button>
+        </div>
       </li>
     </ol>
   </section>
