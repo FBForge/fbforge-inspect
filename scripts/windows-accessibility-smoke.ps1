@@ -277,9 +277,24 @@ automaticUpdates = disabled
     Invoke-Control $server
     $null = Check-Spoken 'Portables CLI exportieren' $buttonType
     $null = Check-Spoken 'Serverergebnis öffnen' $buttonType
-    $commands = Check-Spoken 'Aufrufe und Rückgabecodes' $buttonType
-    Invoke-Control $commands
-    Invoke-Control $commands
+    $null = Check-Spoken 'Aufrufe und Rückgabecodes' $buttonType
+    # aria-expanded buttons expose ExpandCollapse. Exercise the actual keyboard
+    # action instead of assuming a reusable UIA InvokePattern across updates.
+    [AccessibilityKeys]::Press(0x0D)
+    $null = Wait-Check {
+        $control = Find-Control 'Aufrufe und Rückgabecodes' $buttonType
+        $expansion = $null
+        $control -and $control.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern, [ref]$expansion) -and
+            $expansion.Current.ExpandCollapseState -eq [System.Windows.Automation.ExpandCollapseState]::Expanded
+    } 'a11y_commands_not_expanded'
+    [AccessibilityKeys]::Press(0x0D)
+    $null = Wait-Check {
+        $control = Find-Control 'Aufrufe und Rückgabecodes' $buttonType
+        $expansion = $null
+        $control -and $control.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern, [ref]$expansion) -and
+            $expansion.Current.ExpandCollapseState -eq [System.Windows.Automation.ExpandCollapseState]::Collapsed
+    } 'a11y_commands_not_collapsed'
+    $checks.Add([ordered]@{ name = 'Server commands expand and collapse'; role = 'Keyboard'; action = 'Enter'; result = 'expanded then collapsed' })
     $about = Check-Spoken 'Info' $buttonType
     Invoke-Control $about
     $null = Check-Spoken 'Nach Updates suchen' $buttonType
