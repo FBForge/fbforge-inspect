@@ -9,7 +9,6 @@ import { tmpdir } from 'node:os';
 import { join, dirname, resolve } from 'node:path';
 import net from 'node:net';
 import { reportHtml } from '../frontend/src/reports.ts';
-import { inflateRawSync } from 'node:zlib';
 if (process.platform !== 'win32') throw new Error('This probe requires Windows.');
 if (!process.argv[2] || !process.argv[3])
   throw new Error('Usage: node tests/native-windows.mjs <exe> <evidence-dir>');
@@ -330,63 +329,6 @@ try {
       .getByRole('navigation', { name: 'Hauptnavigation' })
       .getByRole('button', { name, exact: true })
       .click();
-  await navigate('Fachdatenschemata');
-  await page.getByRole('button', { name: 'Automatisch zuordnen', exact: true }).click();
-  for (const [label, filename] of [
-    ['Quelle öffnen', 'source.xsd'],
-    ['Ziel öffnen', 'target.xsd'],
-    ['Excel-Anforderungen öffnen', 'requirements.xlsx'],
-  ]) {
-    await page
-      .getByLabel(label, { exact: true })
-      .setInputFiles(fileURLToPath(new URL(`./fixtures/mapping/${filename}`, import.meta.url)));
-  }
-  await page.getByRole('button', { name: 'Automatische Zuordnung starten', exact: true }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Zuordnungen prüfen', exact: true }),
-  ).toBeVisible();
-  await expect(page.locator('.mapping-row h3').first()).toBeInViewport();
-  await expect(
-    page.getByText('3 automatisch · 0 bestätigt · 2 mit Klärungsbedarf · 0 ausgelassen', {
-      exact: true,
-    }),
-  ).toBeVisible();
-  await page.screenshot({ path: join(output, 'windows-mapping.png') });
-  await page.getByRole('button', { name: 'MapForce-Entwurf exportieren', exact: true }).click();
-  await controlSaveDialog('cancel');
-  await expect(page.getByText('Speichern abgebrochen.', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'MapForce-Entwurf exportieren', exact: true }).click();
-  await controlSaveDialog('save', 'native-mapforce.zip');
-  await expect(
-    page.getByText('MapForce-Entwurf als ZIP gespeichert.', { exact: true }),
-  ).toBeVisible();
-  const archive = await readFile(join(reportDirectory, 'native-mapforce.zip'));
-  const entries = new Map();
-  for (let offset = 0; archive.readUInt32LE(offset) === 0x04034b50;) {
-    const method = archive.readUInt16LE(offset + 8),
-      size = archive.readUInt32LE(offset + 18);
-    const length = archive.readUInt16LE(offset + 26),
-      extra = archive.readUInt16LE(offset + 28);
-    const name = archive.subarray(offset + 30, offset + 30 + length).toString('utf8');
-    const begin = offset + 30 + length + extra;
-    const compressed = archive.subarray(begin, begin + size);
-    entries.set(name, (method === 8 ? inflateRawSync(compressed) : compressed).toString('utf8'));
-    offset = begin + size;
-  }
-  expect(entries.has('zuordnung.mfd')).toBe(true);
-  expect(entries.get('zuordnung.mfd')).toContain('<mapping');
-  expect(JSON.parse(entries.get('zuordnung.json')).mapforce.exportedDirectMappings).toBe(3);
-  expect(entries.get('README.txt')).toContain('MapForce-2025');
-  await writeFile(join(output, 'native-mapforce-2025-example.zip'), archive);
-  results.push(
-    'Native optional XLSX mapping and binary MapForce ZIP passed with actual Save and Cancel dialogs',
-  );
-  await navigate('Start');
-  await page.getByRole('button', { name: 'Automatisch zuordnen', exact: true }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Zuordnungen prüfen', exact: true }),
-  ).toBeVisible();
-  await page.getByRole('button', { name: 'Schema ansehen', exact: true }).click();
   const job = {
     format: 'fbforge-inspect-job',
     formatVersion: 1,

@@ -253,26 +253,6 @@ automaticUpdates = disabled
         Invoke-Control $control
     }
     $null = Check-Spoken 'JSON Schema / XSD' $editType
-    $mapping = Check-Spoken 'Automatisch zuordnen' $buttonType
-    [AccessibilityKeys]::Press(0x0D)
-    $null = Wait-Check {
-        $control = Find-Control 'Automatisch zuordnen' $buttonType
-        $toggle = $null
-        $control -and $control.TryGetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern, [ref]$toggle) -and
-            $toggle.Current.ToggleState -eq [System.Windows.Automation.ToggleState]::On
-    } 'a11y_mapping_mode_not_selected'
-    $null = Check-Spoken 'Quelle öffnen' $buttonType
-    $null = Check-Spoken 'Ziel öffnen' $buttonType
-    $null = Check-Spoken 'Excel-Anforderungen öffnen' $buttonType
-    $structure = Check-Spoken 'Schema ansehen' $buttonType
-    [AccessibilityKeys]::Press(0x0D)
-    $null = Wait-Check {
-        $control = Find-Control 'Schema ansehen' $buttonType
-        $toggle = $null
-        $control -and $control.TryGetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern, [ref]$toggle) -and
-            $toggle.Current.ToggleState -eq [System.Windows.Automation.ToggleState]::On
-    } 'a11y_schema_mode_not_selected'
-    $null = Check-Spoken 'JSON Schema / XSD' $editType
     $help = Check-Spoken 'Hilfe' $buttonType
     Invoke-Control $help
     $null = Check-Spoken 'Hilfe durchsuchen' $editType
@@ -315,16 +295,8 @@ automaticUpdates = disabled
             $expansion.Current.ExpandCollapseState -eq [System.Windows.Automation.ExpandCollapseState]::Collapsed
     } 'a11y_commands_not_collapsed'
     $checks.Add([ordered]@{ name = 'Server commands expand and collapse'; role = 'Keyboard'; action = 'Enter'; result = 'expanded then collapsed' })
-    $null = Check-Spoken 'Info' $buttonType
-    # Native activation keeps NVDA's virtual buffer and WebView keyboard focus in
-    # the same navigation transaction before the destination's Tab traversal.
-    [AccessibilityKeys]::Press(0x0D)
-    $null = Wait-Check {
-        $focused = [System.Windows.Automation.AutomationElement]::FocusedElement
-        $focused -and $focused.Current.Name -eq 'Info' -and
-            $focused.Current.ControlType -eq [System.Windows.Automation.ControlType]::Text
-    } 'a11y_about_heading_not_focused'
-    $checks.Add([ordered]@{ name = 'Info navigation reaches its heading'; role = 'Keyboard'; action = 'Enter'; result = 'Info heading focused' })
+    $about = Check-Spoken 'Info' $buttonType
+    Invoke-Control $about
     $null = Check-Spoken 'Nach Updates suchen' $buttonType
     # Repeat the proven native engine/export flow against the installed resources,
     # after stopping the screen reader and its app so they cannot intercept input.

@@ -1,10 +1,8 @@
 # Sicherheit
 
-Die Netzwerkdiagnosen von Inspect verwenden öffentliche Konfigurationsdaten. Optionale Schemata und Excel-Anforderungen für die Strukturzuordnung werden lokal verarbeitet. Bitte keine Zugangsdaten, privaten Schlüssel oder Fachdaten in Diagnosefelder eingeben. Private und symmetrische Schlüssel werden abgewiesen. Die App speichert Eingaben und Ergebnisse nicht automatisch und sendet keine Telemetrie.
+Inspect verarbeitet ausschließlich öffentliche Daten. Bitte keine Zugangsdaten, privaten Schlüssel oder Fachdaten in Diagnosefelder eingeben. Private und symmetrische Schlüssel werden abgewiesen. Die App speichert Eingaben und Ergebnisse nicht automatisch und sendet keine Telemetrie.
 
 Relevante Sicherheitsgrenzen sind UI → native Kommandos, Host → Java-IPC, öffentliche URL → Netzwerk, untrusted JSON/XML/JOSE/X.509 → Parser und Bericht → lokales HTML. Die Darstellung behandelt externe Texte als Daten. HTML-Exporte maskieren Markup und blockieren Skripte und externe Ressourcen per CSP.
-
-Der lokale Zuordnungsimport lädt keine Fremdreferenzen nach und führt keine Excel-Formeln, Makros oder XDF-Skripte aus. Größen-, Struktur- und Archivgrenzen beschränken die verarbeiteten Eingaben. Der MapForce-Entwurf enthält nur ausdrücklich exportierte Zuordnungsinformationen und lokale Schemata. Bericht und ZIP können interne Anforderungen enthalten und müssen vor der Weitergabe geprüft werden.
 
 Der Transport erlaubt nur öffentliche IP-Ziele und Standardports. HTTPS ist der Standard, HTTP und OCSP-POST sind auf ausdrücklich gestartete PKI-Prüfungen beschränkt. DNS-geprüfte IP-Adressen werden beim Verbindungsaufbau festgehalten. Keine automatische Fremdreferenzauflösung, keine DTD/XXE, keine automatische Auswahl eines Vertrauensankers aus empfangenen Daten. Kryptographische Einzelergebnisse ersetzen keine Aussage über die Gesamtintegration.
 

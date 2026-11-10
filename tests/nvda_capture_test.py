@@ -41,7 +41,7 @@ class CaptureTests(unittest.TestCase):
                 labels = ['Hilfe durchsuchen', 'Sammelprüfung', 'Prüfung auswählen', 'Kennung oder öffentliche URL', 'Prüfung hinzufügen', 'Prüfung entfernen: check-1', 'Prüfeingaben',
                           'Prüfungen vorbereiten', 'Werkzeuge', 'Aufgabe',
                           'Zertifikatsinventar', 'Serverdiagnose', 'Portables CLI exportieren',
-                          'Info', 'Nach Updates suchen', 'Automatisch zuordnen', 'Quelle öffnen', 'Ziel öffnen', 'Excel-Anforderungen öffnen', 'Schema ansehen']
+                          'Info', 'Nach Updates suchen']
                 for label in labels:
                     focus.name = label
                     observer.observe([label, object(), 'focused'])

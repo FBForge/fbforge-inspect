@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { pages, type Page } from './contracts';
 import Icon from './Icon.vue';
-const emit = defineEmits<{ navigate: [page: Page]; network: []; mapping: [] }>();
+const emit = defineEmits<{ navigate: [page: Page]; network: [] }>();
 </script>
 <template>
   <section class="start-task-section">
@@ -17,14 +17,6 @@ const emit = defineEmits<{ navigate: [page: Page]; network: []; mapping: [] }>()
           <strong>{{ item.label }}</strong>
         </button>
         <p>{{ item.description }}</p>
-        <span class="start-task-action" aria-hidden="true">Aufgabe öffnen</span>
-      </div>
-      <div class="start-card panel">
-        <Icon name="route" />
-        <button class="start-task-button" @click="emit('mapping')">
-          <strong>Automatisch zuordnen</strong>
-        </button>
-        <p>Schema oder XDF zuordnen und Excel-Anforderungen als Zusatzquelle nutzen.</p>
         <span class="start-task-action" aria-hidden="true">Aufgabe öffnen</span>
       </div>
     </div>

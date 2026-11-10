@@ -88,13 +88,6 @@ const images = {
       'Ausschnitt eines tatsächlichen lokalen Schema-Diagnoseergebnisses mit fiktiven Beispieldaten',
     ],
   ],
-  mapping: [
-    ['mapping-inputs.png', 'Lokale Quell- und Zielschemata mit optionalen Excel-Anforderungen'],
-    [
-      'mapping.png',
-      'Automatische Strukturzuordnung mit fiktiven Excel-Anforderungen und offenen Zusammenführungen',
-    ],
-  ],
   reports: [
     [
       'reports.png',

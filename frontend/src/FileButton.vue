@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-defineProps<{ label: string; accept?: string; disabled?: boolean; multiple?: boolean }>();
+defineProps<{ label: string; accept?: string; disabled?: boolean }>();
 const emit = defineEmits<{ change: [event: Event] }>();
 const input = ref<HTMLInputElement | null>(null);
 </script>
@@ -14,7 +14,6 @@ const input = ref<HTMLInputElement | null>(null);
     type="file"
     :aria-label="label"
     :accept="accept"
-    :multiple="multiple"
     :disabled="disabled"
     @change="emit('change', $event)"
   />

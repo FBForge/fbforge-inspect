@@ -228,27 +228,6 @@
     "summary": "Lesen Sie JSON Schema und XSD als Struktur. Die App prüft keine Fachdateninstanzen und bestätigt keine vollständige Schema-Gültigkeit."
   },
   {
-    "id": "mapping",
-    "title": "Strukturen automatisch zuordnen",
-    "summary": "Quell- und Zielstruktur lokal zuordnen. Eine optionale Excel-Anforderungsdatei verbessert die Vorschläge und macht dokumentierte Zielpfade nachvollziehbar.",
-    "steps": [
-      "Öffnen Sie auf Start die Aufgabe Automatisch zuordnen oder wählen Sie unter Fachdatenschemata diesen Modus. Quelle und Ziel unterstützen XSD, JSON Schema und XDF. Wählen Sie benötigte lokale Begleitdateien gemeinsam aus. Bei mehreren Wurzelelementen wählen Sie den gewünschten Einstieg.",
-      "Ergänzen Sie bei Bedarf eine XLSX-Datei. Prüfen Sie das erkannte Tabellenblatt und die Anzahl der Feldanforderungen. Erkannte Spalten und Vorschau zeigt die Spaltenzuordnung. Passen Sie Feldkennung, Bezeichnung, Zielpfad und weitere Spalten bei Bedarf an und wählen Sie Spaltenzuordnung übernehmen. Die Excel bleibt optional.",
-      "Starten Sie die automatische Zuordnung. Inspect berücksichtigt Feldkennungen, Bezeichnungen, Gruppenpfade, Datentypen und dokumentierte Excel-Zielpfade. Eindeutige kompatible Treffer stehen unter Automatisch. Offene Fälle werden zuerst angezeigt.",
-      "Prüfen Sie Quelle, Ziel und Hinweise je offenem Fall. Wählen Sie das passende Zielfeld und Zuordnung bestätigen. Anderes Zielfeld suchen durchsucht die ganze Zielstruktur. Feld nicht zuordnen lässt einen Eintrag ausdrücklich aus. Erneut zuordnen öffnet ihn wieder.",
-      "Begründung und Excel-Fundstelle zeigt die berücksichtigten Anforderungen mit Blatt, Zeile und Zelladressen. Mehrfach verwendete Kennungen behalten ihren Gruppenkontext. Zusammenführungen, Codelisten und fachliche Anmerkungen bleiben als Klärungsbedarf sichtbar.",
-      "Speichern Sie den Zuordnungsbericht als JSON. Für geklärte direkte XSD-Zuordnungen kann MapForce-Entwurf exportieren ein ZIP mit zuordnung.mfd, den lokalen XSD-Dateien und dem vollständigen Bericht erzeugen. Entpacken Sie alle Dateien gemeinsam und prüfen Sie den Entwurf in MapForce 2025."
-    ],
-    "paragraphs": [
-      "Die Analyse erfolgt lokal ohne KI-Dienst oder Übertragung der Dateien. Sie ist eine nachvollziehbare Zuordnungshilfe und ersetzt keine fachliche Entscheidung. Inspect prüft keine Fachdateninstanzen und sendet keine Einreichung. Die Ergebnisse bleiben während der Sitzung auch beim Wechsel zur Startseite erhalten. Geänderte Eingaben erfordern eine neue Berechnung. Nach dem Start führt Inspect direkt zur Ergebnisübersicht. Der Tastaturfokus bleibt im aktuellen Ablauf, auch wenn eine Entscheidung den gewählten Filter verlässt.",
-      "Unterstützt werden bis zu 32 Schemadateien je Seite, höchstens 4 MiB je Datei und 16 MiB zusammen. Die XLSX-Datei darf höchstens 8 MiB haben. Formeln werden nicht ausgewertet, Makro-Arbeitsmappen werden abgewiesen und externe Bezüge nicht nachgeladen. Codelisteneinträge werden ihrem Feld zugeordnet. Konstanten werden separat dokumentiert.",
-      "XDF-Regeln, JSON-Kompositionen und nicht aufgelöste Referenzen benötigen eine eigene Prüfung. Schemaeinschränkungen und widersprüchliche Typen oder Kardinalitäten verhindern eine automatisch als geklärt gewertete Zuordnung. Das Einlesen bestätigt keine vollständige Schema-Gültigkeit.",
-      "Der Export ist ein MapForce-Entwurf für Version 2025. Das native Öffnen und die Ausführung wurden nicht mit einer installierten MapForce-Version abgenommen. Direkt verbunden werden nur geklärte Zuordnungen ohne Wiederholungen oder Attribute. Konstanten, Bedingungen, Codelistenübersetzungen, Auswahl- und Zusammenführungsregeln werden nicht als Transformation erfunden. Nicht übernommene Einträge stehen mit Begründung in zuordnung.json. Die Quelleinstanz wählen Sie erst in MapForce.",
-      "Bericht und ZIP können Beschriftungen, Anforderungen und öffentliche Schemaangaben enthalten. Prüfen Sie diese Inhalte vor einer Weitergabe. Die ursprüngliche Excel-Arbeitsmappe und Fachdateninstanzen werden nicht in das ZIP kopiert."
-    ],
-    "example": null
-  },
-  {
     "id": "reports",
     "title": "Berichte und Datenschutz",
     "paragraphs": [

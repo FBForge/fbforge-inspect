@@ -2,9 +2,6 @@
 
 ## 0.2.0
 
-- Lokale automatische Strukturzuordnung für XSD, JSON Schema und XDF mit optionalen Excel-Anforderungen. Eindeutige Treffer, gezielte Entscheidungen bei Unklarheiten und nachvollziehbare Fundstellen.
-- Zuordnungsbericht und MapForce-2025-Entwurf für geklärte direkte XSD-Zuordnungen. Offene Transformationsregeln bleiben ausdrücklich dokumentiert.
-
 - Navigation mit ausreichender Breite, ganzen Wörtern und kompakteren Zeilen.
 - Gemeinsame Diagnosezusammenfassung für Einzel-, Sammel- und Serverprüfungen. Bestätigte Punkte und technische Belege werden gezielt über Buttons geöffnet.
 - Sammelprüfung mit Filterbuttons und zusammengehörigen Aktionen pro Eintrag. Serverdiagnose mit drei geführten Schritten und einheitlicher Dateiauswahl.

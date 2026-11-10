@@ -15,8 +15,6 @@ import NetworkView from './NetworkView.vue';
 import BatchView from './BatchView.vue';
 import ToolsView from './ToolsView.vue';
 import ServerView from './ServerView.vue';
-import MappingView from './MappingView.vue';
-const schemaMode = ref<'structure' | 'mapping'>('structure');
 const exportedJobDigest = ref('');
 import InventoryView from './InventoryView.vue';
 import UpdatePanel from './UpdatePanel.vue';
@@ -233,54 +231,17 @@ async function openSchema(url: string) {
             {{
               page === 'process' && processMode === 'limits'
                 ? 'Öffentliche Größenlimits zwischen zwei Zustellpunkten vergleichen.'
-                : page === 'schema' && schemaMode === 'mapping'
-                  ? 'Quell- und Zielstruktur mit optionalen Excel-Anforderungen zuordnen.'
-                  : active.description
+                : active.description
             }}
           </p>
         </div>
-        <button
-          v-if="report && !(page === 'schema' && schemaMode === 'mapping')"
-          ref="exportTrigger"
-          class="button secondary"
-          @click="preview = true"
-        >
+        <button v-if="report" ref="exportTrigger" class="button secondary" @click="preview = true">
           Bericht exportieren
         </button>
       </div>
       <main id="main-content" ref="mainContent" tabindex="0">
-        <div
-          v-if="page === 'schema'"
-          class="task-switch mapping-mode"
-          role="group"
-          aria-label="Schemaansicht oder automatische Zuordnung"
-        >
-          <button
-            class="button secondary"
-            :aria-pressed="schemaMode === 'structure'"
-            :disabled="busy"
-            @click="schemaMode = 'structure'"
-          >
-            Schema ansehen
-          </button>
-          <button
-            class="button secondary"
-            :aria-pressed="schemaMode === 'mapping'"
-            :disabled="busy"
-            @click="schemaMode = 'mapping'"
-          >
-            Automatisch zuordnen
-          </button>
-        </div>
         <template v-if="page === 'start'">
-          <StartView
-            @navigate="navigate"
-            @network="openNetworkHelp"
-            @mapping="
-              schemaMode = 'mapping';
-              navigate('schema');
-            "
-          />
+          <StartView @navigate="navigate" @network="openNetworkHelp" />
         </template>
         <template v-else-if="page === 'network'">
           <NetworkView
@@ -296,7 +257,6 @@ async function openSchema(url: string) {
           </div>
           <p v-if="error" class="notice error-notice" role="alert">{{ error }}</p>
         </template>
-        <template v-else-if="page === 'schema' && schemaMode === 'mapping'"></template>
         <template
           v-else-if="!['help', 'about', 'batch', 'tools', 'inventory', 'server'].includes(page)"
           ><div v-if="environment === 'STAGE' && page === 'routing'" class="notice">
@@ -377,11 +337,6 @@ async function openSchema(url: string) {
         >
         <InfoView v-else-if="page === 'about'" @network="openNetworkHelp" />
         <OfflineHelp v-else-if="page === 'help'" />
-        <KeepAlive
-          ><MappingView
-            v-if="page === 'schema' && schemaMode === 'mapping'"
-            :current-schema="session.form.text"
-        /></KeepAlive>
         <KeepAlive>
           <BatchView
             v-if="page === 'batch'"
@@ -439,9 +394,7 @@ async function openSchema(url: string) {
         <KeepAlive>
           <Results
             v-if="
-              report &&
-              !['start', 'help', 'about', 'batch', 'inventory', 'server'].includes(page) &&
-              !(page === 'schema' && schemaMode === 'mapping')
+              report && !['start', 'help', 'about', 'batch', 'inventory', 'server'].includes(page)
             "
             :key="sessionKey"
             :report="report"

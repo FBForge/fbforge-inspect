@@ -44,9 +44,6 @@ STAGE besitzt keine eigene Routing-API. Die Anwendung kennzeichnet dort die verw
 
 ## Analysefunktionen in 0.2.0
 
-- Automatische Strukturzuordnung für XSD, JSON Schema und XDF. Optionale Excel-Anforderungen ergänzen Zielpfade und Fundstellen. Mehrdeutige Fälle lassen sich gezielt bestätigen oder auslassen.
-- Zuordnungsbericht und MapForce-2025-Entwurf für direkte XSD-Zuordnungen. Das native Öffnen und die Ausführung des Entwurfs sind in MapForce zu prüfen.
-
 - Sammelprüfung mit bis zu 32 Einträgen, Pause, Abbruch und gezielter Wiederholung.
 - Netzwerkphasen, konkrete TLS-Ursachen und ausdrücklich ergänzbare HTTPS-Unternehmens-CAs.
 - Rückwärtsrouting vom bekannten Zustellpunkt und nachvollziehbare öffentliche Adressierungskontexte.
