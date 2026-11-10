@@ -4,9 +4,17 @@ import { invoke, isTauri } from '@tauri-apps/api/core';
 export async function saveFile(content: string, format = 'json') {
   if (isTauri()) return invoke<boolean>('save_report', { content, format });
   const url = URL.createObjectURL(
-    new Blob([content], {
-      type: format === 'json' ? 'application/json' : 'text/plain;charset=utf-8',
-    }),
+    new Blob(
+      [format === 'zip' ? Uint8Array.from(atob(content), (c) => c.charCodeAt(0)) : content],
+      {
+        type:
+          format === 'zip'
+            ? 'application/zip'
+            : format === 'json'
+              ? 'application/json'
+              : 'text/plain;charset=utf-8',
+      },
+    ),
   );
   const link = document.createElement('a');
   link.href = url;

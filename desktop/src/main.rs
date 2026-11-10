@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 mod application_updates;
 mod cli_export;
+mod report_export;
 mod update_policy;
 mod update_transport;
 use std::{
@@ -195,11 +196,8 @@ async fn save_report(
     format: String,
 ) -> Result<bool, String> {
     let _activity = file_activity(&app)?;
-    if !["json", "html", "txt", "ics"].contains(&format.as_str())
-        || content.len() > 32 * 1024 * 1024
-    {
-        return Err("Berichtsformat oder Größe unzulässig.".into());
-    }
+    let bytes = report_export::bytes(&content, &format)
+        .map_err(|_| "Berichtsformat oder Größe unzulässig.".to_string())?;
     tauri::async_runtime::spawn_blocking(move || {
         let selected = app
             .dialog()
@@ -213,7 +211,7 @@ async fn save_report(
         let path = selected
             .into_path()
             .map_err(|_| "Lokalen Speicherort wählen.")?;
-        std::fs::write(path, content)
+        std::fs::write(path, bytes)
             .map_err(|_| "Bericht konnte nicht gespeichert werden.".to_string())?;
         Ok(true)
     })

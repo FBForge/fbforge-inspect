@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xdf:xdatenfelder xmlns:xdf="urn:xoev-de:fim:standard:xdatenfelder_3.0">
+ <xdf:stammdatenschema><xdf:identifikation><xdf:id>S90000001</xdf:id><xdf:version>1.0</xdf:version></xdf:identifikation><xdf:name>Fiktiver Antrag</xdf:name>
+  <xdf:struktur><xdf:anzahl>1:1</xdf:anzahl><xdf:enthaelt><xdf:datenfeldgruppe>
+   <xdf:identifikation><xdf:id>G90000001</xdf:id><xdf:version>1.0</xdf:version></xdf:identifikation><xdf:name>Person</xdf:name>
+   <xdf:struktur><xdf:anzahl>1:1</xdf:anzahl><xdf:enthaelt><xdf:datenfeld>
+    <xdf:identifikation><xdf:id>F90000001</xdf:id><xdf:version>1.0</xdf:version></xdf:identifikation><xdf:name>Familienname</xdf:name><xdf:datentyp><code>text</code></xdf:datentyp>
+   </xdf:datenfeld></xdf:enthaelt></xdf:struktur>
+  </xdf:datenfeldgruppe></xdf:enthaelt></xdf:struktur>
+ </xdf:stammdatenschema>
+</xdf:xdatenfelder>

@@ -1,6 +1,8 @@
 //! Pure release contracts also used by the GUI, without GTK or a Windows desktop.
 #[path = "../src/cli_export.rs"]
 pub mod cli_export;
+#[path = "../src/report_export.rs"]
+pub mod report_export;
 #[path = "../src/update_policy.rs"]
 pub mod update_policy;
 

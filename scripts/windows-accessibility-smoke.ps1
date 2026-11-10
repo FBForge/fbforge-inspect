@@ -253,6 +253,14 @@ automaticUpdates = disabled
         Invoke-Control $control
     }
     $null = Check-Spoken 'JSON Schema / XSD' $editType
+    $mapping = Check-Spoken 'Automatisch zuordnen' $buttonType
+    Invoke-Control $mapping
+    $null = Check-Spoken 'Quelle öffnen' $buttonType
+    $null = Check-Spoken 'Ziel öffnen' $buttonType
+    $null = Check-Spoken 'Excel-Anforderungen öffnen' $buttonType
+    $structure = Check-Spoken 'Schema ansehen' $buttonType
+    Invoke-Control $structure
+    $null = Check-Spoken 'JSON Schema / XSD' $editType
     $help = Check-Spoken 'Hilfe' $buttonType
     Invoke-Control $help
     $null = Check-Spoken 'Hilfe durchsuchen' $editType

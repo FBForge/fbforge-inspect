@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:fbforge:example:source" elementFormDefault="qualified">
+  <xs:element name="Antrag"><xs:complexType><xs:sequence>
+    <xs:element name="Person"><xs:complexType><xs:sequence>
+      <xs:element name="F90000001" type="xs:string"><xs:annotation><xs:documentation>Familienname</xs:documentation></xs:annotation></xs:element>
+      <xs:element name="F90000002" type="xs:string"><xs:annotation><xs:documentation>Straße</xs:documentation></xs:annotation></xs:element>
+      <xs:element name="F90000003" type="xs:string"><xs:annotation><xs:documentation>Hausnummer</xs:documentation></xs:annotation></xs:element>
+      <xs:element name="F90000004" type="xs:date"><xs:annotation><xs:documentation>Geburtsdatum</xs:documentation></xs:annotation></xs:element>
+      <xs:element name="F90000005" type="xs:string" minOccurs="0"><xs:annotation><xs:documentation>E-Mail</xs:documentation></xs:annotation></xs:element>
+    </xs:sequence></xs:complexType></xs:element>
+  </xs:sequence></xs:complexType></xs:element>
+</xs:schema>
