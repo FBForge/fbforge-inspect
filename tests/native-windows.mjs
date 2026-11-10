@@ -345,6 +345,7 @@ try {
   await expect(
     page.getByRole('heading', { name: 'Zuordnungen prüfen', exact: true }),
   ).toBeVisible();
+  await expect(page.locator('.mapping-row h3').first()).toBeInViewport();
   await expect(
     page.getByText('3 automatisch · 0 bestätigt · 2 mit Klärungsbedarf · 0 ausgelassen', {
       exact: true,

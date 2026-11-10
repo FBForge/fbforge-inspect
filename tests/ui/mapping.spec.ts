@@ -22,6 +22,7 @@ async function run(page: Page) {
   await expect(
     page.getByRole('heading', { name: 'Zuordnungen prüfen', exact: true }),
   ).toBeVisible();
+  await expect(page.locator('.mapping-row h3').first()).toBeInViewport();
 }
 async function all(page: Page) {
   await page
@@ -259,9 +260,6 @@ test('mapping reflows in both appearances and screenshots show synthetic require
   }
   await page.setViewportSize({ width: 1360, height: 1000 });
   await run(page);
-  await page
-    .getByRole('heading', { name: 'Zuordnungen prüfen', exact: true })
-    .evaluate((e) => e.parentElement!.scrollIntoView({ block: 'start' }));
   await page.screenshot({
     path:
       process.env.INSPECT_UPDATE_DOC_IMAGES === '1'

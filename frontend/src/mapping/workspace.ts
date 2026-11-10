@@ -253,7 +253,8 @@ export function useMappingWorkspace(currentSchema: () => string | undefined) {
       decisions.value = result;
       message.value = `${result.length} Feldvorkommen analysiert.`;
       await nextTick();
-      results.value?.querySelector<HTMLElement>('h2')?.focus();
+      results.value?.scrollIntoView({ block: 'start' });
+      results.value?.querySelector<HTMLElement>('h2')?.focus({ preventScroll: true });
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Zuordnung fehlgeschlagen.';
       message.value = 'Keine neuen Zuordnungsergebnisse.';
