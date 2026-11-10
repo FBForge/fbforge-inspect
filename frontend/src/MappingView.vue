@@ -37,6 +37,12 @@ const {
   selectedSheet,
   cancel,
 } = useMappingWorkspace(() => props.currentSchema);
+function focusOpenButton(event: Event) {
+  (event.currentTarget as HTMLElement)
+    .closest('.mapping-schema, .mapping-excel')
+    ?.querySelector<HTMLButtonElement>('button')
+    ?.focus();
+}
 </script>
 <template>
   <section class="panel mapping-inputs">
@@ -69,7 +75,10 @@ const {
             v-if="inputs[item.id].schema || inputs[item.id].loading"
             class="button secondary"
             :disabled="processing"
-            @click="removeSchema(item.id)"
+            @click="
+              removeSchema(item.id);
+              focusOpenButton($event);
+            "
           >
             {{ item.label }} entfernen
           </button>
@@ -133,7 +142,10 @@ const {
           v-if="excelName || excelLoading"
           class="button secondary"
           :disabled="processing"
-          @click="removeExcel"
+          @click="
+            removeExcel();
+            focusOpenButton($event);
+          "
         >
           Excel entfernen
         </button>

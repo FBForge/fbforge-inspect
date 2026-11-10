@@ -449,3 +449,35 @@ test('browser ZIP download contains binary archive bytes and native save failure
     page.getByRole('button', { name: 'Zuordnungsbericht speichern', exact: true }),
   ).toBeEnabled();
 });
+
+test('review actions and file removal preserve keyboard focus when the current control disappears', async ({
+  page,
+}) => {
+  await start(page);
+  await schemas(page);
+  await page
+    .getByLabel('Excel-Anforderungen öffnen', { exact: true })
+    .setInputFiles(root + 'requirements.xlsx');
+  await run(page);
+  const street = page
+    .locator('.mapping-row')
+    .filter({ has: page.getByRole('heading', { name: 'Straße', exact: true }) });
+  await street.getByRole('button', { name: 'Feld nicht zuordnen', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading', { name: 'Hausnummer', exact: true })).toBeFocused();
+  await page.getByRole('button', { name: 'Zuordnung bestätigen', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: 'Offene Fälle · 0', exact: true })).toBeFocused();
+  await page.getByRole('button', { name: 'Ausgelassen · 1', exact: true }).click();
+  await page.getByRole('button', { name: 'Erneut zuordnen', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: 'Ausgelassen · 0', exact: true })).toBeFocused();
+  await page.getByRole('button', { name: 'Excel entfernen', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect(
+    page.getByRole('button', { name: 'Excel-Anforderungen öffnen', exact: true }),
+  ).toBeFocused();
+  await page.getByRole('button', { name: 'Quelle entfernen', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: 'Quelle öffnen', exact: true })).toBeFocused();
+});

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, nextTick, reactive, ref, watch } from 'vue';
 import type { MappingDecision, MappingSchema } from './mapping/types';
 import { displayPath } from './mapping/export';
 import DisclosurePanel from './DisclosurePanel.vue';
@@ -15,6 +15,8 @@ const emit = defineEmits<{
 }>();
 const filter = ref('review'),
   query = ref('');
+const list = ref<HTMLOListElement>(),
+  filters = ref<HTMLDivElement>();
 const selected = reactive<Record<string, string>>(Object.create(null));
 const targetSearch = reactive<Record<string, string>>(Object.create(null));
 const sources = computed(() => new Map(props.source.fields.map((f) => [f.key, f])));
@@ -77,6 +79,25 @@ function searchTargets(key: string) {
         .slice(0, 40)
     : [];
 }
+async function act(kind: 'choose' | 'skip' | 'reopen', sourceKey: string, targetKey = '') {
+  const trigger = document.activeElement;
+  const index = visible.value.findIndex((d) => d.source === sourceKey);
+  if (kind === 'choose') emit('choose', sourceKey, targetKey);
+  else if (kind === 'skip') emit('skip', sourceKey);
+  else emit('reopen', sourceKey);
+  await nextTick();
+  if (trigger?.isConnected) return;
+  const next =
+    visible.value.find((d) => d.source === sourceKey) ||
+    visible.value[Math.min(index, visible.value.length - 1)];
+  const row = Array.from(list.value?.querySelectorAll<HTMLElement>('.mapping-row') || []).find(
+    (e) => e.dataset.source === next?.source,
+  );
+  const target =
+    row?.querySelector<HTMLElement>('h3') ||
+    filters.value?.querySelector<HTMLElement>('[aria-pressed="true"]');
+  target?.focus({ preventScroll: false });
+}
 </script>
 <template>
   <section class="panel mapping-results" aria-label="Automatische Zuordnungsergebnisse">
@@ -85,7 +106,7 @@ function searchTargets(key: string) {
       Klare Treffer sind automatisch zugeordnet. Prüfen Sie die offenen Fälle und bestätigen Sie das
       passende Ziel. Fachliche Regeln bleiben als Hinweise sichtbar.
     </p>
-    <div class="queue-filters" role="group" aria-label="Zuordnungen filtern">
+    <div ref="filters" class="queue-filters" role="group" aria-label="Zuordnungen filtern">
       <button
         v-for="item in [
           { id: 'review', label: 'Offene Fälle' },
@@ -125,7 +146,7 @@ function searchTargets(key: string) {
       </ul>
     </DisclosurePanel>
     <p v-if="!visible.length" class="hint">Keine Zuordnungen in diesem Filter.</p>
-    <ol class="mapping-list" role="list">
+    <ol ref="list" class="mapping-list" role="list">
       <li
         v-for="decision in visible.slice(0, limit)"
         :key="decision.source"
@@ -133,7 +154,7 @@ function searchTargets(key: string) {
         :data-source="decision.source"
       >
         <div class="check-heading">
-          <h3>{{ sources.get(decision.source)?.label }}</h3>
+          <h3 tabindex="-1">{{ sources.get(decision.source)?.label }}</h3>
           <span
             class="badge"
             :class="
@@ -180,11 +201,11 @@ function searchTargets(key: string) {
             <button
               class="button secondary"
               :disabled="!(selected[decision.source] ?? decision.target)"
-              @click="emit('choose', decision.source, selected[decision.source] ?? decision.target)"
+              @click="act('choose', decision.source, selected[decision.source] ?? decision.target)"
             >
               Zuordnung bestätigen
             </button>
-            <button class="button secondary" @click="emit('skip', decision.source)">
+            <button class="button secondary" @click="act('skip', decision.source)">
               Feld nicht zuordnen
             </button>
           </div>
@@ -207,7 +228,7 @@ function searchTargets(key: string) {
             </p>
           </DisclosurePanel>
         </template>
-        <button v-else class="button secondary" @click="emit('reopen', decision.source)">
+        <button v-else class="button secondary" @click="act('reopen', decision.source)">
           Erneut zuordnen
         </button>
         <DisclosurePanel label="Begründung und Excel-Fundstelle">
