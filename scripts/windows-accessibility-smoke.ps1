@@ -315,8 +315,16 @@ automaticUpdates = disabled
             $expansion.Current.ExpandCollapseState -eq [System.Windows.Automation.ExpandCollapseState]::Collapsed
     } 'a11y_commands_not_collapsed'
     $checks.Add([ordered]@{ name = 'Server commands expand and collapse'; role = 'Keyboard'; action = 'Enter'; result = 'expanded then collapsed' })
-    $about = Check-Spoken 'Info' $buttonType
-    Invoke-Control $about
+    $null = Check-Spoken 'Info' $buttonType
+    # Native activation keeps NVDA's virtual buffer and WebView keyboard focus in
+    # the same navigation transaction before the destination's Tab traversal.
+    [AccessibilityKeys]::Press(0x0D)
+    $null = Wait-Check {
+        $focused = [System.Windows.Automation.AutomationElement]::FocusedElement
+        $focused -and $focused.Current.Name -eq 'Info' -and
+            $focused.Current.ControlType -eq [System.Windows.Automation.ControlType]::Text
+    } 'a11y_about_heading_not_focused'
+    $checks.Add([ordered]@{ name = 'Info navigation reaches its heading'; role = 'Keyboard'; action = 'Enter'; result = 'Info heading focused' })
     $null = Check-Spoken 'Nach Updates suchen' $buttonType
     # Repeat the proven native engine/export flow against the installed resources,
     # after stopping the screen reader and its app so they cannot intercept input.
