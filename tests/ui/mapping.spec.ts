@@ -281,6 +281,18 @@ test('mapping reflows in both appearances and screenshots show synthetic require
   expect(
     await page.locator('main').evaluate((e) => e.scrollWidth <= e.clientWidth + 1),
   ).toBeTruthy();
+  // Ubuntu runners commonly select DejaVu Sans. Its wider glyphs must also fit.
+  await page.evaluate(() =>
+    document.documentElement.style.setProperty('--font-ui', '"DejaVu Sans", sans-serif'),
+  );
+  expect(
+    await page.locator('main').evaluate((e) => e.scrollWidth <= e.clientWidth + 1),
+  ).toBeTruthy();
+  expect(
+    await page
+      .locator('.mapping-export .button')
+      .evaluateAll((buttons) => buttons.every((e) => e.scrollWidth <= e.clientWidth + 1)),
+  ).toBeTruthy();
   await page.setViewportSize({ width: 350, height: 540 });
   expect(
     await page.locator('main').evaluate((e) => e.scrollWidth <= e.clientWidth + 1),

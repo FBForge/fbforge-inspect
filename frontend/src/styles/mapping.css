@@ -33,7 +33,10 @@
   line-height: 1.6;
 }
 .mapping-inputs,
-.mapping-results {
+.mapping-results,
+.mapping-export,
+.mapping-status,
+.mapping-mode {
   overflow-wrap: anywhere;
 }
 .mapping-row label {
@@ -41,6 +44,7 @@
 }
 .mapping-inputs .button,
 .mapping-results .button,
+.mapping-export .button,
 .mapping-mode .button {
   white-space: normal;
   max-width: 100%;

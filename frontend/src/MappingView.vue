@@ -219,8 +219,8 @@ const {
       Zuordnungshilfe für Strukturen und dokumentierte Anforderungen. Keine Prüfung von Fachdaten.
     </p>
   </section>
-  <p v-if="error" role="alert" class="notice error-notice">{{ error }}</p>
-  <p role="status">{{ message }}</p>
+  <p v-if="error" role="alert" class="notice error-notice mapping-status">{{ error }}</p>
+  <p role="status" class="mapping-status">{{ message }}</p>
   <div v-if="decisions.length && inputs.source.schema && inputs.target.schema" :ref="setResults">
     <MappingResults
       :source="inputs.source.schema"
@@ -230,7 +230,7 @@ const {
       @skip="skip"
       @reopen="reopen"
     />
-    <section class="panel">
+    <section class="panel mapping-export">
       <h2>Zuordnung weitergeben</h2>
       <div class="action-row">
         <button class="button secondary" @click="save('report')">Zuordnungsbericht speichern</button
