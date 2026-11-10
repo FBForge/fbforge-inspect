@@ -254,12 +254,24 @@ automaticUpdates = disabled
     }
     $null = Check-Spoken 'JSON Schema / XSD' $editType
     $mapping = Check-Spoken 'Automatisch zuordnen' $buttonType
-    Invoke-Control $mapping
+    [AccessibilityKeys]::Press(0x0D)
+    $null = Wait-Check {
+        $control = Find-Control 'Automatisch zuordnen' $buttonType
+        $toggle = $null
+        $control -and $control.TryGetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern, [ref]$toggle) -and
+            $toggle.Current.ToggleState -eq [System.Windows.Automation.ToggleState]::On
+    } 'a11y_mapping_mode_not_selected'
     $null = Check-Spoken 'Quelle öffnen' $buttonType
     $null = Check-Spoken 'Ziel öffnen' $buttonType
     $null = Check-Spoken 'Excel-Anforderungen öffnen' $buttonType
     $structure = Check-Spoken 'Schema ansehen' $buttonType
-    Invoke-Control $structure
+    [AccessibilityKeys]::Press(0x0D)
+    $null = Wait-Check {
+        $control = Find-Control 'Schema ansehen' $buttonType
+        $toggle = $null
+        $control -and $control.TryGetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern, [ref]$toggle) -and
+            $toggle.Current.ToggleState -eq [System.Windows.Automation.ToggleState]::On
+    } 'a11y_schema_mode_not_selected'
     $null = Check-Spoken 'JSON Schema / XSD' $editType
     $help = Check-Spoken 'Hilfe' $buttonType
     Invoke-Control $help

@@ -13,7 +13,7 @@ if ($application.ProcessName -ne 'fbforge-inspect') { throw 'save_dialog_wrong_p
 $directory = [IO.Path]::GetFullPath($TestDirectory)
 $temporaryRoot = [IO.Path]::GetFullPath($env:RUNNER_TEMP).TrimEnd('\') + '\'
 if (-not $directory.StartsWith($temporaryRoot, [StringComparison]::OrdinalIgnoreCase) -or -not (Test-Path -LiteralPath $directory -PathType Container)) { throw 'save_dialog_directory_not_owned' }
-if ($Mode -eq 'save' -and $FileName -notmatch '^native-report-(default|raw)\.(json|html)$') { throw 'save_dialog_invalid_filename' }
+if ($Mode -eq 'save' -and $FileName -notmatch '^(native-report-(default|raw)\.(json|html)|native-mapforce\.zip)$') { throw 'save_dialog_invalid_filename' }
 $destination = if ($Mode -eq 'save') { Join-Path $directory $FileName } else { $null }
 if ($destination -and (Test-Path -LiteralPath $destination)) { throw 'save_dialog_refuses_overwrite' }
 Add-Type -AssemblyName UIAutomationClient
