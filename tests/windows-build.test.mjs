@@ -21,6 +21,7 @@ async function buildFixture(failCopy) {
     'assets',
     'licenses',
     'tests',
+    'cli',
     'engine/target',
     'jdk/bin',
     'jdk/legal/java.base',
@@ -32,7 +33,10 @@ async function buildFixture(failCopy) {
     'tsconfig.json',
     'LICENSE',
     'THIRD_PARTY_NOTICES.md',
-    'engine/target/inspect-engine-0.1.0.jar',
+    'cli/inspect.ps1',
+    'cli/inspect.sh',
+    'cli/README.txt',
+    'engine/target/inspect-engine-0.2.0.jar',
   ])
     await writeFile(join(root, name), '{}');
   await copyFile('scripts/build-windows.ps1', join(root, 'scripts/build-windows.ps1'));

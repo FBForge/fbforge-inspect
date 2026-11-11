@@ -16,6 +16,10 @@ final class JsonFields {
     return URLEncoder.encode(value, StandardCharsets.UTF_8);
   }
 
+  static boolean validArs(String value) {
+    return value.matches("(?:[0-9]{2}|[0-9]{3}|[0-9]{5}|[0-9]{9}|[0-9]{12})");
+  }
+
   /** Encode one path segment; form/query encoding represents spaces differently. */
   public static String pathSegment(String value) {
     return encode(value).replace("+", "%20");

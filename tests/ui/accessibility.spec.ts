@@ -8,8 +8,13 @@ const pages = [
   'Prozessnachricht prüfen',
   'Schlüssel prüfen',
   'Fachdatenschemata',
+  'Netzwerk',
   'Hilfe',
   'Info',
+  'Sammelprüfung',
+  'Werkzeuge',
+  'Zertifikatsinventar',
+  'Serverdiagnose',
 ];
 async function selectPage(page: Page, name: string) {
   await page
@@ -111,7 +116,7 @@ test('keyboard navigation reaches the last sidebar action in a short window', as
   await page.setViewportSize({ width: 960, height: 540 });
   await page.goto('/');
   let reached = false;
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < 32; i++) {
     await page.keyboard.press('Tab');
     const state = await page.evaluate(() => {
       const e = document.activeElement!;

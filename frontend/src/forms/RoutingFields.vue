@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DiagnosisDraft, DiagnosisView } from '../session';
+import { regionPattern } from '../areaKeys';
 defineProps<{ form: DiagnosisDraft; view: DiagnosisView }>();
 const emit = defineEmits<{ search: [] }>();
 </script>
@@ -13,7 +14,7 @@ const emit = defineEmits<{ search: [] }>();
         placeholder="14 Ziffern" /></label
     ><label
       >Gebietsart<select v-model="form.regionKind">
-        <option value="ars">ARS · 12 Ziffern</option>
+        <option value="ars">ARS · 2, 3, 5, 9 oder 12 Ziffern</option>
         <option value="ags">AGS · 8 Ziffern</option>
         <option value="areaId">Gebiets-ID</option>
       </select></label
@@ -21,6 +22,7 @@ const emit = defineEmits<{ search: [] }>();
       >Gebietsschlüssel<input
         v-model.trim="form.region"
         required
+        :pattern="regionPattern(form.regionKind)"
         placeholder="ARS, AGS oder ausgewählte ID"
     /></label>
   </div>
@@ -43,9 +45,10 @@ const emit = defineEmits<{ search: [] }>();
     ><input v-model="form.pvog" type="checkbox" />PVOG-Adressierung mit abrufen</label
   >
   <p v-if="form.pvog" class="hint" id="pvog-ars-hint">
-    Mit LeiKa und 12-stelligem ARS sucht Inspect passende Leistungsbeschreibungen samt OE-Verweisen.
-    Ein eindeutiger Treffer wird automatisch geprüft. Bei mehreren Treffern wählen Sie eine
-    Leistungsbeschreibung aus. Die Ortssuche liefert eine Gebiets-ID für die Routingabfrage.
+    Mit LeiKa und einem ARS mit 2, 3, 5, 9 oder 12 Ziffern sucht Inspect passende
+    Leistungsbeschreibungen samt OE-Verweisen. Ein eindeutiger Treffer wird automatisch geprüft. Bei
+    mehreren Treffern wählen Sie eine Leistungsbeschreibung aus. Die Ortssuche liefert eine
+    Gebiets-ID für die Routingabfrage.
   </p>
   <details v-if="form.pvog">
     <summary>Bekannte Leistungsbeschreibungs-ID verwenden</summary>

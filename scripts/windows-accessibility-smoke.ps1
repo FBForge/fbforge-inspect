@@ -2,6 +2,7 @@
 param(
     [Parameter(Mandatory)][string]$InstallerPath,
     [string]$ExpectedBinaryPath,
+    [string]$UpgradeBaselinePath = $env:INSPECT_UPGRADE_BASELINE,
     [string]$CandidateSourceCommit = $env:GITHUB_SHA,
     [ValidatePattern('^[a-f0-9]{64}$')][string]$ExpectedInstallerSha256,
     [Parameter(Mandatory)][string]$NvdaPath
@@ -175,6 +176,17 @@ askedAllowUsageStats = True
 automaticUpdates = disabled
 '@
     [IO.File]::WriteAllText((Join-Path $taskConfig 'nvda.ini'), $config, [Text.UTF8Encoding]::new($false))
+    if ($UpgradeBaselinePath) {
+        $baselineHash = (Get-FileHash -LiteralPath $UpgradeBaselinePath -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($baselineHash -ne '7709169ee04a6e557dd6a2e2bd79457299019ef1a9a9a4539b877b9f0857a664') { throw 'a11y_upgrade_baseline_hash_invalid' }
+        $baselineSignature = Get-AuthenticodeSignature -LiteralPath $UpgradeBaselinePath
+        if ($baselineSignature.Status -ne 'Valid' -or $baselineSignature.SignerCertificate.Thumbprint -ne 'B3477D8A158AF7D599C2C17689CF541B1731D522') { throw 'a11y_upgrade_baseline_signature_invalid' }
+        $baseline = Start-Process -FilePath ([IO.Path]::GetFullPath($UpgradeBaselinePath)) -ArgumentList ('/S /D=' + $taskInstall) -PassThru
+        try { if (-not $baseline.WaitForExit(120000) -or $baseline.ExitCode -ne 0) { throw 'a11y_upgrade_baseline_install_failed' } } finally { $baseline.Dispose() }
+        $oldBinary = Join-Path $taskInstall 'fbforge-inspect.exe'
+        if (-not (Test-Path -LiteralPath $oldBinary -PathType Leaf)) { throw 'a11y_upgrade_baseline_binary_missing' }
+        $checks.Add([ordered]@{ name = 'Upgrade baseline 0.1.0'; role = 'Installer'; sha256 = $baselineHash })
+    }
     $setup = Start-Process -FilePath ([IO.Path]::GetFullPath($InstallerPath)) -ArgumentList ('/S /D=' + $taskInstall) -PassThru
     if (-not $setup.WaitForExit(120000) -or $setup.ExitCode -ne 0) { throw 'a11y_install_failed' }
     $binary = Join-Path $taskInstall 'fbforge-inspect.exe'
@@ -242,7 +254,50 @@ automaticUpdates = disabled
     }
     $null = Check-Spoken 'JSON Schema / XSD' $editType
     $help = Check-Spoken 'Hilfe' $buttonType
-    # Help opens the public website. Its label is checked without moving focus to an external browser.
+    Invoke-Control $help
+    $null = Check-Spoken 'Hilfe durchsuchen' $editType
+    $batch = Check-Spoken 'Sammelprüfung' $buttonType
+    Invoke-Control $batch
+    $null = Check-Spoken 'Prüfung auswählen' ([System.Windows.Automation.ControlType]::ComboBox)
+    $identifier = Check-Spoken 'Kennung oder öffentliche URL' $editType
+    $valuePattern = $null
+    if (-not $identifier.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern, [ref]$valuePattern)) { throw 'a11y_batch_value_pattern_missing' }
+    $valuePattern.SetValue('00000000-0000-4000-8000-000000000001')
+    $addCheck = Check-Spoken 'Prüfung hinzufügen' $buttonType
+    Invoke-Control $addCheck
+    $null = Check-Spoken 'Alle Prüfungen · 1' $buttonType
+    $removeCheck = Check-Spoken 'Prüfung entfernen: check-1' $buttonType
+    Invoke-Control $removeCheck
+    $tools = Check-Spoken 'Werkzeuge' $buttonType
+    Invoke-Control $tools
+    $null = Check-Spoken 'Aufgabe' ([System.Windows.Automation.ControlType]::ComboBox)
+    $inventory = Check-Spoken 'Zertifikatsinventar' $buttonType
+    Invoke-Control $inventory
+    $server = Check-Spoken 'Serverdiagnose' $buttonType
+    Invoke-Control $server
+    $null = Check-Spoken 'Portables CLI exportieren' $buttonType
+    $null = Check-Spoken 'Serverergebnis öffnen' $buttonType
+    $null = Check-Spoken 'Aufrufe und Rückgabecodes' $buttonType
+    # aria-expanded buttons expose ExpandCollapse. Exercise the actual keyboard
+    # action instead of assuming a reusable UIA InvokePattern across updates.
+    [AccessibilityKeys]::Press(0x0D)
+    $null = Wait-Check {
+        $control = Find-Control 'Aufrufe und Rückgabecodes' $buttonType
+        $expansion = $null
+        $control -and $control.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern, [ref]$expansion) -and
+            $expansion.Current.ExpandCollapseState -eq [System.Windows.Automation.ExpandCollapseState]::Expanded
+    } 'a11y_commands_not_expanded'
+    [AccessibilityKeys]::Press(0x0D)
+    $null = Wait-Check {
+        $control = Find-Control 'Aufrufe und Rückgabecodes' $buttonType
+        $expansion = $null
+        $control -and $control.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern, [ref]$expansion) -and
+            $expansion.Current.ExpandCollapseState -eq [System.Windows.Automation.ExpandCollapseState]::Collapsed
+    } 'a11y_commands_not_collapsed'
+    $checks.Add([ordered]@{ name = 'Server commands expand and collapse'; role = 'Keyboard'; action = 'Enter'; result = 'expanded then collapsed' })
+    $about = Check-Spoken 'Info' $buttonType
+    Invoke-Control $about
+    $null = Check-Spoken 'Nach Updates suchen' $buttonType
     # Repeat the proven native engine/export flow against the installed resources,
     # after stopping the screen reader and its app so they cannot intercept input.
     if ($taskNvda -and -not $taskNvda.HasExited) { $taskNvda.Kill(); $taskNvda.WaitForExit() }
@@ -266,7 +321,7 @@ automaticUpdates = disabled
     [IO.File]::WriteAllText((Join-Path $env:RUNNER_TEMP 'fbforge-accessibility-result.json'), ($report | ConvertTo-Json -Depth 5), [Text.UTF8Encoding]::new($false))
 } catch {
     # The test never enters credentials. Log only known synthetic control names.
-    $knownNames = @('Umgebung','API','Darstellung wählen','Destination prüfen','Destination-ID','Routing prüfen','Prozessnachricht prüfen','Schlüssel prüfen','Fachdatenschemata','JSON Schema / XSD','Hilfe')
+    $knownNames = @('Umgebung','API','Darstellung wählen','Destination prüfen','Destination-ID','Routing prüfen','Prozessnachricht prüfen','Schlüssel prüfen','Fachdatenschemata','JSON Schema / XSD','Hilfe','Hilfe durchsuchen','Sammelprüfung','Prüfung auswählen','Kennung oder öffentliche URL','Prüfung hinzufügen','Prüfung entfernen: check-1','Prüfeingaben','Prüfungen vorbereiten','Werkzeuge','Aufgabe','Zertifikatsinventar','Serverdiagnose','Portables CLI exportieren','Info','Nach Updates suchen')
     $focused = [System.Windows.Automation.AutomationElement]::FocusedElement
     if ($focused) {
         $label = if ($knownNames -contains $focused.Current.Name) { $focused.Current.Name } else { '(other control)' }

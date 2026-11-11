@@ -10,11 +10,17 @@ final class NetworkOptions {
   private final URI proxy;
   private final String username;
   private final String password;
+  final String httpsCaPem;
 
   private NetworkOptions(URI proxy, String username, String password) {
+    this(proxy, username, password, "");
+  }
+
+  private NetworkOptions(URI proxy, String username, String password, String httpsCaPem) {
     this.proxy = proxy;
     this.username = username;
     this.password = password;
+    this.httpsCaPem = httpsCaPem;
   }
 
   static NetworkOptions direct() {
@@ -22,7 +28,11 @@ final class NetworkOptions {
   }
 
   static NetworkOptions read(JsonObject options) {
-    if (options == null || JsonFields.value(options, "mode").equals("direct")) return direct();
+    if (options == null) return direct();
+    String ca = JsonFields.value(options, "httpsCaPem");
+    if (!ca.isBlank()) HttpsTrust.factory(ca);
+    if (!options.has("mode") || JsonFields.value(options, "mode").equals("direct"))
+      return new NetworkOptions(null, "", "", ca);
     if (!JsonFields.value(options, "mode").equals("manual"))
       throw new IllegalArgumentException("Netzwerkmodus muss direkt oder manuell sein.");
     URI proxy;
@@ -52,7 +62,7 @@ final class NetworkOptions {
         || username.isEmpty() && !password.isEmpty())
       throw new IllegalArgumentException(
           "Proxy-Zugangsdaten sind nicht zulässig oder der Benutzername fehlt.");
-    return new NetworkOptions(proxy, username, password);
+    return new NetworkOptions(proxy, username, password, ca);
   }
 
   boolean manual() {

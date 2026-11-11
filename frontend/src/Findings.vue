@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import FindingEvidence from './FindingEvidence.vue';
+import DisclosurePanel from './DisclosurePanel.vue';
 import { diagnosisSummary } from './diagnosisSummary';
 import { labels, type Report, type Status } from './contracts';
 import {
@@ -13,11 +14,16 @@ import {
 } from './diagnosis';
 const props = defineProps<{ report: Report }>();
 const filter = ref('all');
+const compactOpen = ref(false);
+watch(filter, (value) => {
+  compactOpen.value = value !== 'all';
+});
 const conclusion = computed(() => diagnosisSummary(props.report));
 watch(
   () => props.report,
   () => {
     filter.value = 'all';
+    compactOpen.value = false;
   },
 );
 const summary = computed(() =>
@@ -77,8 +83,8 @@ function select(id: string) {
       </button>
     </div>
   </div>
-  <section v-if="attention.length || filter !== 'all'" aria-label="Befunde">
-    <div class="section-heading">
+  <section v-if="report.findings.length" aria-label="Befunde">
+    <div v-if="attention.length || filter !== 'all'" class="section-heading">
       <h3>Befunde</h3>
       <label class="filter-label"
         >Anzeigen<select v-model="filter">
@@ -102,18 +108,18 @@ function select(id: string) {
       </p>
       <FindingEvidence :finding="f" />
     </article>
-    <details v-if="compact.length" class="panel compact-findings" :open="filter !== 'all'">
-      <summary>
-        {{ compact.length }}
-        {{
-          filter === 'notApplicable'
-            ? 'nicht anwendbare'
-            : filter === 'confirmed'
-              ? 'bestätigte'
-              : 'weitere'
-        }}
-        {{ compact.length === 1 ? 'Einzelprüfung' : 'Einzelprüfungen' }}
-      </summary>
+    <DisclosurePanel
+      v-if="compact.length"
+      v-model:open="compactOpen"
+      class="compact-findings"
+      :label="`${compact.length} ${
+        filter === 'notApplicable'
+          ? 'nicht anwendbare'
+          : compact.every((f) => f.status === 'confirmed')
+            ? 'bestätigte'
+            : 'weitere'
+      } ${compact.length === 1 ? 'Einzelprüfung' : 'Einzelprüfungen'}`"
+    >
       <div v-for="(f, i) in compact" :key="i" class="compact-finding">
         <div class="finding-header">
           <h4>{{ f.title }}</h4>
@@ -123,7 +129,7 @@ function select(id: string) {
         <p v-if="specificLimitation(f)" class="hint">{{ specificLimitation(f) }}</p>
         <FindingEvidence :finding="f" />
       </div>
-    </details>
+    </DisclosurePanel>
     <p v-if="!visible.length" class="hint">Keine Befunde in diesem Filter.</p>
   </section>
 </template>

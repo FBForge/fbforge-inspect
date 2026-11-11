@@ -1,6 +1,7 @@
 """Promote a completed signing run to the existing, immutable source tag."""
 
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -13,6 +14,9 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 
 REPOSITORY = 'FBForge/fbforge-inspect'
+_update_spec = importlib.util.spec_from_file_location('inspect_update_release', Path(__file__).resolve().parents[1] / 'update-release.py')
+updates = importlib.util.module_from_spec(_update_spec)
+_update_spec.loader.exec_module(updates)
 
 
 def require(condition, reason):
@@ -128,6 +132,16 @@ def validate_package(package, info, commit, version, signing_run, signer):
                 and signature.get('certificateThumbprint', '').upper() == signer.upper()
                 and re.fullmatch(r'[a-fA-F0-9]{40}', signature.get('timestampCertificateThumbprint', '')),
                 'release_signature_mismatch')
+    update = signatures.get('update', {})
+    require(update.get('verified') is True and update.get('product') == 'FBForge Inspect'
+            and update.get('version') == version
+            and update.get('publicKeySha256') == info.get('updatePublicKeySha256'),
+            'release_update_verification_missing')
+    try:
+        updates.validate({name + '.sig': (package / (name + '.sig')).read_bytes(),
+                          'latest.json': (package / 'latest.json').read_bytes()}, info)
+    except (ValueError, KeyError, OSError, UnicodeError):
+        raise RuntimeError('release_update_metadata_invalid') from None
     return files, installer
 
 
@@ -147,6 +161,8 @@ def build_assets(package, info, files, installer, output, artifact, version):
     prefix = 'FBForge-Inspect-' + version + '-windows-x64'
     target = output / (prefix + '-setup.exe')
     shutil.copyfile(installer, target)
+    shutil.copyfile(package / (installer.name + '.sig'), output / (target.name + '.sig'))
+    shutil.copyfile(package / 'latest.json', output / 'latest.json')
     archive = output / (prefix + '.zip')
     created = datetime.fromisoformat(info['createdAt'].replace('Z', '+00:00')).astimezone(timezone.utc)
     with zipfile.ZipFile(archive, 'x', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as destination:
@@ -156,6 +172,21 @@ def build_assets(package, info, files, installer, output, artifact, version):
             entry.external_attr = (stat.S_IFREG | 0o644) << 16
             with file.open('rb') as source, destination.open(entry, 'w') as sink:
                 shutil.copyfileobj(source, sink)
+    cli_archive = output / ('FBForge-Inspect-' + version + '-cli-java.zip')
+    with zipfile.ZipFile(cli_archive, 'x', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as destination:
+        for source, name in [
+            (package / 'engine/inspect-engine.jar', 'inspect-engine.jar'),
+            (package / 'cli/inspect.ps1', 'inspect.ps1'),
+            (package / 'cli/inspect.sh', 'inspect.sh'),
+            (package / 'cli/README.txt', 'README.txt'),
+            (package / 'LICENSE', 'LICENSE'),
+            (package / 'THIRD_PARTY_NOTICES.md', 'THIRD_PARTY_NOTICES.md'),
+        ]:
+            require(source in files, 'release_cli_source_missing')
+            destination.write(source, 'FBForge Inspect CLI/' + name)
+        for source in files:
+            if source.is_relative_to(package / 'engine/licenses'):
+                destination.write(source, 'FBForge Inspect CLI/licenses/' + source.relative_to(package / 'engine/licenses').as_posix())
     proof = {
         'application': 'FBForge Inspect', 'version': version, 'tag': version, 'repository': REPOSITORY,
         'commit': info['commit'], 'validationRun': int(info['validationRunId']), 'signingRun': int(info['runId']),
@@ -164,6 +195,8 @@ def build_assets(package, info, files, installer, output, artifact, version):
         'publisherRun': os.environ.get('GITHUB_RUN_ID'), 'publisherCommit': os.environ.get('GITHUB_SHA'),
         'installer': {'name': target.name, 'sha256': sha256(target)},
         'archive': {'name': archive.name, 'sha256': sha256(archive)},
+        'cli': {'name': cli_archive.name, 'sha256': sha256(cli_archive)},
+        'updatePublicKeySha256': info['updatePublicKeySha256'],
     }
     (output / 'release-info.json').write_text(json.dumps(proof, indent=2) + '\n')
     sums = ''.join(sha256(file) + '  ' + file.name + '\n' for file in sorted(output.iterdir()))
@@ -206,6 +239,10 @@ def main():
         package = candidates[0].parent
         info = json.loads(candidates[0].read_text(encoding='utf-8-sig'))
         files, installer = validate_package(package, info, commit, version, signing_run, signer)
+        # Verify these exact Windows-built engine bytes on Linux before publishing the portable CLI.
+        probe = subprocess.run(['python3', 'scripts/ci/cli-smoke.py', str(package / 'engine/inspect-engine.jar')],
+                               timeout=120, check=False)
+        require(probe.returncode == 0, 'release_cli_cross_platform_validation_failed')
         validation = str(info['validationRunId'])
         require(re.fullmatch('[1-9][0-9]{0,18}', validation), 'release_validation_run_invalid')
         validate_run(api(f'repos/{REPOSITORY}/actions/runs/{validation}'),

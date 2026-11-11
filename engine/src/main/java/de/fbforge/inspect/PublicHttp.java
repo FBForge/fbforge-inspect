@@ -53,6 +53,22 @@ public final class PublicHttp implements PkiFetch {
         (uri, ip, post, budget) -> PinnedHttp.exchange(uri, ip, post, budget, network),
         clock,
         network.manual());
+    com.google.gson.JsonObject context = new com.google.gson.JsonObject();
+    context.addProperty("route", network.manual() ? "manualProxy" : "direct");
+    if (network.manual()) {
+      context.addProperty("proxyHost", network.proxy().getHost());
+      context.addProperty("proxyPort", network.proxyPort());
+      context.addProperty("proxyTls", network.proxy().getScheme().equals("https"));
+    }
+    context.addProperty(
+        "httpsTrust",
+        network.httpsCaPem.isBlank()
+            ? "Java-Laufzeit"
+            : "Java-Laufzeit und ausdrücklich geladene HTTPS-CAs");
+    context.addProperty(
+        "systemProxy",
+        "Windows-, PAC- und Umgebungsvariablen werden nicht automatisch übernommen.");
+    report.data.add("networkContext", context);
   }
 
   PublicHttp(Report report, Resolver resolver, Exchange exchange, LongSupplier clock) {
@@ -144,12 +160,18 @@ public final class PublicHttp implements PkiFetch {
       budget.startRequest();
       String at = Instant.now().toString();
       long started = System.nanoTime();
+      TransportTrace trace = TransportTrace.begin(uri.toString(), viaProxy);
+      if (!report.data.has("networkTraces"))
+        report.data.add("networkTraces", new com.google.gson.JsonArray());
+      report.data.getAsJsonArray("networkTraces").add(trace.data);
       try {
         InetAddress[] addresses = resolver.resolve(uri.getHost());
         if (addresses.length == 0 || Arrays.stream(addresses).anyMatch(a -> !isPublic(a)))
           throw new NetworkFailure("TARGET_BLOCKED");
         budget.checkTime();
+        if (!viaProxy) TransportTrace.stage("tcp");
         Response response = exchange.exchange(uri, addresses[0], post, budget);
+        trace.finish("HTTP_" + response.status());
         report.requests.add(
             new Report.Request(
                 uri.toString(),
@@ -182,6 +204,7 @@ public final class PublicHttp implements PkiFetch {
                         ? "DNS_FAILED"
                         : e instanceof SocketTimeoutException ? "READ_TIMEOUT" : "NETWORK_FAILED",
                     e);
+        trace.finish(failure.code());
         report.requests.add(
             new Report.Request(
                 uri.toString(),
@@ -193,6 +216,10 @@ public final class PublicHttp implements PkiFetch {
                 (System.nanoTime() - started) / 1_000_000,
                 viaProxy));
         throw failure;
+      } finally {
+        // Also clear a trace when validation or a fixture transport raises a runtime exception.
+        trace.finish(
+            trace.data.has("outcome") ? trace.data.get("outcome").getAsString() : "FAILED");
       }
     }
     throw new IOException("Umleitungslimit erreicht.");

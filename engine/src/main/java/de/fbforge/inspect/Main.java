@@ -9,6 +9,11 @@ public final class Main {
   static final Gson JSON = new GsonBuilder().disableHtmlEscaping().create();
 
   public static void main(String[] args) throws Exception {
+    System.setProperty("com.sun.security.enableAIAcaIssuers", "false");
+    if (args.length > 0) {
+      System.exit(Cli.execute(args, System.out, System.err));
+      return;
+    }
     JsonObject response;
     try {
       byte[] bytes = System.in.readNBytes(2 * 1024 * 1024 + 1);
@@ -50,6 +55,7 @@ public final class Main {
   }
 
   public static Report run(JsonObject request) throws Exception {
+    JsonBounds.check(request);
     String operation = JsonFields.value(request, "operation"),
         env = JsonFields.value(request, "environment"),
         version = JsonFields.value(request, "apiVersion");
@@ -72,6 +78,25 @@ public final class Main {
       switch (operation) {
         case "destination" -> api.destination(input, http);
         case "routing" -> api.routes(input);
+        case "reverse" -> ReverseRouting.inspect(api, http, input);
+        case "rollover" -> RolloverDiagnostics.inspect(api, http, input);
+        case "certificate" -> PublicCertificates.inspect(input, report, http);
+        case "signature" -> {
+          if (text.isBlank() || text.length() > 65536)
+            throw new IllegalArgumentException(
+                "Öffentliche Adressierungssignatur bis 64 KiB erwartet.");
+          PublicSignatureInput.validate(text.strip());
+          if (env.equals("STAGE"))
+            throw new IllegalArgumentException(
+                "Adressierungssignatur ausdrücklich mit TEST oder PROD prüfen.");
+          new Signatures(api)
+              .inspect(
+                  text.strip(),
+                  JsonFields.value(input, "destinationId"),
+                  JsonFields.value(input, "service"),
+                  JsonFields.value(input, "region").replaceFirst("^DE", ""),
+                  "$.signature");
+        }
         case "areas" -> api.areas(input);
         case "process" -> api.process(input);
         case "limits" -> api.limits(input);

@@ -18,8 +18,7 @@ final class PinnedHttp {
   static PublicHttp.Response exchange(
       URI uri, InetAddress ip, byte[] post, NetworkBudget budget, NetworkOptions network)
       throws IOException {
-    return exchange(
-        uri, ip, post, budget, network, (SSLSocketFactory) SSLSocketFactory.getDefault());
+    return exchange(uri, ip, post, budget, network, HttpsTrust.factory(network.httpsCaPem));
   }
 
   static PublicHttp.Response exchange(
@@ -35,8 +34,11 @@ final class PinnedHttp {
             ? ProxyConnection.open(uri, ip, network, budget, tlsFactory)
             : connect(uri, ip, budget);
     try {
-      if (uri.getScheme().equals("https"))
+      if (uri.getScheme().equals("https")) {
+        TransportTrace.stage("tls");
         connection = secure(connection, uri, budget, "TLS_FAILED", tlsFactory);
+      }
+      TransportTrace.stage("http");
       boolean forward = network.manual() && uri.getScheme().equals("http");
       writeRequest(
           connection.getOutputStream(),
@@ -108,6 +110,7 @@ final class PinnedHttp {
       configureTls(tls, uri);
       tls.setSoTimeout(budget.timeoutMillis(12000));
       tls.startHandshake();
+      TransportTrace.peer(tls);
       return tls;
     } catch (IOException failure) {
       if (tls != null)
@@ -115,7 +118,9 @@ final class PinnedHttp {
           tls.close();
         } catch (IOException ignored) {
         }
-      throw new NetworkFailure(failureCode, failure);
+      String code = NetworkFailure.tlsCode(failure);
+      throw new NetworkFailure(
+          failureCode.equals("PROXY_TLS_FAILED") ? "PROXY_" + code : code, failure);
     }
   }
 
@@ -145,7 +150,7 @@ final class PinnedHttp {
             + " HTTP/1.1\r\nHost: "
             + uri.getHost()
             + "\r\n"
-            + "User-Agent: FBForge-Inspect/0.1.0\r\n"
+            + "User-Agent: FBForge-Inspect/0.2.0\r\n"
             + "Accept: */*\r\n"
             + "Accept-Encoding: identity\r\n"
             + "Connection: close\r\n";

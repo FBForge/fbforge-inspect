@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
     'inspectEngine',
     (request: unknown) =>
       new Promise((resolve, reject) => {
-        const child = spawn(java, ['-jar', 'engine/target/inspect-engine-0.1.0.jar']);
+        const child = spawn(java, ['-jar', 'engine/target/inspect-engine-0.2.0.jar']);
         let output = '';
         const timer = setTimeout(() => {
           child.kill();
@@ -75,6 +75,8 @@ test('local JSON schema file reaches real engine and never resolves external ref
   await expect(page.getByRole('heading', { name: 'Schema eingelesen', exact: true })).toBeVisible();
   await expect(page.getByText('https://example.org/not-fetched', { exact: true })).toBeVisible();
   await page.screenshot({ path: 'test-results/schema-real-engine.png', fullPage: true });
+  if (process.env.INSPECT_UPDATE_DOC_IMAGES === '1')
+    await page.screenshot({ path: 'docs/images/schema.png', fullPage: true });
 });
 test('XSD is inspected and XXE is rejected through the real engine', async ({ page }) => {
   await page
@@ -143,7 +145,10 @@ test('public RSA key is diagnosed by the real engine without inventing certifica
   await expect(conclusion).toContainText(
     'TEST-Ausnahme: keine vollständige öffentliche Sperrauskunft verfügbar.',
   );
-  await page.locator('.compact-findings > summary').click();
+  await page
+    .locator('.compact-findings')
+    .getByRole('button', { name: /Einzelprüfungen/ })
+    .click();
   await expect(page.getByText('RSA-Schlüssellänge', { exact: true })).toBeVisible();
   await expect(page.getByText('3072 Bit (Mindestvorgabe 3072)', { exact: true })).toBeVisible();
   await expect(page.getByText('Schlüssel nicht auswertbar', { exact: true })).toHaveCount(0);

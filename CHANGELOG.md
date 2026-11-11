@@ -1,5 +1,35 @@
 # Änderungen
 
+## 0.2.0
+
+- Routing, PVOG, Sammelprüfung und Rückwärtsrouting akzeptieren ARS mit 2, 3, 5, 9 oder 12 Ziffern. Führende Nullen bleiben auch beim Einfügen öffentlicher Routing-URLs erhalten.
+
+- Navigation mit ausreichender Breite, ganzen Wörtern und kompakteren Zeilen.
+- Gemeinsame Diagnosezusammenfassung für Einzel-, Sammel- und Serverprüfungen. Bestätigte Punkte und technische Belege werden gezielt über Buttons geöffnet.
+- Sammelprüfung mit Filterbuttons und zusammengehörigen Aktionen pro Eintrag. Serverdiagnose mit drei geführten Schritten und einheitlicher Dateiauswahl.
+
+- Einzelne Checks samt zugehörigem Ergebnis aus Sammelprüfungen entfernen. Übrige Einträge bleiben erhalten und der Tastaturfokus bleibt im Ablauf.
+- Laufende Werkzeugprüfungen zeigen Fortschritt, Abbrechen und Fehlermeldungen. Nach dem Abbruch ist die Rückkehr zur Startseite wieder möglich.
+
+- Geführte Prüfaufträge, sichtbare Sammelergebnisse mit Handlungsbedarf und Filter. Bereits abgeschlossene Ergebnisse bleiben beim Ergänzen erhalten.
+- CLI und vorbereiteter öffentlicher Auftrag werden gemeinsam exportiert. Serverergebnisse lassen sich anhand der exakten Auftragsbytes zuordnen.
+- Fehlgeschlagene Verbindungsphasen erklären nachfolgende ungeprüfte Schritte und führen bei lokalen Prüfungen direkt zu den Netzwerkeinstellungen.
+
+- Portables Java-CLI für Windows und Linux mit vorbereitbaren Prüfaufträgen, versionierten Ergebnisdateien und stabilen Exitcodes.
+- Serverergebnisse lokal öffnen, Transportphasen auswerten und öffentliche Zertifikate ins Inventar übernehmen.
+- Sammelprüfung mit begrenzter Warteschlange, Pause, Abbruch und gezielter Wiederholung. Rohantworten bleiben außerhalb der Sammelergebnisse.
+- Netzwerkphasen für Ziel-DNS, Proxy-DNS, TCP, Proxy-TLS, CONNECT, Ziel-TLS und HTTP. Konkrete Zertifikatsursachen und unerwartete HTML-Antworten werden erklärt.
+- Öffentliche Unternehmens-CAs für HTTPS ausdrücklich laden, getrennt vom V-PKI-Vertrauen. Hostnamenprüfung bleibt aktiv.
+- Rückwärtsrouting vom bekannten Zustellpunkt mit ausgewählten Leistungs-/Gebietspaaren und ausdrücklicher Vollständigkeit.
+- Öffentliche Zertifikatsdateien und Adressierungssignaturen separat prüfen. Keine Speicherung fremder Zugangstoken als Signaturbefund.
+- Öffentlichen Schlüsselwechsel anhand aktiver und neuer Kennung, tatsächlichem Schlüsselinhalt und Zertifikatsüberlappung vorbereiten.
+- Zertifikatsinventar mit betroffenen untersuchten Zustellpunkten, Umgebungen, API-Versionen und Kalenderexport.
+- Konkrete Adressierungszusammenhänge aus Zuständigkeit, Signatur und Routingantwort. Gleiche Destination-IDs verschmelzen keine Behördenkontexte.
+- Intelligente Übernahme öffentlicher Kennungen und URLs mit Vorschau und erhaltenem Kontext.
+- Supporttexte mit Vorschau und durchsuchbare Offline-Hilfe.
+- Integrierter Windows-Updater mit nativer Bestätigung und Signaturbindung an Inspect-Produktdateiname und Version.
+- Unabhängige Updateprüfung, CLI-Prüfung auf Windows und Linux, Installationsupgrade von 0.1.0 und erweiterte NVDA-Abnahme.
+
 ## 0.1.0
 
 - Connect-0.3-Darstellung mit identischen Schrift-, Farb- und Hover-Tokens, gemeinsamer Kopfzeile und Darstellungsmenü. Zusätzliche Aktionspfeile entfernt.

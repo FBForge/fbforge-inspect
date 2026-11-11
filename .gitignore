@@ -12,3 +12,7 @@ test-results/
 playwright-report/
 *.log
 dist-website/
+
+node_modules
+
+__pycache__/

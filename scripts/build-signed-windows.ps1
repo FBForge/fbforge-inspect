@@ -27,6 +27,10 @@ Assert-CodeSigningCertificate $certificate
 if (-not $PSBoundParameters.ContainsKey('InspectJavaHome') -or -not $InspectJavaHome) { $InspectJavaHome = Find-InspectJdk25 }
 if (-not $InspectJavaHome) { throw 'signing_windows_jdk25_missing' }
 $root = Split-Path $PSScriptRoot -Parent
+$updateKeyPath = $env:TAURI_SIGNING_PRIVATE_KEY_PATH
+if (-not $updateKeyPath) { $updateKeyPath = Join-Path $env:LOCALAPPDATA 'FBForge\signing\connect-updater.key' }
+$updatePublicKey = Join-Path $root 'desktop/update-public-key.txt'
+if (-not (Test-Path -LiteralPath $updateKeyPath -PathType Leaf) -or -not $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD -or -not ([IO.File]::ReadAllText($updatePublicKey).Trim())) { throw 'update_signing_setup_required' }
 $previous = @{}
 foreach ($name in @('JAVA_HOME','PATH','GITHUB_SHA','INSPECT_JAVA_SOURCE_URL','RUSTUP_TOOLCHAIN')) { $previous[$name] = [Environment]::GetEnvironmentVariable($name, 'Process') }
 Push-Location $root
@@ -49,6 +53,12 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'signing_build_failed' }
     $setups = @(Get-ChildItem -LiteralPath $InspectOutputDirectory -Filter '*-setup.exe' -File)
     if ($setups.Count -ne 1) { throw 'signing_installer_ambiguous' }
+    $version = (Get-Content -LiteralPath desktop/tauri.conf.json -Raw | ConvertFrom-Json).version
+    $updateInstallerName = 'FBForge-Inspect-' + $version + '-windows-x64-setup.exe'
+    if ($setups[0].Name -ne $updateInstallerName) {
+        Rename-Item -LiteralPath $setups[0].FullName -NewName $updateInstallerName
+        $setups = @(Get-Item -LiteralPath (Join-Path $InspectOutputDirectory $updateInstallerName))
+    }
     $signatures = @(
         (Assert-WindowsSignature -Path (Join-Path $InspectOutputDirectory 'fbforge-inspect.exe') -Thumbprint $Thumbprint -SignTool $tool),
         (Assert-WindowsSignature -Path $setups[0].FullName -Thumbprint $Thumbprint -SignTool $tool)
@@ -66,6 +76,11 @@ try {
         createdAt = [DateTime]::UtcNow.ToString('o'); published = $false
     }
     [IO.File]::WriteAllText((Join-Path $InspectOutputDirectory 'build-info.json'), ($manifest | ConvertTo-Json -Depth 8), (New-Object Text.UTF8Encoding($false)))
+    # Bind the final Authenticode-signed bytes, canonical Inspect product filename and version.
+    & node.exe (Join-Path $InspectWorkDirectory 'node_modules/@tauri-apps/cli/tauri.js') signer sign --private-key-path $updateKeyPath --app-version $version $setups[0].FullName | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw 'update_signature_failed' }
+    & python.exe (Join-Path $root 'scripts/update-release.py') $InspectOutputDirectory --public-key $updatePublicKey
+    if ($LASTEXITCODE -ne 0) { throw 'update_manifest_failed' }
     Write-WindowsPackageHashes -Directory $InspectOutputDirectory
     if ($CI) { Add-Content -LiteralPath $env:GITHUB_ENV -Encoding UTF8 -Value ('SIGNED_OUTPUT=' + [IO.Path]::GetFullPath($InspectOutputDirectory)) }
     Write-Host ('Signed application and installer verified: ' + $InspectOutputDirectory)

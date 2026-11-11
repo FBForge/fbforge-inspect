@@ -7,7 +7,7 @@ import java.util.*;
 /** Evidence is deliberately separate from the interpretation of that evidence. */
 public final class Report {
   public final int protocolVersion = 1;
-  public final String appVersion = "0.1.0";
+  public final String appVersion = "0.2.0";
   public final String createdAt = Instant.now().toString();
   public final String operation, environment, apiVersion;
   public final List<Finding> findings = new ArrayList<>();

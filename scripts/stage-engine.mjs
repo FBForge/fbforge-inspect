@@ -20,7 +20,7 @@ import {
 } from './runtime-metadata.mjs';
 const output = resolve('desktop/resources/engine');
 await mkdir(output, { recursive: true });
-await copyFile('engine/target/inspect-engine-0.1.0.jar', join(output, 'inspect-engine.jar'));
+await copyFile('engine/target/inspect-engine-0.2.0.jar', join(output, 'inspect-engine.jar'));
 const runtime = join(output, 'runtime');
 async function checkRuntimeLicense(root) {
   const license = await readFile(join(root, 'legal/java.base/LICENSE'), 'utf8');

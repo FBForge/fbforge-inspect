@@ -3,6 +3,7 @@ import { reactive, watch, ref } from 'vue';
 import type { Page } from './contracts';
 import type { DiagnosisDraft, DiagnosisView } from './session';
 import { containsPrivateMaterial } from './inputs';
+import { validRegion } from './areaKeys';
 import DestinationFields from './forms/DestinationFields.vue';
 import RoutingFields from './forms/RoutingFields.vue';
 import ProcessFields from './forms/ProcessFields.vue';
@@ -32,10 +33,10 @@ function submit(op: string = props.operation) {
   if (
     op === 'routing' &&
     props.draft.pvog &&
-    (props.draft.regionKind !== 'ars' || !/^(?:DE)?[0-9]{12}$/.test(props.draft.region))
+    (props.draft.regionKind !== 'ars' || !validRegion('ars', props.draft.region))
   ) {
     fileError.value =
-      'Für den PVOG-Vergleich ARS als Gebietsart wählen und einen 12-stelligen ARS eingeben. Eine Gebiets-ID wird nicht in einen ARS umgewandelt.';
+      'Für den PVOG-Vergleich ARS als Gebietsart wählen und 2, 3, 5, 9 oder 12 Ziffern eingeben. Eine Gebiets-ID wird nicht in einen ARS umgewandelt.';
     return;
   }
   if (props.busy || reading.value) return;

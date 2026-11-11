@@ -30,8 +30,10 @@
   position: static;
   width: auto;
   min-height: 0;
-  padding: 22px 12px 16px;
+  padding: 14px 12px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
 }
 .nav-label {
   margin: 0 12px 10px;
@@ -43,8 +45,8 @@ nav {
   padding: 0;
 }
 .nav-item {
-  min-height: 42px;
-  padding: 10px 12px;
+  min-height: 40px;
+  padding: 8px 12px;
   gap: 12px;
   font-size: 13px;
   font-weight: 500;
@@ -64,7 +66,7 @@ nav {
   display: none;
 }
 .nav-item.utility-start {
-  margin-top: 26px;
+  margin-top: 12px;
 }
 .sidebar-bottom {
   display: none;

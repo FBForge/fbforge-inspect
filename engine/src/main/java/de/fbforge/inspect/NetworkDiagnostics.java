@@ -32,6 +32,8 @@ final class NetworkDiagnostics {
             null,
             false));
     targets.addAll(CertificateEndpoints.probes(input));
+    if (input.has("certificates"))
+      report.data.add("networkCertificates", input.get("certificates").deepCopy());
     JsonArray extra = JsonFields.array(input, "certificateEndpoints");
     if (extra.size() > 12)
       throw new IllegalArgumentException(
@@ -49,6 +51,13 @@ final class NetworkDiagnostics {
       throw new IllegalArgumentException(
           "Höchstens sechzehn unterschiedliche Ziele pro Netzwerkprüfung. Weniger Zertifikate"
               + " auswählen.");
+    String onlyUrl = JsonFields.value(input, "onlyUrl");
+    if (!onlyUrl.isBlank()) {
+      targets.removeIf(target -> !target.url().equals(onlyUrl));
+      if (targets.isEmpty())
+        throw new IllegalArgumentException(
+            "Ausgewähltes Netzwerkziel ist nicht Bestandteil der vorbereiteten Prüfung.");
+    }
     for (var target : targets) {
       JsonObject item = new JsonObject();
       String url = target.url();
@@ -63,17 +72,30 @@ final class NetworkDiagnostics {
       long started = System.nanoTime();
       try {
         PublicHttp.Response response = target.pki() ? http.pki(url, target.post()) : http.get(url);
+        boolean unexpected =
+            !target.pki()
+                && response.ok()
+                && (response
+                        .headers()
+                        .getOrDefault("content-type", "")
+                        .toLowerCase(Locale.ROOT)
+                        .contains("text/html")
+                    || response.text().stripLeading().startsWith("<"));
         item.addProperty("httpStatus", response.status());
-        item.addProperty("status", response.ok() ? "confirmed" : "warning");
+        item.addProperty("status", response.ok() && !unexpected ? "confirmed" : "warning");
+        if (unexpected) item.addProperty("code", "HTTP_UNEXPECTED_CONTENT");
         item.addProperty(
             "detail",
-            response.ok()
-                ? "DNS, Verbindung und HTTP-Abruf erfolgreich."
-                : "HTTP "
-                    + response.status()
-                    + ": Der Dienst antwortet. Der konkrete Abruf war nicht erfolgreich.");
+            unexpected
+                ? "HTTP-Antwort erhalten, aber HTML statt der erwarteten öffentlichen JSON-Daten."
+                      + " Eine vorgeschaltete Sperr- oder Anmeldeseite ist möglich."
+                : response.ok()
+                    ? "DNS, Verbindung und HTTP-Abruf erfolgreich."
+                    : "HTTP "
+                        + response.status()
+                        + ": Der Dienst antwortet. Der konkrete Abruf war nicht erfolgreich.");
         report.add(
-            response.ok() ? "confirmed" : "warning",
+            response.ok() && !unexpected ? "confirmed" : "warning",
             target.name(),
             item.get("detail").getAsString(),
             "$.networkChecks[" + (results.size() - 1) + "]",

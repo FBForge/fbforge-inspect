@@ -1,6 +1,6 @@
 # Bauen und prüfen
 
-Benötigt werden Node ab 22.13, npm, OpenJDK 25 mit Maven und Rust 1.96.0 mit rustfmt und Clippy. Die CI verwendet Node 24. Für Windows sind der MSVC-Toolchain und die C++-Buildwerkzeuge von Visual Studio erforderlich. Lokale Linux-Entwicklung benötigt GTK 3, WebKitGTK 4.1, libsoup 3 und deren Entwicklungspakete. Releaseziel von 0.1.0 ist Windows x64.
+Benötigt werden Node ab 22.13, npm, OpenJDK 25 mit Maven und Rust 1.96.0 mit rustfmt und Clippy. Die CI verwendet Node 24. Für Windows sind der MSVC-Toolchain und die C++-Buildwerkzeuge von Visual Studio erforderlich. Lokale Linux-Entwicklung benötigt GTK 3, WebKitGTK 4.1, libsoup 3 und deren Entwicklungspakete. Das Desktop-Releaseziel von 0.2.0 ist Windows x64. Das Java-CLI läuft zusätzlich auf Windows und Linux mit Java 25 oder neuer.
 
 ## Entwicklung
 
@@ -52,7 +52,7 @@ Die [offizielle XZuFi-Paketprüfung](docs/PVOG-MAPPING.md#reproduzierbare-paketp
 
 `npm run quality:duplicates` prüft Produktquellen auf gleiche Blöcke ab fünf Zeilen und 70 Tokens, ohne Kommentare. Der Höchstwert beträgt 0,5 % der vom Werkzeug gezählten Zeilen. Eingebettete Vue-Sprachen werden getrennt tokenisiert. Die Messung ersetzt weder fachliche Tests noch eine Prüfung semantisch ähnlicher Implementierungen.
 
-Alle drei Prüfungen laufen im bestehenden Linux-CI-Job; ihre Berichte werden als Prüfartefakt bereitgestellt. Windows prüft weiterhin den tatsächlichen Installer, WebView2 und NVDA. Die öffentliche Zielprüfung und TLS-Verifikation bleiben im produktiven `PublicHttp`/`PinnedHttp`-Pfad. Tests ersetzen DNS und Abrufantworten nur über interne Schnittstellen; der reine Antwortparser benötigt keine Netzwerkfreigabe.
+Alle drei Prüfungen laufen im bestehenden Linux-CI-Job. Ihre Berichte werden als Prüfartefakt bereitgestellt. Windows prüft weiterhin den tatsächlichen Installer, WebView2 und NVDA. Die öffentliche Zielprüfung und TLS-Verifikation bleiben im produktiven `PublicHttp`/`PinnedHttp`-Pfad. Tests ersetzen DNS und Abrufantworten nur über interne Schnittstellen. Der reine Antwortparser benötigt keine Netzwerkfreigabe.
 
 ## V-PKI-Truststore aktualisieren
 
@@ -74,7 +74,7 @@ Der Installer richtet WebView2 bei Bedarf über den offiziellen Bootstrapper ein
 
 ## CI und Abnahmegrenzen
 
-[Verify 0.1.0 candidate](.github/workflows/verify.yml) läuft bei Pushes nach `main` und `release/0.1.0`, bei Pull Requests und manuell. Linux prüft Build, Java-/Node-/Rust-Tests, Clippy, Format, Browserabläufe und Hilfe. Windows baut den unsignierten Kandidaten und führt native Prüfungen aus. Mit `INSPECT_LIVE_READONLY=1` prüft die lose App zusätzlich TEST-Gebietssuche, Destination mit JWK/x5c und unabhängige Limits. Der öffentliche Nienburger PROD-Zustellpunkt wird in v2 und v3 über die Destination geprüft: Schlüsselkennung mit Leerzeichen, tatsächlicher Schlüsselabruf, gebündeltes V-PKI-Vertrauen sowie OCSP und beide CRLs. Die Abfragen bleiben öffentlich und lesend; OCSP verwendet dafür POST. Konkrete Live-Abnahmen weiterer Fälle sind gesonderte Momentaufnahmen.
+[Verify 0.2.0 candidate](.github/workflows/verify.yml) läuft bei Pushes nach `main` und `release/0.2.0`, bei Pull Requests und manuell. Linux prüft Build, Java-/Node-/Rust-Tests, Clippy, Format, Browserabläufe und Hilfe. Windows baut den unsignierten Kandidaten und führt native Prüfungen aus. Mit `INSPECT_LIVE_READONLY=1` prüft die lose App zusätzlich TEST-Gebietssuche, Destination mit JWK/x5c und unabhängige Limits. Der öffentliche Nienburger PROD-Zustellpunkt wird in v2 und v3 über die Destination geprüft: Schlüsselkennung mit Leerzeichen, tatsächlicher Schlüsselabruf, gebündeltes V-PKI-Vertrauen sowie OCSP und beide CRLs. Die Abfragen bleiben öffentlich und lesend. OCSP verwendet dafür POST. Konkrete Live-Abnahmen weiterer Fälle sind gesonderte Momentaufnahmen.
 
 Die gehosteten Verify-Jobs nutzen nach Lockfile beziehungsweise POM getrennte npm- und Maven-Download-Caches. `npm ci`, Java-Tests und alle Paketprüfungen laufen weiterhin bei jedem Durchlauf. Push und Pull Request desselben Quellbranches teilen eine Concurrency-Gruppe, damit nur der neueste Lauf weiterarbeitet. Das Quellrepository ist Teil dieser Gruppe, sodass gleichnamige Fork-Branches getrennt bleiben. Windows baut das Frontend nur im frischen Paketverzeichnis, zusammen mit der dortigen Typprüfung. Die NVDA-Vorbereitung unterdrückt die langsame Download-Fortschrittsanzeige von Windows PowerShell und prüft weiterhin die festgeschriebene SHA-256. Der Signierjob übernimmt diese Caches nicht und baut weiterhin aus einem frischen Verzeichnis. Laufzeitgewinne anhand des jeweiligen CI-Laufs bewerten.
 
@@ -138,7 +138,7 @@ Connect und Inspect dürfen denselben Rechner mit getrennten Runnerordnern verwe
 
 Der Signierjob verwendet denselben PowerShell-Builder wie lokal. Ein unabhängiger gehosteter Windows-Job lädt ausschließlich den Kandidaten aus diesem Signierlauf, prüft vollständige Dateiprüfsummen, Commit-/Run-Zuordnung, Signaturen und Laufzeitprovenienz und führt Installation, nativen Kern-/Exportdurchlauf und NVDA-Prüfungen aus. Erst danach entsteht das Artefakt `windows-signed-verified`. `windows-signed-candidate` ist der noch nicht unabhängig abgenommene Zwischenstand.
 
-Der Workflow wird in Actions verfügbar, sobald seine Definition auf dem Standardbranch liegt. Das Vorbereiten auf `release/0.1.0` aktiviert keine Signierung und ersetzt keinen Main-Merge. Ein aktueller fehlgeschlagener Verify-Lauf bleibt ein Abnahmehindernis und wird durch Signieren nicht aufgehoben. Ein erfolgreicher unsignierter Kandidat ist kein signierter Release.
+Der Workflow wird in Actions verfügbar, sobald seine Definition auf dem Standardbranch liegt. Das Vorbereiten auf `release/0.2.0` aktiviert keine Signierung und ersetzt keinen Main-Merge. Ein aktueller fehlgeschlagener Verify-Lauf bleibt ein Abnahmehindernis und wird durch Signieren nicht aufgehoben. Ein erfolgreicher unsignierter Kandidat ist kein signierter Release.
 
 ### Vom geprüften Kandidaten zur Veröffentlichung
 
@@ -151,3 +151,17 @@ Der Versions-Tag muss bereits auf den tatsächlich signierten und geprüften Que
 3. In Actions **Sign Windows candidate** auf `main` starten. Bei `validation_run` die numerische Run-ID des erfolgreichen Main-Verify-Laufs eintragen und die Freigabe für `windows-signing` erteilen. Die PIN ausschließlich im lokalen Providerdialog eingeben.
 4. Den erfolgreichen unabhängigen Job `verify-package` abwarten. Für die manuelle Windows-Abnahme das Artefakt `windows-signed-verified` aus genau diesem Lauf verwenden. `windows-signed-candidate` ist noch nicht abgenommen.
 5. Nach der dokumentierten manuellen Abnahme den geprüften Commit und die SHA-256 des tatsächlich geprüften Installers für Tag, Release und Downloadzuordnung festhalten. Website und Download erst im ausdrücklich freigegebenen Veröffentlichungsschritt aktualisieren.
+
+## Portables CLI und Update-Verträge
+
+Nach dem Java-Paketbuild prüft `python scripts/ci/cli-smoke.py engine/target/inspect-engine-0.2.0.jar` den tatsächlichen JAR-Aufruf, UTF-8, lokale öffentliche Fixtures, Exitcodes und den Schutz bestehender Ergebnisdateien. Der Windowslauf verwendet zusätzlich die gebündelte Laufzeit. Vor Veröffentlichung läuft dieselbe Prüfung unter Linux gegen exakt die im verifizierten Windows-Paket enthaltenen Enginebytes.
+
+`desktop/native-contracts` prüft die Update-Richtlinie ohne grafische Laufzeit. `cargo test --locked --manifest-path desktop/native-contracts/Cargo.toml` umfasst echte synthetische Signaturen, Manipulationen, Versionsbindung, Produktbindung und die Zielrichtlinie. Der unabhängige Windows-Verifizierer ruft `verify-update` gegen das endgültige Paket auf.
+
+Inspect verwendet nach Entscheidung des Produkteigentümers denselben Update-Signierschlüssel wie Connect. Der öffentliche Schlüssel ist in `desktop/update-public-key.txt` versioniert. Der private Schlüssel bleibt ausschließlich auf dem Windows-Signierrechner. Der Standardpfad ist `%LOCALAPPDATA%\FBForge\signing\connect-updater.key`. `TAURI_SIGNING_PRIVATE_KEY_PATH` kann einen anderen lokalen Pfad festlegen. Das Passwort wird ausschließlich über die bestehende Variable `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` übergeben und nie protokolliert.
+
+Die finale Authenticode-signierte Installationsdatei wird zuerst auf den kanonischen Namen `FBForge-Inspect-<Version>-windows-x64-setup.exe` gebracht. Anschließend signiert die gepinnte Tauri-CLI genau diese unveränderten Bytes mit `--app-version`. Inspect prüft den signierten Dateinamen und die signierte Version zusätzlich zur Paketsignatur. Eine Connect-Updatesignatur wird dadurch nicht zu einer gültigen Inspect-Updatesignatur.
+
+Das Release enthält den Windows-Installer, das Windows-Paket, ein portables Java-CLI-Archiv, `latest.json`, die Installer-Updatesignatur, Prüfsummen und die Releaseprovenienz. Die unabhängige Paketprüfung und die vollständige Main-CI bleiben Voraussetzung für Veröffentlichung.
+
+Die Windowsabnahme installiert die gepinnte veröffentlichte Version 0.1.0 und darüber den Kandidaten 0.2.0 im selben isolierten Testverzeichnis. SHA-256 und Authenticode des Ausgangsinstallers werden vor der Ausführung geprüft. Danach müssen die installierten neuen EXE-Bytes exakt dem geprüften Kandidaten entsprechen. NVDA 2026.2 prüft zusätzlich die neuen Bereiche über tatsächlich erzeugte Sprachausgaben und native Tab-Navigation.
