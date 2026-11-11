@@ -29,7 +29,7 @@ test('actionable guidance remains independent of translated finding titles', () 
     ['TRUST_ANCHOR_MISSING', 'mitgelieferten V-PKI-Truststore'],
     ['REVOCATION_NOT_REQUESTED', 'OCSP-/CRL-Prüfung'],
     ['SCHEMA_REFERENCES_UNRESOLVED', 'Das Ausgangsschema bleibt erhalten.'],
-    ['PVOG_INPUT_REQUIRED', '12-stelligen ARS'],
+    ['PVOG_INPUT_REQUIRED', '2, 3, 5, 9 oder 12 Ziffern'],
   ]) {
     assert.ok(findingNext({ ...finding, code }).includes(expected), code);
   }

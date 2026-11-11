@@ -1,5 +1,6 @@
 import type { Report, Status } from './contracts.ts';
 import { containsPrivateMaterial } from './inputs.ts';
+import { validRegion } from './areaKeys.ts';
 
 export interface CheckInput {
   id: string;
@@ -278,12 +279,7 @@ export function recognizeInput(source: string): PasteContext | null {
     ) {
       const kind = kinds[0]!;
       const region = url.searchParams.get(kind)!;
-      if (
-        !(kind === 'ars' ? /^(DE)?\d{12}$/ : kind === 'ags' ? /^(DE)?\d{8}$/ : /^\d{1,20}$/).test(
-          region,
-        )
-      )
-        return null;
+      if (!validRegion(kind, region)) return null;
       return {
         operation: 'routing',
         environment: hosts[url.hostname],
@@ -311,7 +307,7 @@ export function checksFromText(source: string): CheckInput[] {
       operation === 'routing' &&
       /^\d{14}$/.test(service || '') &&
       region &&
-      ['ars', 'ags', 'areaId'].includes(kind)
+      validRegion(kind, region)
     )
       return {
         id: `check-${index + 1}`,

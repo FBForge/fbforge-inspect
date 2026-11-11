@@ -210,10 +210,10 @@ test('public analysis tools submit explicit paired contexts and clear stale resu
   await page.getByRole('button', { name: 'Rückwärtsprüfung starten' }).click();
   await expect(page.getByRole('alert')).toContainText('gemeinsam angeben');
   expect(await page.evaluate(() => (window as any).__inspectCalls.length)).toBe(0);
-  await page.getByLabel('Vollständiger ARS (optional)', { exact: true }).fill('020000000000');
+  await page.getByLabel('ARS (optional)', { exact: true }).fill('020000000000');
   await page.getByRole('button', { name: 'Rückwärtsprüfung starten' }).click();
   await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toBeVisible();
-  await page.getByLabel('Vollständiger ARS (optional)', { exact: true }).fill('030000000000');
+  await page.getByLabel('ARS (optional)', { exact: true }).fill('030000000000');
   await expect(page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true })).toHaveCount(0);
   await task.selectOption('rollover');
   await page.getByLabel('Neue veröffentlichte Schlüsselkennung').fill('replacement-key');
@@ -262,6 +262,48 @@ test('public analysis tools submit explicit paired contexts and clear stale resu
   ] as const) {
     await page.getByLabel('HTTP-Status', { exact: true }).fill(String(code));
     await expect(page.locator('main').getByRole('status')).toContainText(text);
+  }
+});
+
+test('batch and reverse routing accept all ARS lengths without padding', async ({ page }) => {
+  await nativeBridge(page);
+  await page.goto('/');
+  await navigate(page, 'Sammelprüfung');
+  await page
+    .getByRole('combobox', { name: 'Prüfung auswählen', exact: true })
+    .selectOption('routing');
+  await page.getByLabel('LeiKa-Schlüssel', { exact: true }).fill('99008001014002');
+  const ars = page.getByLabel('ARS', { exact: true });
+  await ars.fill('0200');
+  await page.getByRole('button', { name: 'Prüfung hinzufügen', exact: true }).click();
+  expect(await ars.evaluate((input: HTMLInputElement) => input.validity.patternMismatch)).toBe(
+    true,
+  );
+  for (const region of ['02', '020', '02000', '020000000', '020000000000']) {
+    await page.getByLabel('LeiKa-Schlüssel', { exact: true }).fill('99008001014002');
+    await ars.fill(region);
+    await page.getByRole('button', { name: 'Prüfung hinzufügen', exact: true }).click();
+  }
+  await expect(page.getByText('Noch nicht ausgeführt', { exact: true })).toHaveCount(5);
+  expect(await page.evaluate(() => (window as any).__inspectCalls.length)).toBe(0);
+  await page.getByRole('button', { name: 'Sammelprüfung starten', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => (window as any).__inspectCalls.length)).toBe(5);
+  expect(
+    await page.evaluate(() => (window as any).__inspectCalls.map((call: any) => call.input.region)),
+  ).toEqual(['02', '020', '02000', '020000000', '020000000000']);
+  await navigate(page, 'Werkzeuge');
+  await page.getByRole('combobox', { name: 'Aufgabe', exact: true }).selectOption('reverse');
+  await page.getByLabel('Destination-ID', { exact: true }).fill(destination);
+  await page.getByLabel('LeiKa-Schlüssel (optional)', { exact: true }).fill('99008001014002');
+  for (const region of ['02', '020', '02000', '020000000', '020000000000', 'DE02']) {
+    await page.getByLabel('ARS (optional)', { exact: true }).fill(region);
+    await page.getByRole('button', { name: 'Rückwärtsprüfung starten', exact: true }).click();
+    await expect(
+      page.getByRole('heading', { name: 'Diagnoseergebnis', exact: true }),
+    ).toBeVisible();
+    expect(await page.evaluate(() => (window as any).__inspectCalls.at(-1).input.pairs)).toEqual([
+      { service: '99008001014002', region, regionKind: 'ars' },
+    ]);
   }
 });
 

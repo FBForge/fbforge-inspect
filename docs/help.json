@@ -92,11 +92,11 @@
     "steps": [
       "Geben Sie den 14-stelligen LeiKa-Schlüssel und die Gebietsart an.",
       "Tragen Sie AGS/ARS oder eine Gebiets-ID ein. Alternativ öffnen Sie die Gebietssuche, suchen einen Ortsnamen und übernehmen das passende Gebiet.",
-      "Für den PVOG-Abgleich verwenden Sie einen 12-stelligen ARS. Der Abruf ist voreingestellt. Ein einziger Treffer aus einer vollständigen Suche wird automatisch geprüft. Bei mehreren Treffern wählen Sie eine Leistungsbeschreibung. Eine bekannte ID können Sie unter den zusätzlichen Eingaben verwenden. Eine Gebiets-ID ersetzt keinen ARS.",
+      "Für den PVOG-Abgleich verwenden Sie einen ARS mit 2, 3, 5, 9 oder 12 Ziffern. Der Abruf ist voreingestellt. Ein einziger Treffer aus einer vollständigen Suche wird automatisch geprüft. Bei mehreren Treffern wählen Sie eine Leistungsbeschreibung. Eine bekannte ID können Sie unter den zusätzlichen Eingaben verwenden. Eine Gebiets-ID ersetzt keinen ARS.",
       "Prüfen Sie die Rollen und Leistungs-/Gebietskennungen pro Kontext. Öffnen Sie bei Bedarf die vollständigen Kontextfelder sowie Onlinedienstparameter mit Sprachangaben und Quelle. Ein unvollständiger Abruf oder fehlende Signatur ist kein vollständiger Negativnachweis."
     ],
     "example": null,
-    "summary": "Routing benötigt LeiKa und ein Gebiet. Für PVOG geben Sie einen 12-stelligen ARS an. Inspect kann passende Leistungsbeschreibungs-IDs vorschlagen. Ein eindeutiger Treffer wird automatisch geprüft. Bei mehreren Treffern wählen Sie eine Leistungsbeschreibung.",
+    "summary": "Routing benötigt LeiKa und ein Gebiet. Für PVOG geben Sie einen ARS mit 2, 3, 5, 9 oder 12 Ziffern an. Inspect kann passende Leistungsbeschreibungs-IDs vorschlagen. Ein eindeutiger Treffer wird automatisch geprüft. Bei mehreren Treffern wählen Sie eine Leistungsbeschreibung.",
     "workflow": {
       "title": "Von LeiKa und ARS zum belegten Routing-Abgleich",
       "intro": "Die Routing API liefert die beobachteten Ziele. PVOG liefert zusätzliche Leistungs- und Zuständigkeitskontexte. Inspect vergleicht verifizierte Destination-IDs im passenden Leistungskontext. Ein PVOG-Suchtreffer allein bestätigt noch keine Übereinstimmung.",
@@ -104,7 +104,7 @@
         {
           "source": "Ihre Eingabe",
           "title": "Leistung und Gebiet festlegen",
-          "text": "Für Routing sind ein 14-stelliger LeiKa-Schlüssel und AGS, ARS oder eine ausgewählte Gebiets-ID erforderlich. Für den standardmäßig aktiven PVOG-Abgleich benötigen Sie einen 12-stelligen ARS. Inspect leitet keinen ARS aus AGS oder Gebiets-ID ab. TEST verwendet TEST-Routing und PVOG STAGE. PROD verwendet PROD-Quellen. STAGE nutzt ausdrücklich PROD-Routing und PVOG PROD und bestätigt damit keine STAGE-Zustellbarkeit."
+          "text": "Für Routing sind ein 14-stelliger LeiKa-Schlüssel und AGS, ARS oder eine ausgewählte Gebiets-ID erforderlich. Für den standardmäßig aktiven PVOG-Abgleich benötigen Sie einen ARS mit 2, 3, 5, 9 oder 12 Ziffern. Inspect leitet keinen ARS aus AGS oder Gebiets-ID ab. TEST verwendet TEST-Routing und PVOG STAGE. PROD verwendet PROD-Quellen. STAGE nutzt ausdrücklich PROD-Routing und PVOG PROD und bestätigt damit keine STAGE-Zustellbarkeit."
         },
         {
           "source": "FIT-Connect · Routing API v2",
@@ -277,7 +277,7 @@
     "summary": "Bis zu 32 öffentliche Einzelprüfungen vorbereiten, kontrolliert ausführen und gezielt wiederholen.",
     "steps": [
       "Öffnen Sie Sammelprüfung und wählen Sie Umgebung sowie API-Version. Unter Prüfung auswählen stehen Zustellpunkt, Routing und Netzwerk bereit.",
-      "Für einen Zustellpunkt geben Sie die Kennung oder eine unterstützte öffentliche URL ein. Für Routing tragen Sie den LeiKa-Schlüssel und den vollständigen ARS ein. Wählen Sie Prüfung hinzufügen. Dabei startet noch keine Verbindung.",
+      "Für einen Zustellpunkt geben Sie die Kennung oder eine unterstützte öffentliche URL ein. Für Routing tragen Sie den LeiKa-Schlüssel und einen ARS mit 2, 3, 5, 9 oder 12 Ziffern ein. Wählen Sie Prüfung hinzufügen. Dabei startet noch keine Verbindung.",
       "Ergänzen Sie bei Bedarf weitere Einträge. Vorhandene Ergebnisse bleiben erhalten. Alle Einträge eines Auftrags verwenden dieselbe Umgebung und API-Version. Ein Auftrag enthält höchstens 32 Prüfungen.",
       "Zum Entfernen eines Eintrags wählen Sie Prüfung entfernen am betreffenden Check. Das zugehörige Ergebnis wird ebenfalls aus diesem Auftrag entfernt. Übrige Einträge und Ergebnisse bleiben erhalten. Während eines laufenden oder pausierten Sammellaufs ist Entfernen gesperrt.",
       "Wählen Sie Sammelprüfung starten. Die Einträge laufen nacheinander. Eine Pause wirkt nach dem aktuellen Eintrag. Beim Abbrechen bleiben abgeschlossene Ergebnisse sichtbar.",

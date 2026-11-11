@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { validRegion } from '../frontend/src/areaKeys.ts';
 import {
   checksFromText,
   parseJob,
@@ -89,6 +90,58 @@ test('batch inputs are bounded and keep routing tuples together', () => {
   assert.throws(() => checksFromText(Array(33).fill(id).join('\n')));
   assert.throws(() => checksFromText(''));
   assert.throws(() => checksFromText('unknown'));
+});
+
+test('routing paste and batch preserve every ARS level including leading zeros', () => {
+  for (const digits of ['02', '020', '02000', '020000000', '020000000000']) {
+    for (const prefix of ['', 'DE']) {
+      const region = prefix + digits;
+      const url = `https://routing-api-testing.fit-connect.fitko.dev/v2/routes?leikaKey=99008001014002&ars=${region}`;
+      assert.equal(validRegion('ars', region), true);
+      assert.equal(recognizeInput(url).input.region, region);
+      assert.equal(checksFromText(url)[0].input.region, region);
+      assert.deepEqual(checksFromText(`routing,99008001014002,${region}`)[0].input, {
+        service: '99008001014002',
+        region,
+        regionKind: 'ars',
+        pvog: false,
+      });
+    }
+  }
+});
+
+test('invalid ARS lengths and characters are rejected without confusing AGS or area IDs', () => {
+  for (const region of [
+    '',
+    '0',
+    '0200',
+    '020000',
+    '0200000',
+    '02000000',
+    '0200000000',
+    '02000000000',
+    '0200000000000',
+    '０２',
+    '0A',
+    '-2',
+    '02 00',
+    'DEDE02',
+  ]) {
+    assert.equal(validRegion('ars', region), false, region);
+    assert.equal(
+      recognizeInput(
+        `https://routing-api-testing.fit-connect.fitko.dev/v2/routes?leikaKey=99008001014002&ars=${encodeURIComponent(region)}`,
+      ),
+      null,
+    );
+    assert.throws(() => checksFromText(`routing,99008001014002,${region}`));
+  }
+  assert.equal(validRegion('ars', '02\n'), false);
+  assert.equal(validRegion('ags', '02000000'), true);
+  assert.equal(validRegion('ags', 'DE02000000'), true);
+  assert.equal(validRegion('ags', '02'), false);
+  assert.equal(validRegion('areaId', '1'), true);
+  assert.equal(validRegion('unknown', '02'), false);
 });
 test('portable jobs reject credentials and duplicate work identifiers', () => {
   assert.equal(parseJob(JSON.stringify(job())).checks.length, 1);

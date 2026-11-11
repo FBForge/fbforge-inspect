@@ -30,7 +30,7 @@ final class ReverseRouting {
           "notApplicable",
           "Routing-Kombinationen auswählen",
           "Die veröffentlichten Leistungen und Gebiete sind geladen. Eine konkrete Leistung und ein"
-              + " vollständiges Suchgebiet für die Folgeprüfung auswählen.",
+              + " Suchgebiet für die Folgeprüfung auswählen.",
           "$.publicServices",
           url,
           "Rückwärtsprüfung mit ausgewählten Kombinationen starten.",
@@ -84,7 +84,7 @@ final class ReverseRouting {
           "Rückwärtsrouting · " + service,
           found
               ? "Der erwartete Zustellpunkt wird zurückgegeben. Weitere Zuständigkeiten bleiben"
-                    + " sichtbar."
+                  + " sichtbar."
               : complete
                   ? "Der erwartete Zustellpunkt wurde für diese Abfrage nicht zurückgegeben."
                   : "Die Abfrage ist unvollständig. Kein vollständiger Negativnachweis möglich.",
@@ -93,7 +93,7 @@ final class ReverseRouting {
           found
               ? ""
               : "Leistungs-/Gebietskontext und veröffentlichte Adressierungsinformationen gezielt"
-                    + " prüfen.",
+                  + " prüfen.",
           "Öffentliche Auffindbarkeit ist keine authentifizierte Zustellprobe. Die interne Ursache"
               + " einer fehlenden Route ist damit nicht bewiesen.");
     }

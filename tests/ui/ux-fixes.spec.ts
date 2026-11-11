@@ -271,11 +271,38 @@ test('F05 PVOG requires ARS before making a routing request', async ({ page }) =
     .getByRole('textbox', { name: 'PVOG-Leistungsbeschreibungs-ID', exact: true })
     .fill('L100012.LB.9413106');
   await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
-  await expect(page.getByRole('alert')).toContainText('12-stelligen ARS');
+  await expect(page.getByRole('alert')).toContainText('2, 3, 5, 9 oder 12 Ziffern');
   expect(await page.evaluate(() => (window as any).inspectUx.calls.length)).toBe(0);
   await page.getByRole('combobox', { name: 'Gebietsart', exact: true }).selectOption('ars');
   await page.getByRole('textbox', { name: 'Gebietsschlüssel', exact: true }).fill('010010000000');
   await run(page);
+});
+
+test('routing accepts every ARS hierarchy level with PVOG and rejects an incomplete level', async ({
+  page,
+}) => {
+  await go(page, 'Routing prüfen');
+  await page.getByLabel('LeiKa-Schlüssel', { exact: true }).fill('99150085001000');
+  await page.getByRole('combobox', { name: 'Gebietsart', exact: true }).selectOption('ars');
+  await page.getByLabel('PVOG-Adressierung mit abrufen', { exact: true }).check();
+  const region = page.getByLabel('Gebietsschlüssel', { exact: true });
+  await region.fill('0200');
+  await page.getByRole('button', { name: 'Prüfung starten', exact: true }).click();
+  expect(await region.evaluate((input: HTMLInputElement) => input.validity.patternMismatch)).toBe(
+    true,
+  );
+  expect(await page.evaluate(() => (window as any).inspectUx.calls.length)).toBe(0);
+  for (const value of ['02', '020', '02000', '020000000', '020000000000', 'DE02']) {
+    await region.fill(value);
+    await run(page);
+    expect(
+      await page.evaluate(() => (window as any).inspectUx.calls.at(-1).request.input),
+    ).toMatchObject({
+      region: value,
+      regionKind: 'ars',
+      pvog: true,
+    });
+  }
 });
 
 test('F06 independent limits need only two destinations and retain the process workspace', async ({

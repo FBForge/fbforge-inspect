@@ -21,13 +21,14 @@ final class Pvog {
     String lb = JsonFields.value(input, "lbId"),
         region = JsonFields.value(input, "region").replaceFirst("^DE", "");
     if (!JsonFields.value(input, "regionKind").equals("ars")
-        || !region.matches("[0-9]{12}")
+        || !JsonFields.validArs(region)
         || lb.length() > 255) {
       report.unknown(
           FindingCode.PVOG_INPUT_REQUIRED,
           "PVOG-Vergleich benötigt gültige Gebiets- und Leistungsangaben",
-          "Ein 12-stelliger ARS ist erforderlich. Eine bekannte Leistungsbeschreibungs-ID darf"
-              + " höchstens 255 Zeichen enthalten. Ohne ID werden Vorschläge gesucht.",
+          "Ein ARS mit 2, 3, 5, 9 oder 12 Ziffern ist erforderlich. Eine bekannte"
+              + " Leistungsbeschreibungs-ID darf höchstens 255 Zeichen enthalten. Ohne ID werden"
+              + " Vorschläge gesucht.",
           "$",
           DOC);
       return;

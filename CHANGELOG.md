@@ -2,6 +2,8 @@
 
 ## 0.2.0
 
+- Routing, PVOG, Sammelprüfung und Rückwärtsrouting akzeptieren ARS mit 2, 3, 5, 9 oder 12 Ziffern. Führende Nullen bleiben auch beim Einfügen öffentlicher Routing-URLs erhalten.
+
 - Navigation mit ausreichender Breite, ganzen Wörtern und kompakteren Zeilen.
 - Gemeinsame Diagnosezusammenfassung für Einzel-, Sammel- und Serverprüfungen. Bestätigte Punkte und technische Belege werden gezielt über Buttons geöffnet.
 - Sammelprüfung mit Filterbuttons und zusammengehörigen Aktionen pro Eintrag. Serverdiagnose mit drei geführten Schritten und einheitlicher Dateiauswahl.

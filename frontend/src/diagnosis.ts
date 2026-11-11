@@ -49,7 +49,7 @@ export function findingNext(f: Finding) {
   if (f.code === 'SCHEMA_REFERENCES_UNRESOLVED')
     return 'Eine Referenz bei Bedarf als eigene Prüfung vorbereiten. Das Ausgangsschema bleibt erhalten.';
   if (f.code === 'PVOG_INPUT_REQUIRED')
-    return 'ARS als Gebietsart wählen und einen 12-stelligen ARS eingeben. Eine bekannte Leistungsbeschreibungs-ID kann direkt eingetragen oder als Vorschlag gesucht werden.';
+    return 'ARS als Gebietsart wählen und einen ARS mit 2, 3, 5, 9 oder 12 Ziffern eingeben. Eine bekannte Leistungsbeschreibungs-ID kann direkt eingetragen oder als Vorschlag gesucht werden.';
   return '';
 }
 export function specificLimitation(f: Finding) {

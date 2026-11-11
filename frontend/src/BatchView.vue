@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useId } from 'vue';
+import { arsPattern } from './areaKeys';
 import Findings from './Findings.vue';
 import DisclosurePanel from './DisclosurePanel.vue';
 import FileButton from './FileButton.vue';
@@ -212,8 +213,15 @@ function retryIds() {
         <template v-if="kind === 'routing'">
           <label>LeiKa-Schlüssel<input v-model="service" required pattern="[0-9]{14}" /></label>
           <label
-            >Vollständiger ARS<input v-model="region" required pattern="(DE)?[0-9]{12}"
+            >ARS<input
+              v-model.trim="region"
+              required
+              :pattern="arsPattern"
+              aria-describedby="batch-ars-hint"
           /></label>
+          <p id="batch-ars-hint" class="hint">
+            2, 3, 5, 9 oder 12 Ziffern. Führende Nullen bleiben erhalten.
+          </p>
         </template>
         <button ref="addButton" class="button secondary" type="submit">Prüfung hinzufügen</button>
       </fieldset>

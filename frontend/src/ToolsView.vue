@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { arsPattern } from './areaKeys';
 import { recognizeInput } from './portable';
 import { explainHttp } from './support';
 import type { PasteContext } from './portable';
@@ -51,8 +52,7 @@ function run() {
     ['reverse', 'signature'].includes(mode.value) &&
     Boolean(service.value) !== Boolean(region.value)
   ) {
-    error.value =
-      'LeiKa-Schlüssel und vollständigen ARS gemeinsam angeben oder beide Felder leer lassen.';
+    error.value = 'LeiKa-Schlüssel und ARS gemeinsam angeben oder beide Felder leer lassen.';
     return;
   }
   if (mode.value === 'certificate')
@@ -170,12 +170,18 @@ defineExpose({
                   v-model.trim="service"
                   pattern="[0-9]{14}" /></label
               ><label
-                >Vollständiger ARS (optional)<input v-model.trim="region" pattern="(DE)?[0-9]{12}"
+                >ARS (optional)<input
+                  v-model.trim="region"
+                  :pattern="arsPattern"
+                  aria-describedby="tools-ars-hint"
               /></label>
             </div>
+            <p id="tools-ars-hint" class="hint">
+              ARS mit 2, 3, 5, 9 oder 12 Ziffern. Führende Nullen bleiben erhalten.
+            </p>
             <p v-if="mode === 'reverse'" class="hint">
               Ohne Kombination werden zuerst die veröffentlichten Zuordnungen geladen. Für den
-              Routingabruf eine konkrete Leistung und einen vollständigen ARS angeben.
+              Routingabruf eine konkrete Leistung und einen ARS angeben.
             </p>
           </template>
           <label v-else

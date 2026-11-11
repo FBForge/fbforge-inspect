@@ -7,6 +7,7 @@ import java.util.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class RoutingWorkflowTest {
   private static JsonObject input(String kind, String region) {
@@ -53,6 +54,78 @@ class RoutingWorkflowTest {
     assertEquals(
         env.equals("STAGE"),
         report.findings.stream().anyMatch(f -> f.title().equals("Routingquelle PROD")));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"02", "020", "02000", "020000000", "020000000000"})
+  void acceptsEveryArsHierarchyLevelForRoutingAndPvogWithoutPadding(String region)
+      throws Exception {
+    for (String prefix : List.of("", "DE")) {
+      Report report = new Report("routing", "TEST", "v3");
+      List<String> calls = new ArrayList<>();
+      Api api =
+          new Api(
+              report,
+              url -> {
+                calls.add(url);
+                return SignatureFixtures.response(
+                    url,
+                    url.contains("/v2/routes")
+                        ? page("routes", "[]")
+                        : "{\"content\":[],\"page\":{\"number\":0,\"size\":100,\"totalElements\":0,\"totalPages\":0}}");
+              });
+      JsonObject query = input("ars", prefix + region);
+      query.addProperty("pvog", true);
+      query.addProperty("lbId", "L1.LB.fixture");
+      api.routes(query);
+      assertEquals(
+          Api.routing("TEST")
+              + "/v2/routes?leikaKey="
+              + SignatureFixtures.SERVICE
+              + "&ars="
+              + region
+              + "&limit=100&offset=0",
+          calls.getFirst());
+      assertTrue(
+          calls.stream()
+              .anyMatch(url -> url.contains("/relations/jzufi-2-3?ars=" + region + "&lbids=")));
+      assertFalse(
+          report.findings.stream().anyMatch(f -> f.code().equals(FindingCode.PVOG_INPUT_REQUIRED)));
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "",
+        "0",
+        "0200",
+        "020000",
+        "0200000",
+        "02000000",
+        "0200000000",
+        "02000000000",
+        "0200000000000",
+        "０２",
+        "0A",
+        "-2",
+        "02 00",
+        "DEDE02"
+      })
+  void invalidArsNeverReachesRoutingOrPvog(String region) {
+    Report report = new Report("routing", "TEST", "v3");
+    Api api =
+        new Api(
+            report,
+            url -> {
+              fail("no request for invalid ARS");
+              return null;
+            });
+    JsonObject query = input("ars", region);
+    assertThrows(IllegalArgumentException.class, () -> api.routes(query));
+    assertDoesNotThrow(() -> api.pvog(query, new Signatures(api)));
+    assertTrue(
+        report.findings.stream().anyMatch(f -> f.code().equals(FindingCode.PVOG_INPUT_REQUIRED)));
   }
 
   @ParameterizedTest

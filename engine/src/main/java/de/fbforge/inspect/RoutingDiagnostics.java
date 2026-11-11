@@ -31,8 +31,9 @@ final class RoutingDiagnostics {
                 yield "ags";
               }
               case "ars" -> {
-                if (!region.matches("[0-9]{12}"))
-                  throw new IllegalArgumentException("ARS mit 12 Ziffern erwartet.");
+                if (!validArs(region))
+                  throw new IllegalArgumentException(
+                      "ARS mit 2, 3, 5, 9 oder 12 Ziffern erwartet.");
                 yield "ars";
               }
               case "areaId" -> {
