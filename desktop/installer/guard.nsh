@@ -1,4 +1,6 @@
 ; Fixed local identity, never read from renderer, metadata or command line.
+!define FBFORGE_GUARD_DIR "${__FILEDIR__}"
+!define FBFORGE_GUARD_TOOL_ID "fbforge-inspect"
 !define FBFORGE_GUARD_APP_ID "de.fbforge.inspect"
 !addplugindir /x86-unicode "${__FILEDIR__}/guard"
 !include "${__FILEDIR__}/safe-utils.nsh"
@@ -82,3 +84,5 @@ Function ${PREFIX}FBForgeRelease
     Quit
 FunctionEnd
 !macroend
+
+!include "${__FILEDIR__}/guard-v2.nsh"

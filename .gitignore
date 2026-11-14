@@ -16,3 +16,6 @@ dist-website/
 node_modules
 
 __pycache__/
+
+# Generated, separately signed installer guard.
+/desktop/installer/guard/*.dll

@@ -47,6 +47,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
+      - name: Install pinned x86 installer guard toolchain
+        run: rustup toolchain install 1.93.1 --profile minimal --target i686-pc-windows-msvc
       - name: Build and sign using the interactive user's local token
         env:
           VALIDATION_RUN: ${{ inputs.validation_run }}

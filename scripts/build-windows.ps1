@@ -27,6 +27,10 @@ foreach ($inspectFolder in @('frontend','desktop','scripts','docs','assets','lic
   & robocopy (Join-Path $inspectSource $inspectFolder) $inspectTarget /E /XD target node_modules resources gen .local android ios /NFL /NDL /NJH /NJS /NP | Out-Null
   if ($LASTEXITCODE -ge 8) { throw "Kopieren von $inspectFolder fehlgeschlagen." }
 }
+# The general copy excludes staged resources. Preserve the guard's source module
+# named processes/resources as part of its exact public source snapshot.
+& robocopy (Join-Path $inspectSource 'desktop/installer/guard-source') (Join-Path $inspectWorkRoot 'desktop/installer/guard-source') /E /XD target /NFL /NDL /NJH /NJS /NP | Out-Null
+if ($LASTEXITCODE -ge 8) { throw 'Kopieren der Guardquellen fehlgeschlagen.' }
 foreach ($inspectFile in @('package.json','package-lock.json','tsconfig.json','LICENSE','THIRD_PARTY_NOTICES.md')) { Copy-Item (Join-Path $inspectSource $inspectFile) $inspectWorkRoot }
 New-Item -ItemType Directory -Force (Join-Path $inspectWorkRoot 'engine\target') | Out-Null
 Copy-Item (Join-Path $inspectSource 'engine\target\inspect-engine-0.2.0.jar') (Join-Path $inspectWorkRoot 'engine\target')
@@ -55,6 +59,14 @@ try {
       $inspectSnapshot = Join-Path $inspectWorkRoot 'signed-application.exe'
       $inspectConfig = Join-Path $inspectWorkRoot 'signing-config.json'
       $inspectSigning = Get-WindowsSigningConfig -Signer (Join-Path $inspectWorkRoot 'scripts\sign-windows-file.ps1') -Thumbprint $InspectSigningThumbprint -TimestampUrl $InspectTimestampUrl -Snapshot $inspectSnapshot
+      & node.exe ../scripts/installer-guard.mjs
+      if ($LASTEXITCODE) { throw 'signing_guard_build_failed' }
+      $inspectGuard = Join-Path $inspectWorkRoot 'desktop/installer/guard/fbforge_suite_nsis_guard.dll'
+      $inspectTool = Get-WindowsSignTool
+      Invoke-WindowsFileSigning -Path $inspectGuard -Thumbprint $InspectSigningThumbprint -TimestampUrl $InspectTimestampUrl -SignTool $inspectTool -MainBinaryPath (Join-Path $inspectWorkRoot 'desktop/target/release/fbforge-inspect.exe') -SignedMainBinaryPath $inspectSnapshot
+      $inspectGuardSignature = Assert-WindowsSignature -Path $inspectGuard -Thumbprint $InspectSigningThumbprint -SignTool $inspectTool
+      # Preserve the signed guard through Tauri's later beforeBundle hook.
+      $inspectSigning.build = @{ beforeBundleCommand = ('node scripts/installer-guard.mjs verify ' + $inspectGuardSignature.sha256 + ' && node desktop/installer/nsis/toolchain.mjs prepare') }
       [IO.File]::WriteAllText($inspectConfig, ($inspectSigning | ConvertTo-Json -Depth 8), (New-Object Text.UTF8Encoding($false)))
       $inspectArguments += @('--config',$inspectConfig)
     }
