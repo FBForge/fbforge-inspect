@@ -16,6 +16,7 @@ async function buildFixture(failCopy) {
   for (const name of [
     'frontend',
     'desktop',
+    'desktop/installer/guard-source/crates/suite-core/src/processes/resources',
     'scripts',
     'docs',
     'assets',
@@ -37,6 +38,7 @@ async function buildFixture(failCopy) {
     'cli/inspect.sh',
     'cli/README.txt',
     'engine/target/inspect-engine-0.2.0.jar',
+    'desktop/installer/guard-source/crates/suite-core/src/processes/resources/windows.rs',
   ])
     await writeFile(join(root, name), '{}');
   await copyFile('scripts/build-windows.ps1', join(root, 'scripts/build-windows.ps1'));
@@ -59,6 +61,10 @@ function global:robocopy {
   if ($env:INSPECT_TEST_COPY_FAILURE -eq '1') { $global:LASTEXITCODE = 8; return }
   $null = New-Item -ItemType Directory -Path $Destination -Force
   Get-ChildItem -LiteralPath $Source -Force | Copy-Item -Destination $Destination -Recurse -Force
+  if ($Source -eq (Join-Path $env:INSPECT_TEST_FIXTURE 'desktop/installer/guard-source')) {
+    if ($args -contains 'resources') { throw 'guard source resource modules must not be excluded' }
+    Set-Content (Join-Path $env:INSPECT_TEST_FIXTURE 'guard-copy-observed') 'dedicated guard copy'
+  }
   $global:LASTEXITCODE = 1 # Windows robocopy: files copied successfully.
 }
 function global:npm.cmd { $global:LASTEXITCODE = 0 }
@@ -123,6 +129,16 @@ test(
     const { root, result } = await buildFixture(false);
     try {
       assert.equal(result.status, 0, result.stdout + result.stderr);
+      assert.equal(
+        (await readFile(join(root, 'guard-copy-observed'), 'utf8')).trim(),
+        'dedicated guard copy',
+      );
+      const guardModule =
+        'desktop/installer/guard-source/crates/suite-core/src/processes/resources/windows.rs';
+      assert.equal(
+        await readFile(join(root, 'work', guardModule), 'utf8'),
+        await readFile(join(root, guardModule), 'utf8'),
+      );
       const files = await readdir(join(root, '.local/artifacts/windows-x64'));
       assert.ok(files.includes('inspect-setup.exe'));
       assert.ok(files.includes('SHA256SUMS.txt'));
