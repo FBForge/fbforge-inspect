@@ -79,3 +79,6 @@ mod export_tests {
         assert!(!fixture.0.join("export/link").exists());
     }
 }
+
+#[path = "../src/app_coordination.rs"]
+pub mod app_coordination;

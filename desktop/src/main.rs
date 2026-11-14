@@ -327,8 +327,19 @@ fn open_reference(reference: String) -> Result<(), String> {
     Ok(())
 }
 
+#[cfg(windows)]
+mod app_coordination;
+
 fn main() {
-    tauri::Builder::default()
+    #[cfg(windows)]
+    let lease = match app_coordination::acquire() {
+        Ok(lease) => lease,
+        Err(error) => {
+            app_coordination::show_error(error);
+            return;
+        }
+    };
+    let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_updater::Builder::new()
@@ -379,8 +390,13 @@ fn main() {
             application_updates::install_application_update,
             open_reference
         ])
-        .run(tauri::generate_context!())
+        .build(tauri::generate_context!())
         .expect("FBForge Inspect konnte nicht gestartet werden");
+    let exit_code = app.run_return(|_, _| {});
+    // Keep ownership on the startup thread until the event loop has finished.
+    #[cfg(windows)]
+    drop(lease);
+    std::process::exit(exit_code);
 }
 
 #[cfg(test)]

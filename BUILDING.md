@@ -165,3 +165,9 @@ Die finale Authenticode-signierte Installationsdatei wird zuerst auf den kanonis
 Das Release enthält den Windows-Installer, das Windows-Paket, ein portables Java-CLI-Archiv, `latest.json`, die Installer-Updatesignatur, Prüfsummen und die Releaseprovenienz. Die unabhängige Paketprüfung und die vollständige Main-CI bleiben Voraussetzung für Veröffentlichung.
 
 Die Windowsabnahme installiert die gepinnte veröffentlichte Version 0.1.0 und darüber den Kandidaten 0.2.0 im selben isolierten Testverzeichnis. SHA-256 und Authenticode des Ausgangsinstallers werden vor der Ausführung geprüft. Danach müssen die installierten neuen EXE-Bytes exakt dem geprüften Kandidaten entsprechen. NVDA 2026.2 prüft zusätzlich die neuen Bereiche über tatsächlich erzeugte Sprachausgaben und native Tab-Navigation.
+
+## Native Appstart-Koordination
+
+Vertrag, vendorte Herkunft und abgegrenzte Prüfnachweise stehen unter
+[Native Appstart-Koordination](docs/plans/app-coordination.md). Installer und
+appinterner Updatehandoff sind in diesem Schritt nicht angebunden.

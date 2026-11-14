@@ -1,0 +1,12 @@
+[package]
+name = "fbforge-suite-coordination"
+version = "0.1.0-dev.1"
+edition = "2021"
+rust-version = "1.90"
+license = "EUPL-1.2"
+publish = false
+description = "Thread-bound per-user Windows coordination for cooperating FBForge applications"
+
+[target.'cfg(windows)'.dependencies]
+ring = "=0.17.14"
+windows-sys = { version = "=0.52.0", features = ["Win32_Foundation", "Win32_Security", "Win32_Security_Authorization", "Win32_System_Threading"] }
