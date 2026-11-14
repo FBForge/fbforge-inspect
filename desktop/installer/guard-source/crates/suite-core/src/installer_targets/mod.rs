@@ -6,6 +6,8 @@ mod host;
 #[cfg(any(windows, test))]
 pub(crate) mod journal;
 mod manifest;
+#[cfg(any(windows, test))]
+mod preservation;
 use crate::catalog::{validate_tool, ToolManifest};
 use fbforge_suite_coordination::Lease;
 pub use host::{VerifiedInstallerHost, PAYLOAD_MANIFEST_LEAF};

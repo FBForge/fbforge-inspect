@@ -82,9 +82,9 @@ fn require_standard_token() -> Result<(), InstallerError> {
     Ok(())
 }
 
-pub(super) fn start(
+pub(super) fn start<G>(
     proof: &VerifiedCachedWindowsPackage<'_>,
-    validate: impl FnOnce() -> Result<(), InstallerError>,
+    validate: impl FnOnce() -> Result<G, InstallerError>,
 ) -> Result<InstallerChild, InstallerError> {
     let application = authenticode::installer_path(proof)?;
     let mut command = Vec::with_capacity(application.len() + 6);
@@ -116,7 +116,7 @@ pub(super) fn start(
     if current_temporary_directory()? != temporary_path {
         return Err(InstallerError::TemporaryDirectoryUnavailable);
     }
-    validate()?;
+    let _gate = validate()?;
     // SAFETY: absolute held-file application path, distinct mutable command
     // buffer, fixed /P only, fixed cache CWD, no inherited handles or new token.
     let created = unsafe {

@@ -2,7 +2,7 @@ use super::{manifest::canonical_version, TargetError};
 use serde::{Deserialize, Serialize};
 
 pub(super) const MAX_JOURNAL_BYTES: usize = 64 * 1024;
-#[cfg(windows)]
+#[cfg(any(windows, test))]
 pub(super) const RECEIPT: &str = ".fbforge-installation.v1.json";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]

@@ -170,6 +170,9 @@ impl NativeTargetPlan {
         } else {
             None
         };
+        if let Some((tree, version)) = &original {
+            check_preserved_namespace(tree.path(), &tool, version)?;
+        }
         if original
             .as_ref()
             .is_some_and(|(_, version)| payload.version() < version)
@@ -343,6 +346,7 @@ impl NativeTargetPlan {
         if self.layout()? != layout {
             return Err(TargetError::RecoveryRequired);
         }
+        self.check_original_namespace(layout)?;
         // The initial creation anchor was no-delete; the freshly checked
         // stage_health directory anchors now deliberately share deletion.
         drop(self.stage_anchor.take());
@@ -372,6 +376,7 @@ impl NativeTargetPlan {
         if self.phase != TargetPhase::PublishedPending || self.layout()? != Layout::Published {
             return Err(TargetError::InvalidPhase);
         }
+        self.check_original_namespace(Layout::Published)?;
         let inspected_at = native_time()?;
         let mut current =
             health::inspect(&self.target, &self.tool, &self.payload, inspected_at, true)?;
@@ -432,8 +437,26 @@ impl NativeTargetPlan {
             if self.payload.version() < &version {
                 return Err(TargetError::Downgrade);
             }
+            check_preserved_namespace(tree.path(), &self.tool, &version)?;
             self.old_resources = resources(Some(&tree))?;
             self.original = Some(tree);
+        }
+        Ok(())
+    }
+    fn check_original_namespace(&self, layout: Layout) -> Result<(), TargetError> {
+        if self.original.is_some() {
+            let root = if layout == Layout::OriginalIntact {
+                self.target.clone()
+            } else {
+                self.backup.path().join("root")
+            };
+            let version = manifest::canonical_version(
+                self.journal
+                    .original_version
+                    .as_deref()
+                    .ok_or(TargetError::RecoveryRequired)?,
+            )?;
+            check_preserved_namespace(&root, &self.tool, &version)?;
         }
         Ok(())
     }
@@ -652,4 +675,17 @@ fn require_current_time(verified_at: u64) -> Result<(), TargetError> {
     } else {
         Ok(())
     }
+}
+
+fn check_preserved_namespace(
+    root: &Path,
+    tool: &ToolManifest,
+    version: &semver::Version,
+) -> Result<(), TargetError> {
+    let receipt = io::read(
+        &root.join(journal::RECEIPT),
+        super::preservation::MAX_RECEIPT_BYTES,
+    )
+    .map_err(|_| TargetError::ManualMigrationRequired)?;
+    super::preservation::check_existing(root, &receipt, tool, version)
 }

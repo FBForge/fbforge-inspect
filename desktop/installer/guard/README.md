@@ -10,7 +10,7 @@ installiert keine Toolchain. Er setzt nur für diesen DLL-Build das Rust-Flag
 `-C target-feature=+crt-static` zur statischen CRT-Anbindung. Manueller Build: `node scripts/installer-guard.mjs`.
 
 `../guard-source/` ist ein mechanischer öffentlicher FBForge-Suite-Snapshot von
-Commit `f4b6cf322feeca31e4a908482486d03ef7d70138` einschließlich EUPL-1.2-Lizenz.
+Commit `56456955edb52a00d7493283d95b44ead8176f6e` einschließlich EUPL-1.2-Lizenz.
 `source-manifest.json` benennt die exakten Quelldateien und SHA-256-Werte.
 Die separate Workspace verändert keine Laufzeitabhängigkeiten der Anwendung.
 Buildausgaben liegen unter `desktop/target/installer-guard/`, die bereitgestellte

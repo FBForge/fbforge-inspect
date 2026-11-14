@@ -299,7 +299,10 @@ impl fmt::Debug for VerifiedCachedWindowsPackage<'_> {
             .finish_non_exhaustive()
     }
 }
-impl VerifiedCachedWindowsPackage<'_> {
+impl<'cache> VerifiedCachedWindowsPackage<'cache> {
+    pub(crate) fn into_cached_package(self) -> CachedPackage<'cache> {
+        self._package
+    }
     pub(crate) fn matches_release(&self, release: &VerifiedRelease) -> bool {
         self._package.matches_release(release)
     }
@@ -423,6 +426,25 @@ impl OwnedVerifiedCooperatingProgram {
     }
     pub fn protocol(&self) -> u16 {
         1
+    }
+
+    /// Re-read the signed section-backed ProductVersion on this same held file.
+    /// This root-image check is not complete installation or loaded-JAR health.
+    pub fn verify_product_version(
+        &mut self,
+        expected: &semver::Version,
+    ) -> Result<(), VerificationFailure> {
+        #[cfg(windows)]
+        {
+            windows::verify_program_product_version(&mut self._program, expected)
+        }
+        #[cfg(not(windows))]
+        {
+            let _ = expected;
+            Err(VerificationFailure::Indeterminate(
+                IndeterminateReason::UnsupportedPlatform,
+            ))
+        }
     }
 
     /// Check and retain the existing installation tree before the caller's fresh

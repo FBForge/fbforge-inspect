@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "FBForge Suite",
-  "revision": "f4b6cf322feeca31e4a908482486d03ef7d70138",
+  "revision": "56456955edb52a00d7493283d95b44ead8176f6e",
   "license": "EUPL-1.2",
   "files": [
     {
@@ -116,8 +116,8 @@
     },
     {
       "path": "crates/suite-core/src/authenticode/mod.rs",
-      "size": 18525,
-      "sha256": "404dd26152ebab54f8567f2fd7faeeecca439a4f306dd35eb2150f83f4796c5d"
+      "size": 19268,
+      "sha256": "9a43fa86bd14ab701d1d1a93ea947e7743606520d78b58db5a001c3ebec8269d"
     },
     {
       "path": "crates/suite-core/src/authenticode/program_permissions.rs",
@@ -131,8 +131,8 @@
     },
     {
       "path": "crates/suite-core/src/authenticode/windows.rs",
-      "size": 31125,
-      "sha256": "c0877f3d7025dbee3edae079921cdd2c4a3c2a6866b5580bb10181b997ccb45f"
+      "size": 31485,
+      "sha256": "7010131aef772b584bbdbbc5cf008af5b2b4843a953b156186301f15c5458a6d"
     },
     {
       "path": "crates/suite-core/src/authenticode/windows/installer_targets_bridge.rs",
@@ -191,8 +191,8 @@
     },
     {
       "path": "crates/suite-core/src/installer_targets/journal.rs",
-      "size": 7313,
-      "sha256": "eb8cd91751e9a7d821e1f68a295204e081dfb187b024cd6cc79315fbaf9ba41c"
+      "size": 7324,
+      "sha256": "d7a86f767201349552648498b83819f26b048f8085f2f0c6ac723832809d5fa8"
     },
     {
       "path": "crates/suite-core/src/installer_targets/manifest.rs",
@@ -201,13 +201,18 @@
     },
     {
       "path": "crates/suite-core/src/installer_targets/mod.rs",
-      "size": 5686,
-      "sha256": "395a8c543d3fa2ab90bfa10152e1d553a26c698316f4614e2c374390e43f023b"
+      "size": 5731,
+      "sha256": "2192ac48c3e39ece023ad9382783b052f13b91f49ca40f447feb407f6207a009"
+    },
+    {
+      "path": "crates/suite-core/src/installer_targets/preservation.rs",
+      "size": 9467,
+      "sha256": "cfa5a9ccfbe5e4ec618cc18b2a99c963b86d8ff6a12a9aa5a679104e69fb85d5"
     },
     {
       "path": "crates/suite-core/src/installer_targets/windows.rs",
-      "size": 25512,
-      "sha256": "96a9efac93c6e332eae723bbb96b79a5fb764048be7d0d11bac13283e6ea98bb"
+      "size": 26841,
+      "sha256": "7ae4586f0e80f34bcf87bc893c36f378ea5960ab1e6f06ed7c52c6d85fe5f216"
     },
     {
       "path": "crates/suite-core/src/installer_targets/windows/health.rs",
@@ -221,13 +226,13 @@
     },
     {
       "path": "crates/suite-core/src/installers/mod.rs",
-      "size": 14664,
-      "sha256": "491f1512fcd046f35e8d99af4edbc698107a11d4eb83b3c4a52aa2d18602fdd0"
+      "size": 17012,
+      "sha256": "783a03a7e3657f646b6378689b6fe56adbc837c7a69ca856bba64db8acaa58bf"
     },
     {
       "path": "crates/suite-core/src/installers/windows.rs",
-      "size": 7013,
-      "sha256": "d30578f0ae398bee780669cec58c20f5b634f47fe0159237a126ed71e9ce4251"
+      "size": 7027,
+      "sha256": "e69bf98013ef6854cd9dcec3db9bf2c6e332d3d79627638b9beebc565502e24b"
     },
     {
       "path": "crates/suite-core/src/inventory/mod.rs",

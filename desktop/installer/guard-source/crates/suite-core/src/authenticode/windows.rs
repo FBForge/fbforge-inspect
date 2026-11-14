@@ -356,6 +356,18 @@ pub(super) fn checked_installer_path(file: &File) -> Result<Vec<u16>, Failure> {
     final_path(file)
 }
 
+pub(super) fn verify_program_product_version(
+    program: &mut LockedPackageFile,
+    expected: &semver::Version,
+) -> Result<(), Failure> {
+    validate_held_file(&program.file)?;
+    let actual = super::read_program_product_version(&mut program.file)?;
+    if &actual != expected {
+        return Err(invalid(Invalid::PackageMismatch));
+    }
+    Ok(())
+}
+
 fn validate_held_file(file: &File) -> Result<(), Failure> {
     let information = file_information(file)?;
     // SAFETY: caller retains the already open package handle throughout.

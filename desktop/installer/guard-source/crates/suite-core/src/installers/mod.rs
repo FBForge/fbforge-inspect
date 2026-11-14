@@ -22,6 +22,7 @@ pub enum InstallerError {
     LaunchUnavailable,
     ElevationNotAllowed,
     ProcessUnavailable,
+    Cancelled,
     TemporaryDirectoryUnavailable,
 }
 impl From<VerificationFailure> for InstallerError {
@@ -49,6 +50,7 @@ impl fmt::Display for InstallerError {
             Self::ElevationNotAllowed => {
                 "Der Installerstart unter erhöhten Rechten ist nicht freigegeben."
             }
+            Self::Cancelled => "Der Installerstart wurde vor der Ausführung abgebrochen.",
             Self::ProcessUnavailable => {
                 "Der Installerprozess konnte nicht sicher beobachtet werden."
             }
@@ -124,6 +126,17 @@ pub fn prepare_cached_installer<'cache>(
     })
 }
 
+/// Consume old cache publisher evidence only to recover its private cache owner.
+/// All sharing-transition, byte, protocol and publisher checks run again.
+pub fn prepare_verified_cached_installer<'cache>(
+    proof: VerifiedCachedWindowsPackage<'cache>,
+    release: &VerifiedRelease,
+    policies: &AuthenticodePolicies,
+    now: u64,
+) -> Result<PreparedInstaller<'cache>, InstallerError> {
+    prepare_cached_installer(proof.into_cached_package(), release, policies, now)
+}
+
 impl<'cache> PreparedInstaller<'cache> {
     /// Trusted native caller only: revalidate current Store/trust, administrative
     /// update/install policy, consent, target and mutation guards immediately
@@ -137,11 +150,25 @@ impl<'cache> PreparedInstaller<'cache> {
         policies: &AuthenticodePolicies,
         metadata_checked_at: u64,
     ) -> Result<InstallerProcess<'cache>, InstallerError> {
-        let validate = || {
+        self.start_with_gate(current, policies, metadata_checked_at, || {
+            Ok(((), metadata_checked_at))
+        })
+    }
+
+    /// One final trusted native check immediately before the fixed process
+    /// creation. Its returned guard stays owned through CreateProcessW. The
+    /// built-in metadata/clock/policy checks run again after this callback,
+    /// including its freshly reported native Store verification time.
+    pub fn start_with_gate<G>(
+        self,
+        current: &VerifiedRelease,
+        policies: &AuthenticodePolicies,
+        metadata_checked_at: u64,
+        before_create: impl FnOnce() -> Result<(G, u64), InstallerError>,
+    ) -> Result<InstallerProcess<'cache>, InstallerError> {
+        let validate = |gate_checked_at: u64| -> Result<(), InstallerError> {
             let now = native_time()?;
-            if now < self.checked_at || now < metadata_checked_at {
-                return Err(InstallerError::ClockRollback);
-            }
+            require_current_time(now, self.checked_at, metadata_checked_at, gate_checked_at)?;
             let policy = authenticode::validate_release_policy(current, policies, now)?;
             if current.metadata_schema_version() != 2
                 || !self.proof.matches_release(current)
@@ -154,12 +181,16 @@ impl<'cache> PreparedInstaller<'cache> {
             }
             Ok(())
         };
-        validate()?;
+        validate(metadata_checked_at)?;
         #[cfg(windows)]
         {
             // Repeat the clock/binding checks after final path and launch-buffer
             // setup, immediately before CreateProcessW's side effect.
-            let process = windows::start(&self.proof, validate)?;
+            let process = windows::start(&self.proof, || {
+                let (guard, gate_checked_at) = before_create()?;
+                validate(gate_checked_at)?;
+                Ok(guard)
+            })?;
             Ok(InstallerProcess {
                 process,
                 _prepared: self,
@@ -167,7 +198,7 @@ impl<'cache> PreparedInstaller<'cache> {
         }
         #[cfg(not(windows))]
         {
-            let _ = (self, current, policies, metadata_checked_at);
+            let _ = (self, current, policies, metadata_checked_at, before_create);
             Err(InstallerError::UnsupportedPlatform)
         }
     }
@@ -275,6 +306,19 @@ fn system_windows_directory_path(
     temporary_directory_path(&terminated, count as u32 + 1)
 }
 
+fn require_current_time(
+    now: u64,
+    prepared_at: u64,
+    metadata_at: u64,
+    gate_at: u64,
+) -> Result<(), InstallerError> {
+    if now < prepared_at || now < metadata_at || now < gate_at {
+        Err(InstallerError::ClockRollback)
+    } else {
+        Ok(())
+    }
+}
+
 fn native_time() -> Result<u64, InstallerError> {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -375,6 +419,22 @@ mod temporary_directory_tests {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn creation_clock_cannot_fall_behind_the_later_native_callback_checkpoint() {
+        assert_eq!(
+            require_current_time(1000, 900, 950, 1001),
+            Err(InstallerError::ClockRollback)
+        );
+        assert_eq!(require_current_time(1001, 900, 950, 1001), Ok(()));
+        assert_eq!(
+            require_current_time(1000, 1001, 950, 990),
+            Err(InstallerError::ClockRollback)
+        );
+        assert_eq!(
+            require_current_time(1000, 900, 1001, 990),
+            Err(InstallerError::ClockRollback)
+        );
+    }
     #[test]
     fn waits_are_bounded_and_never_round_a_positive_budget_to_zero() {
         assert_eq!(wait_milliseconds(Duration::ZERO), Ok(0));
