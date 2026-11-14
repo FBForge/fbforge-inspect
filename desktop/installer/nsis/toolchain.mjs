@@ -106,7 +106,8 @@ async function extractPinnedArchive(archive, destination) {
   // Extraction follows the exact public SHA256 check, never an untrusted ZIP.
   if (process.platform === 'win32') {
     const quote = value => `'${value.replaceAll("'", "''")}'`;
-    const script = `$ErrorActionPreference='Stop'; Expand-Archive -LiteralPath ${quote(archive)} -DestinationPath ${quote(destination)}`;
+    // Windows PowerShell serializes progress as CLIXML on bounded stderr.
+    const script = `$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; Expand-Archive -LiteralPath ${quote(archive)} -DestinationPath ${quote(destination)}`;
     await execute('powershell.exe', ['-NoProfile', '-NonInteractive', '-EncodedCommand', Buffer.from(script, 'utf16le').toString('base64')], { timeout: 60_000, maxBuffer: 65536, windowsHide: true });
   } else {
     await execute('python3', ['-c', 'import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])', archive, destination], { timeout: 60_000, maxBuffer: 65536 });
