@@ -326,6 +326,13 @@ pub(super) struct NativeLease {
     name: String,
     owner_thread: u32,
 }
+
+impl NativeLease {
+    pub(super) fn is_current_thread_owner(&self) -> bool {
+        // SAFETY: thread identity lookup has no side effects.
+        self.owner_thread == unsafe { GetCurrentThreadId() }
+    }
+}
 impl Drop for NativeLease {
     fn drop(&mut self) {
         // SAFETY: the public !Send/!Sync guard prevents safe thread transfer.
@@ -393,6 +400,7 @@ fn acquire(identity: &AppIdentity) -> Result<Acquisition, Unavailable> {
     let lease = Lease {
         _native: native,
         requires_rescan,
+        app_id: identity.clone(),
         _thread_bound: PhantomData,
     };
     Ok(if requires_rescan {

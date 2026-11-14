@@ -86,3 +86,7 @@ pub mod app_coordination;
 #[cfg(test)]
 #[path = "../src/update_handoff.rs"]
 pub(crate) mod update_handoff;
+
+#[cfg(test)]
+#[path = "../cooperation_marker.rs"]
+mod cooperation_marker;

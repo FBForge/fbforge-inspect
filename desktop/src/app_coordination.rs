@@ -8,11 +8,17 @@ pub enum StartupError {
     Busy,
     NeedsRescan,
     Unavailable,
+    InstallationIncomplete,
 }
 
 pub fn acquire() -> Result<Lease, StartupError> {
     let identity = AppIdentity::new(APP_ID).map_err(|_| StartupError::Unavailable)?;
-    require_clean_lease(Lease::try_acquire(&identity))
+    let lease = require_clean_lease(Lease::try_acquire(&identity))?;
+    let program = std::env::current_exe().map_err(|_| StartupError::Unavailable)?;
+    let directory = program.parent().ok_or(StartupError::Unavailable)?;
+    fbforge_suite_coordination::check_pending_installation(directory)
+        .map_err(|_| StartupError::InstallationIncomplete)?;
+    Ok(lease)
 }
 
 fn require_clean_lease(outcome: Acquisition) -> Result<Lease, StartupError> {
@@ -28,6 +34,7 @@ fn require_clean_lease(outcome: Acquisition) -> Result<Lease, StartupError> {
 impl StartupError {
     pub fn message(self) -> &'static str {
         match self {
+            Self::InstallationIncomplete => "Die Installation ist nicht vollständig abgeschlossen. Führen Sie das Setup erneut aus und versuchen Sie es danach erneut.",
             Self::Busy => "FBForge Inspect ist bereits geöffnet oder wird verwaltet. Wechseln Sie zur geöffneten Anwendung. Warten Sie bei einer laufenden Installation, bis sie abgeschlossen ist.",
             Self::NeedsRescan => "Die vorherige App-Koordination wurde unterbrochen. FBForge Inspect wurde vorsorglich nicht gestartet. Prüfen Sie zuerst laufende Arbeit und gespeicherte Daten. Eine Wiederherstellung ist noch nicht bestätigt.",
             Self::Unavailable => "Die gemeinsame Windows-Koordination ist nicht verfügbar. FBForge Inspect wurde nicht gestartet. Versuchen Sie es später erneut.",

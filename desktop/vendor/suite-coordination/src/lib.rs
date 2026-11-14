@@ -2,8 +2,12 @@
 //! updaters. A lease is neither process-state evidence nor execution authority.
 //! Consumers must keep ownership on one OS thread and recheck other prerequisites.
 
+mod installation;
 #[cfg(windows)]
 mod windows;
+pub use installation::{
+    check_pending_installation, PendingInstallation, PENDING_INSTALLATION_MARKER,
+};
 
 use std::{fmt, marker::PhantomData, rc::Rc};
 
@@ -93,6 +97,7 @@ pub struct Lease {
     #[cfg(windows)]
     _native: windows::NativeLease,
     requires_rescan: bool,
+    app_id: AppIdentity,
     _thread_bound: PhantomData<Rc<()>>,
 }
 
@@ -115,6 +120,23 @@ impl Lease {
 
     pub fn requires_rescan(&self) -> bool {
         self.requires_rescan
+    }
+
+    /// Native identity of the held lease, without a caller-controlled override.
+    pub fn app_id(&self) -> &str {
+        self.app_id.as_str()
+    }
+
+    /// Positive native owner-thread check; callers cannot set this state.
+    pub fn is_current_thread_owner(&self) -> bool {
+        #[cfg(windows)]
+        {
+            self._native.is_current_thread_owner()
+        }
+        #[cfg(not(windows))]
+        {
+            false
+        }
     }
 }
 
