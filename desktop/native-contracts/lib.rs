@@ -82,3 +82,7 @@ mod export_tests {
 
 #[path = "../src/app_coordination.rs"]
 pub mod app_coordination;
+
+#[cfg(test)]
+#[path = "../src/update_handoff.rs"]
+pub(crate) mod update_handoff;

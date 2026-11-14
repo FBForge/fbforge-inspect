@@ -36,12 +36,20 @@ impl StartupError {
 }
 
 pub fn show_error(error: StartupError) {
+    show_message(error.message());
+}
+
+pub fn show_update_error() {
+    show_message("Der Start des Update-Installers konnte nicht bestätigt werden. FBForge Inspect bleibt beendet. Starten Sie die Anwendung erneut und prüfen Sie das Update.");
+}
+
+fn show_message(message: &str) {
     #[cfg(windows)]
     {
         use windows_sys::Win32::UI::WindowsAndMessaging::{
             MessageBoxW, MB_ICONWARNING, MB_OK, MB_TASKMODAL,
         };
-        let text: Vec<u16> = error.message().encode_utf16().chain(Some(0)).collect();
+        let text: Vec<u16> = message.encode_utf16().chain(Some(0)).collect();
         let title: Vec<u16> = "FBForge Inspect".encode_utf16().chain(Some(0)).collect();
         // SAFETY: both terminated buffers live through this synchronous call.
         // The native startup dialog receives no renderer, SID, path or OS error.
@@ -57,7 +65,7 @@ pub fn show_error(error: StartupError) {
             return;
         }
     }
-    eprintln!("{}", error.message());
+    eprintln!("{message}");
 }
 
 #[cfg(test)]
