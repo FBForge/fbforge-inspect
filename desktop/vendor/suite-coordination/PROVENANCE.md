@@ -9,8 +9,8 @@ The package manifest is standalone: workspace values are explicit, publication
 is disabled, and the minimum Rust version is 1.90. The original source and tests
 are unchanged. The application minimum Rust version is not increased.
 
-The operator selected EUPL-1.2 for this newly written FBForge coordination code
-as part of this integration. This does not assert that the earlier Suite commit
+This newly written FBForge coordination code uses EUPL-1.2
+in this integration. This does not assert that the earlier Suite commit
 already declared a license. LICENSE contains the existing public EUPL-1.2 text
 from FBForge Connect commit `2afe03c8444e5f48180b214f4afa6aea73ed9be8`.
 Only the extra empty final line was removed to match FBForge Inspect's text.

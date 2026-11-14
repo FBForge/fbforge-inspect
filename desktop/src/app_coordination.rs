@@ -28,8 +28,8 @@ fn require_clean_lease(outcome: Acquisition) -> Result<Lease, StartupError> {
 impl StartupError {
     pub fn message(self) -> &'static str {
         match self {
-            Self::Busy => "FBForge Inspect ist bereits geöffnet oder wird verwaltet. Beenden Sie laufende Arbeit regulär und starten Sie die Anwendung danach erneut.",
-            Self::NeedsRescan => "Die vorherige App-Koordination wurde unterbrochen. FBForge Inspect wurde vorsorglich nicht gestartet. Prüfen Sie zuerst laufende Arbeit und gespeicherte Daten; eine Wiederherstellung ist noch nicht bestätigt.",
+            Self::Busy => "FBForge Inspect ist bereits geöffnet oder wird verwaltet. Wechseln Sie zur geöffneten Anwendung. Warten Sie bei einer laufenden Installation, bis sie abgeschlossen ist.",
+            Self::NeedsRescan => "Die vorherige App-Koordination wurde unterbrochen. FBForge Inspect wurde vorsorglich nicht gestartet. Prüfen Sie zuerst laufende Arbeit und gespeicherte Daten. Eine Wiederherstellung ist noch nicht bestätigt.",
             Self::Unavailable => "Die gemeinsame Windows-Koordination ist nicht verfügbar. FBForge Inspect wurde nicht gestartet. Versuchen Sie es später erneut.",
         }
     }

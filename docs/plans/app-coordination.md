@@ -3,7 +3,7 @@
 FBForge Inspect erwirbt unter Windows vor dem Tauri-Builder und damit vor
 Java-/Arbeitsstart eine native Lease für `de.fbforge.inspect`. Der Startthread behält sie
 bis zum Ende des Eventloops und der vorhandenen Exit-Callbacks. `run_return`
-ermöglicht die Freigabe auf demselben Thread; anschließend endet der Prozess
+ermöglicht die Freigabe auf demselben Thread. Anschließend endet der Prozess
 mit dem vom Eventloop gelieferten Exitcode. Die Lease ist weder Send noch Sync.
 Sie wird nicht in Tauri-State, einen Tokio-Task oder einen anderen Prozess verschoben.
 
@@ -11,7 +11,7 @@ Bei Busy oder nicht verfügbarer Koordination erscheint ein nativer Hinweis und
 nur der neue Einstieg endet. Verlassener Besitz wird gehalten übernommen, für
 diesen Start abgewiesen und auf dem Besitzerthread freigegeben. Ein späterer
 expliziter Start kann neu erwerben. Ein solcher Erwerb beweist keine frühere
-Java-/Datenwiederherstellung: Drop verbraucht das Abandoned-Signal; nach dem
+Java-/Datenwiederherstellung: Drop verbraucht das Abandoned-Signal. Nach dem
 letzten Handle-Close kann das OS die Historie vollständig verlieren. Es gibt
 keinen dauerhaften Crashmarker. Die bestehende Ressourceninitialisierung bleibt
 verpflichtend und wird nicht umgangen. Es wird kein ungeprüfter Health-Gate simuliert.
@@ -28,7 +28,7 @@ Dieser Schritt bindet weder NSIS noch den appinternen Updater ein. Deren bisheri
 Start-/Exitlogik bleibt unverändert. Insbesondere umgeht der Windows-Updater mit
 `process::exit` einen regulären Rust-Drop. Daraus folgt keine sichere oder
 unterbrechungsfreie Installerübergabe. Die vorhandene NSIS-Prüfung kann weiterhin
-laufende Prozesse schließen; dieser Schritt gibt Installer oder Updates nicht frei.
+laufende Prozesse schließen. Dieser Schritt gibt Installer oder Updates nicht frei.
 
 Nur kooperierende Versionen derselben Windows-Benutzer-SID verwenden diesen
 Ausschluss. Alte Apps, Java-Kinder nach einem Absturz, andere Benutzer-SIDs und
@@ -46,7 +46,7 @@ und genaue Quellhashes stehen in dessen `PROVENANCE.md`.
 Die portable Bibliothek verwendet weiterhin Rust 1.90. Ihre Mindestversion wird
 mit einer getrennt heruntergeladenen, per offiziellem SHA256 geprüften Rust-1.90-
 Toolchain getestet. Die Anwendung verwendet ihren bisherigen Buildvertrag
-(Rust 1.96.0); ihre `rust-version = "1.90"` wird nicht angehoben.
+(Rust 1.96.0). Ihre `rust-version = "1.90"` wird nicht angehoben.
 
 Native Vertragsprüfungen:
 
@@ -97,8 +97,8 @@ Wine meldete außerdem bekannte Fontconfig-/OLE-Fehler bei seinen Hilfsprozessen
 diese Emulatorprüfung ersetzt keine echte Windowsabnahme.
 
 Die tatsächliche Windows-App wurde im beschriebenen Compile-only-Scratchlauf
-mit dem dokumentierten Compiler gelinkt. Der unveränderte Connect-Exitcallback
-und `run_return` sind damit tatsächlich kompiliert. Der nachfolgende vollständige
+mit dem dokumentierten Compiler gelinkt. Der Inspect-Einstieg und `run_return`
+sind damit tatsächlich kompiliert. Der nachfolgende vollständige
 Desktop-Clippy-Befehl
 
 ```sh
@@ -108,8 +108,11 @@ cargo clippy --manifest-path desktop/Cargo.toml --target x86_64-pc-windows-gnu -
 blieb innerhalb des 600-Sekunden-Sitzungslimits unvollständig. Der erfolgreiche
 Adapter-Clippy ist ausdrücklich kein vollständiger Desktop-Clippy. Die spätere
 Präzisierung des Abandoned-Warntexts und Testnamens wird separat am vollständigen
-Adapter erneut kompiliert/geprüft; die Eventloopintegration bleibt unverändert.
+Adapter erneut kompiliert/geprüft. Die Eventloopintegration bleibt unverändert.
 
 Inspect bestand alle 14 portablen nativen Vertragstests, nativen Build,
 NativeContracts-Clippy mit `-D warnings` und die Rustformatprüfungen unter
 Rust 1.96.0.
+
+
+Nach unabhängiger statischer Durchsicht wurden ausschließlich die festen Startmeldungen präzisiert. Bei belegter Sperre verweist die Meldung auf die vorhandene Anwendung. Der Warntext zur unterbrochenen Koordination verwendet vollständige Sätze. Die Lizenzherkunft behauptet keine frühere Betreiberentscheidung. Rustformat und Whitespaceprüfung bestanden erneut. Die Kontrollfluss-/Eventloopintegration und die oben abgegrenzten Laufzeitnachweise bleiben unverändert. Für diese Textänderungen wurden keine zusätzlichen Anwendungstests ausgeführt.
