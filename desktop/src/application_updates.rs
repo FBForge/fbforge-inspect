@@ -12,6 +12,21 @@ use tauri::{Manager, State};
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
 use tauri_plugin_updater::{Update, UpdaterExt};
 
+#[cfg(windows)]
+pub(crate) type InstallerQueue =
+    std::sync::Arc<crate::update_handoff::InstallerHandoff<PendingInstaller>>;
+#[cfg(windows)]
+pub(crate) struct PendingInstaller {
+    release: Update,
+    bytes: Vec<u8>,
+}
+#[cfg(windows)]
+impl PendingInstaller {
+    pub(crate) fn install(self) -> Result<(), ()> {
+        self.release.install(self.bytes).map_err(|_| ())
+    }
+}
+
 pub const PUBLIC_KEY: &str = include_str!("../update-public-key.txt");
 
 #[derive(Clone, Serialize)]
@@ -48,8 +63,17 @@ struct Pending {
 pub struct ApplicationUpdates {
     pending: Mutex<Pending>,
     cancel: AtomicBool,
+    #[cfg(windows)]
+    installer: InstallerQueue,
 }
 impl ApplicationUpdates {
+    #[cfg(windows)]
+    pub(crate) fn with_installer(installer: InstallerQueue) -> Self {
+        Self {
+            installer,
+            ..Self::default()
+        }
+    }
     fn lock(&self) -> Result<std::sync::MutexGuard<'_, Pending>, &'static str> {
         self.pending.lock().map_err(|_| "update_unavailable")
     }
@@ -89,13 +113,19 @@ pub async fn check_application_update(
         if !policy::manifest(&raw, &app.package_info().version.to_string())? {
             return Ok(None);
         }
-        app.updater_builder()
+        let updater = app
+            .updater_builder()
             .target("windows-x86_64")
             .pubkey(PUBLIC_KEY.trim())
             .timeout(Duration::from_secs(600))
             .version_comparator(|current, release| {
                 release.version.pre.is_empty() && release.version > current
-            })
+            });
+        // run_return already performs cleanup before the main thread installs.
+        // Retain no default AppHandle cleanup callback in the deferred Update.
+        #[cfg(windows)]
+        let updater = updater.on_before_exit(|| {});
+        updater
             .build()
             .map_err(|_| "update_manifest_invalid")?
             .restore_update(raw)
@@ -221,15 +251,34 @@ pub async fn install_application_update(
             }
         }
         let bytes = updates.lock()?.bytes.take().ok_or("update_not_ready")?;
-        // Windows' official updater starts NSIS /UPDATE and exits after successful launch.
-        // A failed launch keeps the application open; its sessions must be reconnected.
-        let result = tokio::task::spawn_blocking(move || release.install(bytes))
-            .await
-            .map_err(|_| "update_install_failed")?;
-        result.map_err(|_| "update_install_failed")
+        #[cfg(windows)]
+        {
+            let status = updates.lock()?.status.clone();
+            updates
+                .installer
+                .submit(PendingInstaller { release, bytes })
+                .map_err(|_| "update_install_failed")?;
+            Ok(Some(status))
+        }
+        #[cfg(not(windows))]
+        {
+            tokio::task::spawn_blocking(move || release.install(bytes))
+                .await
+                .map_err(|_| "update_install_failed")?
+                .map_err(|_| "update_install_failed")?;
+            Ok(None::<UpdateStatus>)
+        }
     }
     .await;
-    engine.1.store(false, Ordering::Release);
+    let result = crate::update_handoff::finish_attempt(result, &engine.1);
+    let result = match result {
+        Ok(Some(status)) => {
+            // No state access after requesting exit: cleanup may begin immediately.
+            app.exit(0);
+            return Ok(status);
+        }
+        result => result.map(|_| ()),
+    };
     let mut pending = updates.lock()?;
     pending.status.phase = if pending.bytes.is_some() {
         "downloaded"

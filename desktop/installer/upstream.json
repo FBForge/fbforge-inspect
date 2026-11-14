@@ -1,0 +1,11 @@
+{
+  "version": "2.12.3",
+  "url": "https://github.com/tauri-apps/tauri/blob/tauri-cli-v2.12.3/crates/tauri-bundler/src/bundle/windows/nsis/installer.nsi",
+  "sha256": "8ae02c66f8adb4a0d15d97f984fbacd2b44262d8a4d03fefaf6177f67f7008e5",
+  "utils": {
+    "url": "https://github.com/tauri-apps/tauri/blob/tauri-cli-v2.12.3/crates/tauri-bundler/src/bundle/windows/nsis/utils.nsh",
+    "sha256": "78272bd40b8a783c0ab94e4bcb400fd947ba306a7575f2bbbbccb7478f40447f",
+    "safeSha256": "d307ceb8cda14e6d921faadd7725c801d515da94e29d4216d1e18139a75c7adc",
+    "removed": "ERROR_MORE_DATA and CheckIfAppIsRunning macro only"
+  }
+}

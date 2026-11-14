@@ -13,6 +13,7 @@ custom-protocol = ["tauri/custom-protocol"]
 tauri-build = { version = "=2.7.3", features = [] }
 
 [dependencies]
+fbforge-suite-coordination = { path = "vendor/suite-coordination" }
 tauri = { version = "=2.12.4", features = [] }
 tauri-plugin-dialog = "=2.8.3"
 serde = { version = "=1.0.229", features = ["derive"] }
@@ -29,3 +30,6 @@ tokio = { version = "=1.53.3", features = ["process", "io-util", "sync", "time",
 strip = true
 lto = true
 codegen-units = 1
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "=0.52.0", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging"] }

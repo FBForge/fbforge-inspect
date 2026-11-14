@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 mod application_updates;
 mod cli_export;
+mod update_handoff;
 mod update_policy;
 mod update_transport;
 use std::{
@@ -327,15 +328,33 @@ fn open_reference(reference: String) -> Result<(), String> {
     Ok(())
 }
 
+#[cfg(windows)]
+mod app_coordination;
+
 fn main() {
-    tauri::Builder::default()
+    #[cfg(windows)]
+    let lease = match app_coordination::acquire() {
+        Ok(lease) => lease,
+        Err(error) => {
+            app_coordination::show_error(error);
+            return;
+        }
+    };
+    #[cfg(windows)]
+    let installer = application_updates::InstallerQueue::default();
+    #[cfg(windows)]
+    let updates =
+        application_updates::ApplicationUpdates::with_installer(std::sync::Arc::clone(&installer));
+    #[cfg(not(windows))]
+    let updates = application_updates::ApplicationUpdates::default();
+    let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_updater::Builder::new()
                 .pubkey(application_updates::PUBLIC_KEY.trim())
                 .build(),
         )
-        .manage(application_updates::ApplicationUpdates::default())
+        .manage(updates)
         .manage(Session::default())
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
@@ -379,8 +398,24 @@ fn main() {
             application_updates::install_application_update,
             open_reference
         ])
-        .run(tauri::generate_context!())
+        .build(tauri::generate_context!())
         .expect("FBForge Inspect konnte nicht gestartet werden");
+    let exit_code = app.run_return(|_, _| {});
+    // Keep ownership on the startup thread until the event loop has finished.
+    #[cfg(windows)]
+    let exit_code = match update_handoff::finish_after_exit(
+        lease,
+        &installer,
+        exit_code,
+        application_updates::PendingInstaller::install,
+    ) {
+        Ok(exit_code) => exit_code,
+        Err(_) => {
+            app_coordination::show_update_error();
+            1
+        }
+    };
+    std::process::exit(exit_code);
 }
 
 #[cfg(test)]

@@ -1,0 +1,29 @@
+{
+  "publicKey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVDMzUyRDYzRDMwREVBNzQKUldSMDZnM1RZeTAxWEEwcEo2c1VpZUM2UFo3U2RXREduL2c5dlZCNnN4U25FQUNKUlNNNXdqWGUK",
+  "cases": {
+    "catalog": {
+      "schemaVersion": 2,
+      "keyId": "release-cache-test",
+      "signed": "{\"schemaVersion\":2,\"subject\":\"catalog\",\"sequence\":1,\"issuedAt\":200,\"expiresAt\":1000,\"body\":{\"schemaVersion\":1,\"tools\":[{\"id\":\"fbforge-connect\",\"productName\":\"FBForge Connect\",\"appId\":\"org.fitconnect.integration-client\",\"platform\":\"windows-x64\",\"installer\":\"nsis-current-user\",\"registryNames\":[\"FIT-Connect Test-Client\",\"FBForge Connect\"],\"executables\":[\"fbforge-connect.exe\",\"fit-connect-integration-client.exe\"],\"releaseRepository\":\"FBForge/fbforge-connect\",\"trustPolicyId\":\"fbforge-connect-production\",\"minimumSuiteVersion\":\"0.1.0\",\"capabilities\":[\"install\",\"launch\",\"update\",\"repair\",\"uninstall\"]},{\"id\":\"fbforge-inspect\",\"productName\":\"FBForge Inspect\",\"appId\":\"de.fbforge.inspect\",\"platform\":\"windows-x64\",\"installer\":\"nsis-current-user\",\"registryNames\":[\"FBForge Inspect\"],\"executables\":[\"fbforge-inspect.exe\"],\"releaseRepository\":\"FBForge/fbforge-inspect\",\"trustPolicyId\":\"fbforge-inspect-production\",\"minimumSuiteVersion\":\"0.1.0\",\"capabilities\":[\"install\",\"launch\",\"update\",\"repair\",\"uninstall\"]}]}}",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMDZnM1RZeTAxWEM5U0sxOG1OOUN1N21QLzJyYllUNHhyMDI2c3FKZFJXbFJsZmxPb3J6YU4raUdvazFzS0hSNmpIbVlGelpBdGdKYkh2N2dRVkY5RHJvcFh2SDAvMncwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0NjI4NDIwCWZpbGU6Y2F0YWxvZy5iaW4JdmVyc2lvbjowLjEuMApNcE4rUU5DV1J3a2RnSHN0cU12SnNQMm1McFBHMm84eEo4bXNVckdGTkU4dE9PLzZzZlRKb1A0SG5WV3Nxd0xUWGF2dlVBWkRSdEtEdC8vUi9FZVhBdz09Cg=="
+    },
+    "release1": {
+      "schemaVersion": 2,
+      "keyId": "release-cache-test",
+      "signed": "{\"schemaVersion\":2,\"subject\":\"release/fbforge-connect\",\"sequence\":1,\"issuedAt\":200,\"expiresAt\":1000,\"body\":{\"schemaVersion\":1,\"toolId\":\"fbforge-connect\",\"appId\":\"org.fitconnect.integration-client\",\"version\":\"0.3.0\",\"platform\":\"windows-x64\",\"installer\":\"nsis-current-user\",\"repository\":\"FBForge/fbforge-connect\",\"releaseTag\":\"v0.3.0\",\"assetName\":\"FBForge.Connect_0.3.0_x64-setup.exe\",\"size\":3,\"sha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"authenticodePolicyId\":\"fbforge-connect-production\",\"status\":\"available\",\"requiredFiles\":[\"fbforge-connect.exe\",\"engine/fbforge-engine.jar\"]}}",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMDZnM1RZeTAxWE5ZZEx4dFprMklvWHZtU0QrN0kyY2s5KzRHaVdYUVdGOVY5SGluVVpnb1lMNGVBQjRDeG4zcXo5U29PRm9LSGQ0cTl4L3RtTDVNcHhteEtJaklhM1FJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0NjI4NDIxCWZpbGU6cmVsZWFzZTEuYmluCXZlcnNpb246MC4xLjAKZzZ2bTF2OFZBK2VCV2tKSWlGTnlTTDZnMVlZQ2FKWXRRNlBXcjFrSDNjcUlROGlxVkdQQ09DZDBGR3pXMVdvek5NbkovK0pEdjdqYWlEZFRSVWd0QlE9PQo="
+    },
+    "release2": {
+      "schemaVersion": 2,
+      "keyId": "release-cache-test",
+      "signed": "{\"schemaVersion\":2,\"subject\":\"release/fbforge-connect\",\"sequence\":2,\"issuedAt\":200,\"expiresAt\":1000,\"body\":{\"schemaVersion\":1,\"toolId\":\"fbforge-connect\",\"appId\":\"org.fitconnect.integration-client\",\"version\":\"0.4.0\",\"platform\":\"windows-x64\",\"installer\":\"nsis-current-user\",\"repository\":\"FBForge/fbforge-connect\",\"releaseTag\":\"v0.4.0\",\"assetName\":\"FBForge.Connect_0.4.0_x64-setup.exe\",\"size\":3,\"sha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"authenticodePolicyId\":\"fbforge-connect-production\",\"status\":\"available\",\"requiredFiles\":[\"fbforge-connect.exe\",\"engine/fbforge-engine.jar\"]}}",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMDZnM1RZeTAxWElPaTFnT2dqNFYzQnJiV0xyL2ZNS2lGWVgzNFVjdHRaeGZ3V3d5bExLWTBYVlg2OGMxZzUveGNVUjlzSHBGeVdMUDFFdXVqVzlXYW0xQ1U5SlhMNGdBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0NjI4NDIxCWZpbGU6cmVsZWFzZTIuYmluCXZlcnNpb246MC4xLjAKdURDSDNqcTQyUkpQK2tRNFFqbHBlVjRyUUM2OWJxa01IVXlmYUx3MUZ6L1d2QnZpeFdtbEVieUR1U3I0MkdBUGhORWlsVFlNSkVFQm5nM1gwWHZ1Qmc9PQo="
+    },
+    "withdrawn3": {
+      "schemaVersion": 2,
+      "keyId": "release-cache-test",
+      "signed": "{\"schemaVersion\":2,\"subject\":\"release/fbforge-connect\",\"sequence\":3,\"issuedAt\":200,\"expiresAt\":1000,\"body\":{\"schemaVersion\":1,\"toolId\":\"fbforge-connect\",\"appId\":\"org.fitconnect.integration-client\",\"version\":\"0.4.0\",\"platform\":\"windows-x64\",\"installer\":\"nsis-current-user\",\"repository\":\"FBForge/fbforge-connect\",\"releaseTag\":\"v0.4.0\",\"assetName\":\"FBForge.Connect_0.4.0_x64-setup.exe\",\"size\":3,\"sha256\":\"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\",\"authenticodePolicyId\":\"fbforge-connect-production\",\"status\":\"withdrawn\",\"requiredFiles\":[\"fbforge-connect.exe\",\"engine/fbforge-engine.jar\"]}}",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMDZnM1RZeTAxWEU0VnhQSWkyRHdLamw1Z1pWNE5zRHNoTmxjZGRPcVBlaGxsMHR6MGNFRzB6R3E3OXFteit0Q0lLUFF3UG5ZMlBPVzd5b2syUWRaZXlhNEZCRWppM0FrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzk0NjI4NDIxCWZpbGU6d2l0aGRyYXduMy5iaW4JdmVyc2lvbjowLjEuMAozYy9qYi81QUFPdnl5RE5BWDI2ZzM0YSt2d0dRbzZ1cVRyWGZCaEphbnlmbkxRSlNlL3FSSC8zakJKbmNZMmdlNlZmUkhIaWJzQWgzT3J0bG1xS1pDdz09Cg=="
+    }
+  }
+}

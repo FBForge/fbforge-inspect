@@ -7,7 +7,8 @@
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://127.0.0.1:1421",
     "beforeBuildCommand": "npm run build:frontend",
-    "frontendDist": "../dist"
+    "frontendDist": "../dist",
+    "beforeBundleCommand": "node scripts/installer-guard.mjs && node desktop/installer/nsis/toolchain.mjs prepare"
   },
   "app": {
     "windows": [
@@ -26,24 +27,37 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis"],
+    "targets": [
+      "nsis"
+    ],
     "category": "DeveloperTool",
-    "shortDescription": "Zustellpunkte, Routing und PVOG-Adressierung pr\u00fcfen",
+    "shortDescription": "Zustellpunkte, Routing und PVOG-Adressierung prüfen",
     "resources": {
       "resources/engine/": "engine/"
     },
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
     "windows": {
       "nsis": {
         "installMode": "currentUser",
-        "languages": ["German", "English"],
-        "displayLanguageSelector": false
+        "languages": [
+          "German",
+          "English"
+        ],
+        "displayLanguageSelector": false,
+        "template": "installer/installer.nsi",
+        "installerHooks": "installer/guard.nsh"
       },
       "webviewInstallMode": {
         "type": "downloadBootstrapper",
         "silent": true
       }
-    }
+    },
+    "useLocalToolsDir": true
   },
   "plugins": {
     "updater": {

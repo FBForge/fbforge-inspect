@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "nsisVersion": "3.13",
+  "sourceCommit": "a4ba28e60bd9e7c271cd2bfc1558889ce3355653",
+  "sourceSha256": "bf9ebdefc2b26850bc5da8f2f505cb34aa364dd8cf49dd49f93d532c94accb4a",
+  "patchSha256": "d0eb6a5684d6bd3cd8b74b2516073ff28d384d3ac17a338e7765dda389aa0cb0",
+  "sourceDateEpoch": 1767225600,
+  "stubs": {
+    "bzip2-x86-unicode": {
+      "size": 119296,
+      "sha256": "cc44b0f445a533ad77057e3e79ed8c86b0cf3314ceb43f54deb1db7ffe4ce603"
+    },
+    "bzip2_solid-x86-unicode": {
+      "size": 119808,
+      "sha256": "f7bdbe5c1cd32fda8b18715bd636545db2f5f357fa2f1a21092d7ed1ced68e36"
+    },
+    "lzma-x86-unicode": {
+      "size": 120832,
+      "sha256": "227f86f1fc4d3875a76978ac3084b9b396b7be2b079f952087c92e26b3a670a1"
+    },
+    "lzma_solid-x86-unicode": {
+      "size": 121344,
+      "sha256": "aa2ca20324f38b8be4a0d0ba15f28175c3602f2e4194b8c9fd8fa06f3572d10e"
+    },
+    "zlib-x86-unicode": {
+      "size": 120320,
+      "sha256": "7026a53e4858119ba81596860a6ddf957974f07efb3381071b7d85bdf0b768b5"
+    },
+    "zlib_solid-x86-unicode": {
+      "size": 121344,
+      "sha256": "59b20b5504a82e66e710ad227b46eeadfb747ea4032410d5d6aea8ebd524cebd"
+    }
+  },
+  "archiveSha256": "ba63dffc4410ee89193e1cb5a41989991bd77c61068da17e3156d136b7b0b3d8",
+  "tauriPluginSha256": "5ba143b5db4a87d32d6e7802e033330aae56cbceabe0d1e3ba41948385ad4709",
+  "compilerFiles": {
+    "NSIS.exe": {
+      "size": 91352,
+      "sha256": "78e17de55fa013be7620487e85b6676c204c6c51d7ebabb74ee8a9cfce6252a0"
+    },
+    "makensis.exe": {
+      "size": 2560,
+      "sha256": "4ec390d0f96f9728507fbc2f4e91311dd90bfc6c8ddfe2159357b3651ae151c0"
+    },
+    "Bin/makensis.exe": {
+      "size": 468992,
+      "sha256": "65343c225ec88393cc4453b0963caf63f763f42f48cb55736d51893ff2e29d4a"
+    }
+  },
+  "toolsetSha256": "78b3635e50d37429729bf3cf38339845234dd7ad6a0299645c13188262f617a5"
+}

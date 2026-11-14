@@ -1,0 +1,26 @@
+[
+  {
+    "name": "nsis-v313.tar.gz",
+    "sha256": "bf9ebdefc2b26850bc5da8f2f505cb34aa364dd8cf49dd49f93d532c94accb4a"
+  },
+  {
+    "name": "scons.deb",
+    "sha256": "a14beb8e06395adf70ce70e13e37b6b7e547610593b741a45583cf40709789e0"
+  },
+  {
+    "name": "gcc-mingw-w64-i686-posix_13.2.0-6ubuntu1+26.1_amd64.deb",
+    "sha256": "8c63daeb59c96044c2a5c26b5a3a2b793237f3e10d3428bb659401122b8e501c"
+  },
+  {
+    "name": "binutils-mingw-w64-i686_2.45.90.20260125-1ubuntu1+13.3_amd64.deb",
+    "sha256": "f80c4b88b182bcbe94ea1e0d5f2e172f85f9fc280d47d04077349c67bf901a58"
+  },
+  {
+    "name": "mingw-w64-i686-dev_13.0.0-2ubuntu1_all.deb",
+    "sha256": "abd55207c0b9f35dcca53666bc932327e7eb73e6839218801dd5c70296d0661d"
+  },
+  {
+    "name": "gcc-mingw-w64-i686-posix-runtime_13.2.0-6ubuntu1+26.1_amd64.deb",
+    "sha256": "650bcd76e0c56c713428950aec8823fd517f911eaad80406907379a69d36ad0a"
+  }
+]

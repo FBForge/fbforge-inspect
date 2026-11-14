@@ -23,3 +23,10 @@ Each binary package includes a generated runtime section below and `engine/runti
 The logo was created for FBForge Inspect using image generation. It is included under the project license. FIT-Connect and PVOG names identify interoperable third-party services. Their operators do not endorse this application.
 
 Public protocol specifications are linked in docs/SOURCES.md. Their implementation is independent. Documentation text in this repository is original.
+
+## Lokal vendorte FBForge-Koordination
+
+`desktop/vendor/suite-coordination` enthält neu geschriebenen FBForge-Code unter
+EUPL-1.2. Herkunft, unveränderte Quellhashes und Lizenzwahl stehen in dessen
+`PROVENANCE.md`; der vollständige Lizenztext liegt unter `LICENSE`. Die Crate
+verwendet die bereits im Desktop enthaltenen Pakete ring und windows-sys.
