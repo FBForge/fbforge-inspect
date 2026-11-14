@@ -1,0 +1,14 @@
+{
+  "nsis-3.13-version-info.bin": {
+    "compilerVersion": "v3.13",
+    "sourceSha256": "bf9ebdefc2b26850bc5da8f2f505cb34aa364dd8cf49dd49f93d532c94accb4a",
+    "unsignedPeSha256": "dd415d50f40c8dac2ea1cec19975cbbcde5b3c6548140975514ca9e603d841f5",
+    "language": 1033,
+    "versionInfoSha256": "91592fb9932df85c3ded6ed1b2a373b74118e5720902cef735e80e07fced5c05"
+  },
+  "sdk-neutral-version-info.bin": {
+    "producer": "tauri-winres0.3.7 neutral RC + MinGW windres",
+    "rcSha256": "3c95f6d738a01feaf6ba868aa28422e8d15e9ae045a56befd12b1849ae00a2ee",
+    "versionInfoSha256": "8f6c8e4b116e9a5f399d549249cf7696dac9a2f67e0a549f6ded0952950fa418"
+  }
+}

@@ -1,0 +1,17 @@
+[package]
+name = "fbforge-suite-nsis-guard"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license = "EUPL-1.2"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+fbforge-suite-core = { path = "../suite-core" }
+fbforge-suite-coordination = { path = "../suite-coordination" }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "=0.52.0", features = ["Win32_Foundation", "Win32_System_LibraryLoader", "Win32_System_Memory", "Win32_System_Threading"] }

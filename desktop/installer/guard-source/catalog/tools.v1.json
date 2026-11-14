@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "tools": [
+    {
+      "id": "fbforge-connect",
+      "productName": "FBForge Connect",
+      "appId": "org.fitconnect.integration-client",
+      "platform": "windows-x64",
+      "installer": "nsis-current-user",
+      "registryNames": ["FIT-Connect Test-Client", "FBForge Connect"],
+      "executables": ["fbforge-connect.exe", "fit-connect-integration-client.exe"],
+      "releaseRepository": "FBForge/fbforge-connect",
+      "trustPolicyId": "fbforge-connect-production",
+      "minimumSuiteVersion": "0.1.0",
+      "capabilities": ["install", "launch", "update", "repair", "uninstall"]
+    },
+    {
+      "id": "fbforge-inspect",
+      "productName": "FBForge Inspect",
+      "appId": "de.fbforge.inspect",
+      "platform": "windows-x64",
+      "installer": "nsis-current-user",
+      "registryNames": ["FBForge Inspect"],
+      "executables": ["fbforge-inspect.exe"],
+      "releaseRepository": "FBForge/fbforge-inspect",
+      "trustPolicyId": "fbforge-inspect-production",
+      "minimumSuiteVersion": "0.1.0",
+      "capabilities": ["install", "launch", "update", "repair", "uninstall"]
+    }
+  ]
+}

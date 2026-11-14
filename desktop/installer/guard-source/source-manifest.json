@@ -1,0 +1,588 @@
+{
+  "schemaVersion": 1,
+  "project": "FBForge Suite",
+  "revision": "f4b6cf322feeca31e4a908482486d03ef7d70138",
+  "license": "EUPL-1.2",
+  "files": [
+    {
+      "path": "Cargo.lock",
+      "size": 7906,
+      "sha256": "6fd313d5c1b32ee63f0f01c88b4c35bc5fc525d52b83a5a2d76da57c8a2474fb"
+    },
+    {
+      "path": "Cargo.toml",
+      "size": 439,
+      "sha256": "4bae2b1ce99fcd353bcc908513d78c7a78feffd3432775367bac9c89e5844e1c"
+    },
+    {
+      "path": "LICENSE",
+      "size": 13760,
+      "sha256": "9bfa3666d76c7306f3bc66a70b46d29072e73d5232ac0a144c34ad2bb40947c4"
+    },
+    {
+      "path": "catalog/tools.v1.json",
+      "size": 1134,
+      "sha256": "3511ccf44d781e70ba8b4cdd17c63c1b0928404013dc91694060ffcd9d7aacd0"
+    },
+    {
+      "path": "crates/suite-coordination/Cargo.toml",
+      "size": 454,
+      "sha256": "2d5eb02b2eaa11fe26cd50028a3cfe1f81a3157977edc45063980a580c23efe5"
+    },
+    {
+      "path": "crates/suite-coordination/src/installation.rs",
+      "size": 1205,
+      "sha256": "259c3f83346cd853d40309a85af703c39956712080eafa4b3664e46756126cca"
+    },
+    {
+      "path": "crates/suite-coordination/src/lib.rs",
+      "size": 4833,
+      "sha256": "284e131410b4032026e54a40e4f67a668bd457abf321a3f935ef424595c09c42"
+    },
+    {
+      "path": "crates/suite-coordination/src/windows.rs",
+      "size": 23773,
+      "sha256": "63a5534eadae6df7049fe61b7ee2f7fc223ea7bf0233dd04cf80a3381b06c891"
+    },
+    {
+      "path": "crates/suite-coordination/tests/identity.rs",
+      "size": 1420,
+      "sha256": "263226de112cb3977eb8656abb5ce1db7db27acf69641d3cf37c14b172b1eee5"
+    },
+    {
+      "path": "crates/suite-coordination/tests/interrupted_installation.rs",
+      "size": 1655,
+      "sha256": "8afc4a870950ecd3b7b48c636cd7ec7aa0b0b3a0dadcfb072a8e54c2ed167f41"
+    },
+    {
+      "path": "crates/suite-coordination/tests/lease_process.rs",
+      "size": 1996,
+      "sha256": "3d12a3997a38591c901ce0bdff2774ab6a9fd190ca249a3e6a76e8fd5aea4015"
+    },
+    {
+      "path": "crates/suite-core/Cargo.toml",
+      "size": 1077,
+      "sha256": "ecefcc3ab021ea7c58edd613ae1b51c2797538f963eefb18026b40971abfd8d9"
+    },
+    {
+      "path": "crates/suite-core/src/administration/mod.rs",
+      "size": 7762,
+      "sha256": "25b07aaa0a9bab90089725c0d1ae1a9303870979e97e066a203618147fa3fc63"
+    },
+    {
+      "path": "crates/suite-core/src/administration/tests.rs",
+      "size": 9342,
+      "sha256": "8e3172af1e795fcd06655b53591c851ea7ac5e489b79856fbd6abda52753efcf"
+    },
+    {
+      "path": "crates/suite-core/src/administration/windows.rs",
+      "size": 4657,
+      "sha256": "dd255165b5345e047bb1eddced8f904610177052381d4aaa3df91d760bb3b6a1"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/cooperation.rs",
+      "size": 15740,
+      "sha256": "eaffa3554d8858164a33e8c781f5d3edef5ba10aeff7ad9b5e156d0b156e7075"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/cooperation/tests.rs",
+      "size": 8899,
+      "sha256": "457e36cfa695d48bb2609b8d03f0694e6bd22e9b9d1ea77d7a2c2eef0f1d3f26"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/installer_protocol.rs",
+      "size": 10494,
+      "sha256": "c7528b38071f2afffbd0712434ec9631be4734c89e2529731669442d2004e3f6"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/installer_protocol/fixtures/nsis-3.13-version-info.bin",
+      "size": 720,
+      "sha256": "91592fb9932df85c3ded6ed1b2a373b74118e5720902cef735e80e07fced5c05"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/installer_protocol/fixtures/provenance.json",
+      "size": 649,
+      "sha256": "51c65ea3948cc33c53c1a8f264f9507697bd26d21bc6700797b0c1e134fdf3d5"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/installer_protocol/fixtures/sdk-neutral-version-info.bin",
+      "size": 268,
+      "sha256": "8f6c8e4b116e9a5f399d549249cf7696dac9a2f67e0a549f6ded0952950fa418"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/installer_protocol/tests.rs",
+      "size": 12560,
+      "sha256": "150aff835f7d5ae7aa3e8b50c7f78176abc092814a2eff24aa487059fc172624"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/mod.rs",
+      "size": 18525,
+      "sha256": "404dd26152ebab54f8567f2fd7faeeecca439a4f306dd35eb2150f83f4796c5d"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/program_permissions.rs",
+      "size": 12091,
+      "sha256": "d591b079c55a6d5b994cc2dea0441adec32863fdef907fd710c1ccdefae01b7b"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/start.rs",
+      "size": 3111,
+      "sha256": "686a38855c984c38ae48e2c7d5f309a6e2f96d4dd4bbb72b7921c895634f22a4"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/windows.rs",
+      "size": 31125,
+      "sha256": "c0877f3d7025dbee3edae079921cdd2c4a3c2a6866b5580bb10181b997ccb45f"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/windows/installer_targets_bridge.rs",
+      "size": 7824,
+      "sha256": "7c694e8cbc8b8446e8b35b603bf9359373011e8ec5508358f701feabf99f1f85"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/windows/program_tree.rs",
+      "size": 36982,
+      "sha256": "79d60d90249b132a914cd50c2561896ecfaf17f21363261ad92d2101a47dec7e"
+    },
+    {
+      "path": "crates/suite-core/src/authenticode/windows/program_tree/tests.rs",
+      "size": 19185,
+      "sha256": "f1ab312a4030bcd7ef209bf7dee65e5aa5273d167c9f71aaa9d196987acb8f33"
+    },
+    {
+      "path": "crates/suite-core/src/bin/fbforge-metadata.rs",
+      "size": 12122,
+      "sha256": "6d1c779ffdf99335e9f897e020268c6d8e1aad0f4bbd24c61edaa4acb68409aa"
+    },
+    {
+      "path": "crates/suite-core/src/bin/fbforge-metadata/tests.rs",
+      "size": 2915,
+      "sha256": "cef7bd7fa061979a81556f74f7fd1a371569bc7a0f5f0a40e8ea01aebf1092ef"
+    },
+    {
+      "path": "crates/suite-core/src/catalog.rs",
+      "size": 5897,
+      "sha256": "ff5b459b78851c2bf0873dc75296bf353b361c1673c94e5fa0a96fbfb292b39a"
+    },
+    {
+      "path": "crates/suite-core/src/discovery/mod.rs",
+      "size": 1159,
+      "sha256": "e70183741c8ca9a24c5adc409cfce4d370a2256b1b34102c1b928f70ee39cd73"
+    },
+    {
+      "path": "crates/suite-core/src/discovery/validation.rs",
+      "size": 4551,
+      "sha256": "975d11db02d2b8b9992d689fb28c5874b7a44f89839a081728a75475254fce6c"
+    },
+    {
+      "path": "crates/suite-core/src/discovery/windows.rs",
+      "size": 8836,
+      "sha256": "b5c35bf6d3b39c3a37a5651fc2c340b3d0fbd94a3772743166c1acc0c41d0c10"
+    },
+    {
+      "path": "crates/suite-core/src/installer_targets/binding.rs",
+      "size": 2952,
+      "sha256": "167f699e7e8f75456fa7f791d47b4d10029534e6193a7869ebe73945b6b54b08"
+    },
+    {
+      "path": "crates/suite-core/src/installer_targets/host.rs",
+      "size": 7429,
+      "sha256": "54b9f807c6a54dcbdc7dec47df0116301a9dca231ae38b14d6e4c13ee2538ab0"
+    },
+    {
+      "path": "crates/suite-core/src/installer_targets/journal.rs",
+      "size": 7313,
+      "sha256": "eb8cd91751e9a7d821e1f68a295204e081dfb187b024cd6cc79315fbaf9ba41c"
+    },
+    {
+      "path": "crates/suite-core/src/installer_targets/manifest.rs",
+      "size": 7227,
+      "sha256": "8b29d83cc5b2efc7e9dd00d6b9e79f0d0e2810fe5449d43dcbbe9883a5bf0e76"
+    },
+    {
+      "path": "crates/suite-core/src/installer_targets/mod.rs",
+      "size": 5686,
+      "sha256": "395a8c543d3fa2ab90bfa10152e1d553a26c698316f4614e2c374390e43f023b"
+    },
+    {
+      "path": "crates/suite-core/src/installer_targets/windows.rs",
+      "size": 25512,
+      "sha256": "96a9efac93c6e332eae723bbb96b79a5fb764048be7d0d11bac13283e6ea98bb"
+    },
+    {
+      "path": "crates/suite-core/src/installer_targets/windows/health.rs",
+      "size": 4632,
+      "sha256": "4c7725a72b163fce0f7b036f005f2bdb6645416db2e6d6487755d222bd11142b"
+    },
+    {
+      "path": "crates/suite-core/src/installer_targets/windows/io.rs",
+      "size": 5432,
+      "sha256": "a651c06ce45cbbc2e019fb7cbfee1d063ff2967b82b71ef1dec8e1e31786376e"
+    },
+    {
+      "path": "crates/suite-core/src/installers/mod.rs",
+      "size": 14664,
+      "sha256": "491f1512fcd046f35e8d99af4edbc698107a11d4eb83b3c4a52aa2d18602fdd0"
+    },
+    {
+      "path": "crates/suite-core/src/installers/windows.rs",
+      "size": 7013,
+      "sha256": "d30578f0ae398bee780669cec58c20f5b634f47fe0159237a126ed71e9ce4251"
+    },
+    {
+      "path": "crates/suite-core/src/inventory/mod.rs",
+      "size": 6224,
+      "sha256": "4a4addfc4cf6e240d0e4b7fc5900329d17422ba02177573f5069507d6aa544b1"
+    },
+    {
+      "path": "crates/suite-core/src/inventory/snapshot.rs",
+      "size": 4977,
+      "sha256": "ff40c67bf337c857ae0ea13750998fd893151dd968108589691e4193564f4b6c"
+    },
+    {
+      "path": "crates/suite-core/src/inventory/types.rs",
+      "size": 3650,
+      "sha256": "95ff11cc3f93e3903bbc65bb5631f9c9d78d227692c9af4b0a5eb29f94f06f9a"
+    },
+    {
+      "path": "crates/suite-core/src/lib.rs",
+      "size": 363,
+      "sha256": "dbf0828bd02adba4340445cf8db75e46d1ba65cb6b59b03804b4b936f8b76c56"
+    },
+    {
+      "path": "crates/suite-core/src/network/mod.rs",
+      "size": 13907,
+      "sha256": "71eacc53b6dd2400006bbe54f9d090eed3d48bda24a7399129ea5daf7e97978e"
+    },
+    {
+      "path": "crates/suite-core/src/network/policy.rs",
+      "size": 8254,
+      "sha256": "00020171570c36a56e039abefa35b8e10480ebe73f514c38030efdc33ef64678"
+    },
+    {
+      "path": "crates/suite-core/src/network/windows.rs",
+      "size": 14488,
+      "sha256": "33e8aaf1945b6062da25748573d691ff3b04668adbfc4f5acfa50f19d3e9dd67"
+    },
+    {
+      "path": "crates/suite-core/src/operations.rs",
+      "size": 2957,
+      "sha256": "4aa35c84fd27ed3db626244e7011e2110234a58603f17495e847cd070a6b474d"
+    },
+    {
+      "path": "crates/suite-core/src/processes/mod.rs",
+      "size": 3899,
+      "sha256": "bb0c8db7254156dfc39d24f1408ae7ff814fb4897f7243e11e538bbca3d559ac"
+    },
+    {
+      "path": "crates/suite-core/src/processes/resources.rs",
+      "size": 4765,
+      "sha256": "dde6a72014183fe766e9f1152b13946ff5a437b5b5f6df3f3fa85202c55105ac"
+    },
+    {
+      "path": "crates/suite-core/src/processes/resources/windows.rs",
+      "size": 2414,
+      "sha256": "4f943fd9d9906e781ac60903c9d3eeaf58186d1eb6c6f86c848e85b90beb36cb"
+    },
+    {
+      "path": "crates/suite-core/src/processes/windows.rs",
+      "size": 14084,
+      "sha256": "1b872585a8f611a04419a3e0e37b554cd64c1548ff017bd8b2ea261e587fae72"
+    },
+    {
+      "path": "crates/suite-core/src/production.rs",
+      "size": 3148,
+      "sha256": "08db046b7286d7168dd27b47d7e56cd18534f4e02520886b010e858fc0e9442a"
+    },
+    {
+      "path": "crates/suite-core/src/settings.rs",
+      "size": 6592,
+      "sha256": "ce02dc0539da58e0c1f1523914196b3d236af39a9eb566620df3644b7c6c6d53"
+    },
+    {
+      "path": "crates/suite-core/src/storage/files.rs",
+      "size": 5668,
+      "sha256": "c92f262876cd54a2b94a2169bf7ccec36959ee3096c8e6731edac825a52a0e6e"
+    },
+    {
+      "path": "crates/suite-core/src/storage/format.rs",
+      "size": 2836,
+      "sha256": "9dca0d2393cf91866612a197c6e74272983ec7fc2760212c89f4fb4a62b802b2"
+    },
+    {
+      "path": "crates/suite-core/src/storage/mod.rs",
+      "size": 9286,
+      "sha256": "3762fffe6b2f15eb2feac974c0f98d88a9e42d120789ae70531246d2c62811fe"
+    },
+    {
+      "path": "crates/suite-core/src/storage/packages/files.rs",
+      "size": 6349,
+      "sha256": "d94deeda015cec01f7a61642beee996744de5fe33707395ac937486435f79ee7"
+    },
+    {
+      "path": "crates/suite-core/src/storage/packages/mod.rs",
+      "size": 19270,
+      "sha256": "8ae2be0d2801333b7b8e1d41af9e3b79710257e9808c35888d7e2ab5fbcf3f26"
+    },
+    {
+      "path": "crates/suite-core/src/storage/packages/unix.rs",
+      "size": 4848,
+      "sha256": "1125e90e66220ca6fb32285ed4a649edf48cace5a4b2f7c80910f0965a331412"
+    },
+    {
+      "path": "crates/suite-core/src/storage/packages/windows.rs",
+      "size": 8890,
+      "sha256": "788ce78e45e831c18aed6617993b221dc259650c3e0e330dc53312fbc6e51781"
+    },
+    {
+      "path": "crates/suite-core/src/storage/releases.rs",
+      "size": 7845,
+      "sha256": "dcdaab3734d1432bd94f2161fcfbe4aea6364a978e547dff1ef7fb4ae1f291a3"
+    },
+    {
+      "path": "crates/suite-core/src/storage/unix.rs",
+      "size": 2714,
+      "sha256": "c88853899d40eeb09ee05549cd5d18974c91115b5aec28a5c9dc74ecac90b934"
+    },
+    {
+      "path": "crates/suite-core/src/storage/windows.rs",
+      "size": 11910,
+      "sha256": "a1ec454f07a1fe3123a7c517f28f856bdca8036ff42b3747e9c28c2247ced43c"
+    },
+    {
+      "path": "crates/suite-core/src/trust/authoring.rs",
+      "size": 6108,
+      "sha256": "3ad028e42defd36dbb46ab2fbbe272d2b13fb88bd6452b820fe0dc6c49fec319"
+    },
+    {
+      "path": "crates/suite-core/src/trust/authoring/tests.rs",
+      "size": 5310,
+      "sha256": "cd5107faaf3e86ae7b9ab904b3c616f42070dad11f4861306e81aee29cb2a55f"
+    },
+    {
+      "path": "crates/suite-core/src/trust/encoding.rs",
+      "size": 711,
+      "sha256": "a267ac30ce103d11bb89ada630eba9f913a9f91ba35ca216382b8ae54ddb1516"
+    },
+    {
+      "path": "crates/suite-core/src/trust/metadata.rs",
+      "size": 8058,
+      "sha256": "06cecb26eaeada4e48222d0d8d12b5865609810ba6f3d423de7a6bda15362014"
+    },
+    {
+      "path": "crates/suite-core/src/trust/minisign.rs",
+      "size": 2884,
+      "sha256": "6661c2c6f521301b29862aad1ad9d5613a9ec9ec877c269e3da994792bb871ab"
+    },
+    {
+      "path": "crates/suite-core/src/trust/mod.rs",
+      "size": 7339,
+      "sha256": "70fdca2c8c5ab76ce370b2fa6bcbf1a9280106cab551e814389664687e136d14"
+    },
+    {
+      "path": "crates/suite-core/src/trust/production_tests.rs",
+      "size": 2080,
+      "sha256": "16fd7aa71bd7bf84c256de9224a906d82c35e69a5332b1dcff5a757b0cb0bd49"
+    },
+    {
+      "path": "crates/suite-core/src/trust/release.rs",
+      "size": 9628,
+      "sha256": "34ca45bc8edacd7953578ffd6e6ab5c030b50ad81d24b4e4edaecaee243a9620"
+    },
+    {
+      "path": "crates/suite-core/src/updates.rs",
+      "size": 6544,
+      "sha256": "45ed20b82249b229b56a46fa16e2617d518d44dfda84d4312e70a7160a918ecd"
+    },
+    {
+      "path": "crates/suite-core/tests/authenticode_policy.rs",
+      "size": 5019,
+      "sha256": "cfb4ad4c0576a29793127aae810fc3157fdb9343d46d4e1e15cf37c3713bccd3"
+    },
+    {
+      "path": "crates/suite-core/tests/cached_authenticode.rs",
+      "size": 7655,
+      "sha256": "d1b6045d0092c06eab65fbcfa317929a74d9a92aab7c38fc820b4e1d660589cc"
+    },
+    {
+      "path": "crates/suite-core/tests/catalog_contract.rs",
+      "size": 2830,
+      "sha256": "6d7b7c30ab8c0546113cf979df889bbc8b6be1939229876e5afc682132f6f600"
+    },
+    {
+      "path": "crates/suite-core/tests/cooperating_program.rs",
+      "size": 2758,
+      "sha256": "1bc4a6f8d5959553ee7bb6b790a4e518e507a1f37abb9f14c1c3473d68d85a8a"
+    },
+    {
+      "path": "crates/suite-core/tests/fixtures/MINISIGN.md",
+      "size": 1194,
+      "sha256": "a2d0616c35ca78895513ebd87ced7906014ab073253e90a676cc5694d4f364b1"
+    },
+    {
+      "path": "crates/suite-core/tests/fixtures/RELEASE-CACHE.md",
+      "size": 1058,
+      "sha256": "21a571044261fd818f02c24ab6efb2639b8a5a89cf152739eb6a1e3004cf690d"
+    },
+    {
+      "path": "crates/suite-core/tests/fixtures/minisign-v2.json",
+      "size": 16897,
+      "sha256": "82e0722f696d519d7abb91311b7ee126dce89d07e123535ca59453961cea385f"
+    },
+    {
+      "path": "crates/suite-core/tests/fixtures/release-cache-v2.json",
+      "size": 5547,
+      "sha256": "01ba5d78d1852325599273af6331e99a3d869017e2f9efd3f2e0a5929a845a48"
+    },
+    {
+      "path": "crates/suite-core/tests/installation_detection.rs",
+      "size": 5743,
+      "sha256": "3805a1e41ca3bd07bb68c615d5794cea2dd23f35f03f2951604275430285408f"
+    },
+    {
+      "path": "crates/suite-core/tests/installer_launch.rs",
+      "size": 5178,
+      "sha256": "4b9045b2e2ecc1943749cf45467098a912205d49e9e2e5824bc2fcdc9a636822"
+    },
+    {
+      "path": "crates/suite-core/tests/installer_targets.rs",
+      "size": 4965,
+      "sha256": "81d9b8a4a8cf6bd7e9b7a716677910713378bb0d9533a4ded502d8a29cf9d70f"
+    },
+    {
+      "path": "crates/suite-core/tests/inventory_lifecycle.rs",
+      "size": 10050,
+      "sha256": "1034718e030c6352a3f57f64197785879b21f5994dd1d5cbde5567cdab517363"
+    },
+    {
+      "path": "crates/suite-core/tests/inventory_snapshot.rs",
+      "size": 3840,
+      "sha256": "5b9a03c0285df9175959f5ffef406a58e3326342e73a930037b68635421dafa7"
+    },
+    {
+      "path": "crates/suite-core/tests/metadata_authoring.rs",
+      "size": 4495,
+      "sha256": "6b22643a0ae3489821942212edf0645fbeb8ae651aada81e39da1fedcfac0be3"
+    },
+    {
+      "path": "crates/suite-core/tests/metadata_cli.rs",
+      "size": 7278,
+      "sha256": "3861d0ddfd5d2199a0987619a9f74a436c3d793e6042b14a405ce13373b2d0a7"
+    },
+    {
+      "path": "crates/suite-core/tests/minisign_metadata.rs",
+      "size": 14185,
+      "sha256": "297a51439274be37b969ea4564d68ca5e287af5f41c069b6783a51bd9a15f841"
+    },
+    {
+      "path": "crates/suite-core/tests/network_policy.rs",
+      "size": 6621,
+      "sha256": "488a157f06b874769ff97262ba60877d79643f930d30c988aefd9c37963776df"
+    },
+    {
+      "path": "crates/suite-core/tests/operation_policy.rs",
+      "size": 3530,
+      "sha256": "521dda1d52dd71ff5b1189140e570515c64938f6acffaa896bc3e93bfda69325"
+    },
+    {
+      "path": "crates/suite-core/tests/package_cache.rs",
+      "size": 28671,
+      "sha256": "de586922e494965d49bee5edca6662ee7768d5bcafb307cee9c56701adf7dac3"
+    },
+    {
+      "path": "crates/suite-core/tests/process_detection.rs",
+      "size": 4004,
+      "sha256": "2ea8441459b4c9ae5954d0ec4011ae96eeb83e53ff8c120f4634623ba032152b"
+    },
+    {
+      "path": "crates/suite-core/tests/production_trust.rs",
+      "size": 4401,
+      "sha256": "485d15d02e2208a07a414805f393a2f93657407dcbb6591d9ea1804df1722b16"
+    },
+    {
+      "path": "crates/suite-core/tests/release_candidate.rs",
+      "size": 6615,
+      "sha256": "ad02c09e309826a194f7f0b147f73b8eac87bf893742d5f7ef7378579e3c8762"
+    },
+    {
+      "path": "crates/suite-core/tests/release_package.rs",
+      "size": 5674,
+      "sha256": "d94d1aa30fd8680e224bae2e2f790510e59c6800be63b18bdc8cee62469517c3"
+    },
+    {
+      "path": "crates/suite-core/tests/release_store.rs",
+      "size": 30225,
+      "sha256": "12693ee89d393f652847ced229c9237eddba9445d1a62b9a473945b7b8e30657"
+    },
+    {
+      "path": "crates/suite-core/tests/resource_users.rs",
+      "size": 1356,
+      "sha256": "d69cd3f09522930896befc843444793ca44a315d3d5ca21d499956ad0f1ed6d3"
+    },
+    {
+      "path": "crates/suite-core/tests/signed_catalog.rs",
+      "size": 6381,
+      "sha256": "abb407c0ede87288f67050d5f160b887032d1944d69f1b4b5b9cd4b2119e8a48"
+    },
+    {
+      "path": "crates/suite-core/tests/state_lock.rs",
+      "size": 2070,
+      "sha256": "9a349b6559fc04e1e1631e92c78c050225df7395398b3d560c7728d00d5b552a"
+    },
+    {
+      "path": "crates/suite-core/tests/state_store.rs",
+      "size": 11034,
+      "sha256": "ae49146eaef0b21473e431348fb102e43cae323ceba73694dd333a9275573d8a"
+    },
+    {
+      "path": "crates/suite-core/tests/support/mod.rs",
+      "size": 1606,
+      "sha256": "ec2d06675756f51709bad65c04b552bc3fe7def4e6f9cc39c3b1996b59d4f5c7"
+    },
+    {
+      "path": "crates/suite-core/tests/update_policy.rs",
+      "size": 7380,
+      "sha256": "6935a2bdd9a43a57ddc9f965553237afb05cff75a4925ccd8a665dae25f9a15e"
+    },
+    {
+      "path": "crates/suite-core/tests/user_settings.rs",
+      "size": 13250,
+      "sha256": "850b1209b2fdf9c63053caa24c4bd2be75d728dfb771713948305b0d5e4a54a1"
+    },
+    {
+      "path": "crates/suite-nsis-guard/Cargo.toml",
+      "size": 516,
+      "sha256": "e76c4e2fa108ae2d83c1b8fbcd3c0d8a4992d588388e05644f1b6a0a421263ea"
+    },
+    {
+      "path": "crates/suite-nsis-guard/examples/abi_host.rs",
+      "size": 22356,
+      "sha256": "f9ff4ea332338952eda605e0cce30853ef052477c3e3dc40b95125e5ba95e275"
+    },
+    {
+      "path": "crates/suite-nsis-guard/src/abi.rs",
+      "size": 12118,
+      "sha256": "78058941c3e7cccf86a34d601bdfca43e06dc302d7503aad8675fcf30a239294"
+    },
+    {
+      "path": "crates/suite-nsis-guard/src/abi/v2.rs",
+      "size": 5315,
+      "sha256": "98b5ab4b8732ac2ad8d3bf9e677233300ea2df03efee3eee1badec7f43165b14"
+    },
+    {
+      "path": "crates/suite-nsis-guard/src/lib.rs",
+      "size": 255,
+      "sha256": "4e1c1dc681a8779c1668f7be83ead53b15fd850f0a858e6b6cfbfe445f0ef1ec"
+    },
+    {
+      "path": "crates/suite-nsis-guard/src/mutation.rs",
+      "size": 18394,
+      "sha256": "9f0a8cb18f213c7c6fc31e9d4a1028c4e8193172f5e8d22ed2fa493c5a0c7e8a"
+    },
+    {
+      "path": "crates/suite-nsis-guard/src/session.rs",
+      "size": 24324,
+      "sha256": "68b3eb3c17fa1630c0cec841152a058435df7bf92001fef05fe2636dad64feaf"
+    }
+  ]
+}
