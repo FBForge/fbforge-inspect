@@ -37,7 +37,9 @@
       "nsis": {
         "installMode": "currentUser",
         "languages": ["German", "English"],
-        "displayLanguageSelector": false
+        "displayLanguageSelector": false,
+        "template": "installer/installer.nsi",
+        "installerHooks": "installer/guard.nsh"
       },
       "webviewInstallMode": {
         "type": "downloadBootstrapper",
